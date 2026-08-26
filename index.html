@@ -708,12 +708,7 @@ render();
   var items=Array.prototype.slice.call(wrap.children);
   var sel=document.getElementById('sortsel'), favbtn=document.getElementById('favbtn');
   var favn=document.getElementById('favn'), tcount=document.getElementById('tcount'), empty=document.getElementById('favempty');
-  var tcount2=document.getElementById('tcount2'), catalog=document.getElementById('catalog');
-  function toCatalog(){
-    if(!catalog) return;
-    var r=catalog.getBoundingClientRect();
-    if(r.top>window.innerHeight-120||r.bottom<0) catalog.scrollIntoView({behavior:'smooth',block:'start'});
-  }
+  var tcount2=document.getElementById('tcount2');
   var num=function(v){ var x=parseFloat(v); return isNaN(x)?null:x; };
   var rankOf=function(el){ return num(el.dataset.rank)||9999; };
   function by(key,dir){
@@ -774,9 +769,9 @@ render();
   favbtn.addEventListener('click',function(){
     only=!only;
     favbtn.setAttribute('aria-pressed',only?'true':'false');
-    apply(); toCatalog();
+    apply();
   });
-  sel.addEventListener('change',function(){ try{ localStorage.setItem(SKEY,sel.value); }catch(e){} apply(); toCatalog(); });
+  sel.addEventListener('change',function(){ try{ localStorage.setItem(SKEY,sel.value); }catch(e){} apply(); });
   try{ var s=localStorage.getItem(SKEY); if(s&&SORT[s]) sel.value=s; }catch(e){}
   apply();
 
