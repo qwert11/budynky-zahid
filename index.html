@@ -12,6 +12,7 @@
   --bg:#FAF9F5; --card:#FFFFFF; --ink:#232820; --muted:#6C7263; --line:#E4E2D6;
   --accent:#2E6B4E; --accent-soft:#EAF2ED; --amber:#996A14; --amber-soft:#F6EEDC;
   --chip:#F0EFE8; --rank:#D8D5C6; --gold:#C9962B;
+  --dead:#A8442E; --dead-soft:#F6E3DC;
   --kfs:82%; --kfl:63%; --kfa:.85;
 }
 @media (prefers-color-scheme: dark){
@@ -19,6 +20,7 @@
     --bg:#181C18; --card:#20251F; --ink:#E7E5DA; --muted:#9AA191; --line:#30362E;
     --accent:#84C29E; --accent-soft:#25332B; --amber:#D9A24A; --amber-soft:#332B1B;
     --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
+    --dead:#DB8F76; --dead-soft:#372218;
     --kfs:62%; --kfl:44%; --kfa:.6;
   }
 }
@@ -26,6 +28,7 @@
   --bg:#181C18; --card:#20251F; --ink:#E7E5DA; --muted:#9AA191; --line:#30362E;
   --accent:#84C29E; --accent-soft:#25332B; --amber:#D9A24A; --amber-soft:#332B1B;
   --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
+  --dead:#DB8F76; --dead-soft:#372218;
   --kfs:62%; --kfl:44%; --kfa:.6;
 }
 *{box-sizing:border-box}
@@ -53,6 +56,20 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .fav[aria-pressed="true"]{color:var(--gold); border-color:var(--gold); background:var(--amber-soft);}
 .fav:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 .row.isfav{border-color:var(--gold);}
+
+/* ── недоступные (объявление снято с OLX) */
+.unav{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; cursor:pointer;
+  font-size:15px; line-height:1; padding:7px 9px; flex:none;}
+.unav[aria-pressed="true"]{color:var(--dead); border-color:var(--dead); background:var(--dead-soft);}
+.unav:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.row.isdead{border-color:var(--dead);}
+.row.isdead .ph img{filter:grayscale(1); opacity:.62;}
+.row.isdead .tx a{color:var(--muted); text-decoration:line-through; text-decoration-thickness:1.5px;}
+.row.isdead .m,.row.isdead .ixs{opacity:.66;}
+.deadtag{display:inline-block; font-size:11.5px; font-weight:600; padding:1px 8px; border-radius:999px;
+  background:var(--dead-soft); color:var(--dead); margin-left:6px; vertical-align:1px; white-space:nowrap;}
+#deadbtn .dx{color:var(--dead); font-weight:700;}
+#deadbtn[aria-pressed="true"]{background:var(--dead-soft); border-color:var(--dead); color:var(--dead);}
 
 /* ── карта */
 .map{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 14px 8px; margin:0 0 26px;}
@@ -186,6 +203,8 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
 /* hover — только для мыши: на тач-экранах он залипает после тапа */
 @media (hover:hover) and (pointer:fine){
   .fav:hover{border-color:var(--gold); color:var(--gold);}
+  .unav:hover{border-color:var(--dead); color:var(--dead);}
+  #deadbtn:hover{border-color:var(--dead);}
   .clbar button:hover{border-color:var(--accent); color:var(--accent);}
   .tools .tolist:hover{border-color:var(--accent);}
   .tbtn:hover{border-color:var(--gold);}
@@ -206,7 +225,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   <span class="fyes">только готовое жильё</span>
   <span class="fyes">каждый дом проверен по фотографиям</span>
 </p>
-<p class="lede">Дома, в которые можно заехать: из ~520 объявлений по <b>всей Западной Украине</b> (Ивано-Франковск, Львов, Тернополь, Черновцы, Ужгород, Мукачево, Луцк, Ровно, Волынь шире) отобрано 150 — <b>без недостроев, коробок «под чистовую» и аварийных</b>: если на фото кирпич или блоки без отделки, объявление в список не попало. Каждый проверен по фотографиям и параметрам, у каждого индексы: цена/качество, цена, просмотры в день, километры до ближайшего города, цена за м² и <b>настоящая дата размещения</b> — та, которую OLX в объявлении не показывает. Панель <b>сортировки и избранного</b> — сразу под этим текстом, она не уезжает при прокрутке; избранное сохраняется в этом браузере и показывается жёлтой звездой на карте.</p>
+<p class="lede">Дома, в которые можно заехать: из ~520 объявлений по <b>всей Западной Украине</b> (Ивано-Франковск, Львов, Тернополь, Черновцы, Ужгород, Мукачево, Луцк, Ровно, Волынь шире) отобрано 150 — <b>без недостроев, коробок «под чистовую» и аварийных</b>: если на фото кирпич или блоки без отделки, объявление в список не попало. Каждый проверен по фотографиям и параметрам, у каждого индексы: цена/качество, цена, просмотры в день, километры до ближайшего города, цена за м² и <b>настоящая дата размещения</b> — та, которую OLX в объявлении не показывает. Панель <b>сортировки и избранного</b> — сразу под этим текстом, она не уезжает при прокрутке; избранное сохраняется в этом браузере и показывается жёлтой звездой на карте. Доступность объявлений проверяется на OLX раз в сутки: снятые с продажи зачёркиваются, кнопка <b>«✕ Недоступные»</b> скрывает их из каталога и с карты; крестиком на карточке можно пометить недоступное вручную.</p>
 
 <div class="tools" id="tools">
   <label for="sortsel">Сортировка:</label>
@@ -221,6 +240,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <option value="days-desc">больше шансов на торг (висит дольше)</option>
   </select>
   <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное">★ <span class="fw">Избранное </span><span id="favn">0</span></button>
+  <button class="tbtn" id="deadbtn" aria-pressed="false" title="Скрыть недоступные объявления из каталога и с карты"><span class="dx">✕</span> <span class="fw">Недоступные </span><span id="deadn">0</span></button>
   <a class="tolist" href="#catalog">Каталог <span class="fw">150 </span>↓</a>
   <span class="tcount" id="tcount"></span>
 </div>
@@ -359,6 +379,7 @@ function render(){
   let skipped=0;
   for(const p of PTS){
     if(only&&fv&&!fv.has(p.i)){ skipped++; continue; }
+    if(window.BHDEAD&&window.BHDEAD.hide&&window.BHDEAD.has(p.i)){ skipped++; continue; }
     const X=p.x*s+tx, Y=p.y*s+ty;
     if(X<-60||Y<-60||X>W+60||Y>H+60) continue;
     const key=Math.floor(X/cell)+':'+Math.floor(Y/cell);
@@ -751,11 +772,36 @@ render();
     }
   }catch(e){}
   window.BHFAV={set:favs, only:false};
+  // ── недоступные: серверный список dead.json (обновляет GitHub Actions раз в сутки,
+  // прямо из браузера страницу OLX не проверить — CORS) + ручные пометки ✕ на карточке.
+  // DEAD0 — снимок на дату сборки, работает и без dead.json (например, в копии-артефакте)
+  var DKEY='bh:dead', DHKEY='bh:hidedead';
+  var DEAD0={checked:'2026-08-26',dead:['IDZDJMM','ID115UZ2','ID10lwgQ','ID10VGCy','ID10VIHk','ID10zsHI','IDZJ6dS','ID10XyEJ','IDZGMim','ID10chVC','ID10VKoY']};
+  var deadSrv=new Map(), deadUser=new Map(), hideDead=false;
+  function seedDead(j){ deadSrv=new Map(); for(var si=0;si<j.dead.length;si++) deadSrv.set(j.dead[si], j.checked||''); }
+  seedDead(DEAD0);
+  try{
+    var draw=JSON.parse(localStorage.getItem(DKEY)||'[]');
+    for(var di=0;di<draw.length;di++){ var de=draw[di]; if(de&&de.i) deadUser.set(de.i, de.d||''); }
+  }catch(e){}
+  try{ hideDead=localStorage.getItem(DHKEY)==='1'; }catch(e){}
+  function isDead(id){ return deadSrv.has(id)||deadUser.has(id); }
+  window.BHDEAD={has:isDead, hide:hideDead};
   var wrap=document.getElementById('rows');
   var items=Array.prototype.slice.call(wrap.children);
+  // кнопка «✕ недоступно» на каждой карточке — рядом со звездой избранного
+  for(var bi=0;bi<items.length;bi++){
+    var tt=items[bi].querySelector('.t');
+    if(!tt) continue;
+    var ub=document.createElement('button');
+    ub.className='unav'; ub.dataset.unav=items[bi].dataset.id;
+    ub.setAttribute('aria-pressed','false'); ub.textContent='✕';
+    tt.appendChild(ub);
+  }
   var sel=document.getElementById('sortsel'), favbtn=document.getElementById('favbtn');
   var favn=document.getElementById('favn'), tcount=document.getElementById('tcount'), empty=document.getElementById('favempty');
   var tcount2=document.getElementById('tcount2');
+  var deadn=document.getElementById('deadn'), deadbtn=document.getElementById('deadbtn');
   var num=function(v){ var x=parseFloat(v); return isNaN(x)?null:x; };
   var rankOf=function(el){ return num(el.dataset.rank)||9999; };
   function by(key,dir){
@@ -818,8 +864,31 @@ render();
   function paintRow(el){
     var fav=favs.has(el.dataset.id);
     el.classList.toggle('isfav',fav);
-    el.hidden=!!(only&&!fav);
+    el.hidden=!!((only&&!fav)||(hideDead&&isDead(el.dataset.id)));
     return !el.hidden;
+  }
+  function saveDead(){
+    var a=[]; deadUser.forEach(function(d,id){ a.push({i:id,d:d||''}); });
+    try{ localStorage.setItem(DKEY, JSON.stringify(a)); }catch(e){}
+  }
+  function fmtD(d){ return d?(' с '+d.slice(8,10)+'.'+d.slice(5,7)):''; }
+  function syncDead(){
+    var n=0;
+    for(var i=0;i<items.length;i++){
+      var el=items[i], id=el.dataset.id, dead=isDead(id);
+      if(dead) n++;
+      el.classList.toggle('isdead',dead);
+      var m=el.querySelector('.m'), tag=el.querySelector('.deadtag');
+      if(dead&&!tag&&m){ tag=document.createElement('span'); tag.className='deadtag'; tag.textContent='недоступно'; m.appendChild(tag); }
+      else if(!dead&&tag) tag.remove();
+      var b=el.querySelector('[data-unav]');
+      if(b){
+        b.setAttribute('aria-pressed',dead?'true':'false');
+        b.title=deadSrv.has(id)?('Снято с OLX — подтверждено проверкой'+fmtD(deadSrv.get(id))):
+          (deadUser.has(id)?('Помечено вручную'+fmtD(deadUser.get(id))+'. Нажмите, чтобы снять пометку'):'Пометить недоступным (объявление удалено с OLX)');
+      }
+    }
+    deadn.textContent=n;
   }
   // reorder=false — только перекрашиваем строки, не двигая их в DOM:
   // перестановка узлов сбивает браузеру привязку прокрутки и кидает страницу вверх
@@ -838,6 +907,7 @@ render();
     }
     var orph=orphans();
     var txt=only?(shown+' в избранном'+(orph.length?(' + '+orph.length+' вне каталога'):'')):(shown+' домов в каталоге');
+    if(hideDead&&!only&&shown<items.length) txt=shown+' домов в каталоге · '+(items.length-shown)+' скрыто';
     tcount.textContent=txt;
     if(tcount2) tcount2.textContent='показано '+txt;
     empty.hidden=!(only&&shown===0&&orph.length===0);
@@ -849,7 +919,8 @@ render();
     });
     if(dirty) save();
     syncStars();
-    if(window.BHMAP&&window.BHMAP.render){ window.BHFAV.set=favs; window.BHFAV.only=only; window.BHMAP.render(); }
+    syncDead();
+    if(window.BHMAP&&window.BHMAP.render){ window.BHFAV.set=favs; window.BHFAV.only=only; window.BHDEAD.hide=hideDead; window.BHMAP.render(); }
     // страховка: если браузер всё же сдвинул прокрутку — возвращаем на место
     var y2=window.pageYOffset||document.documentElement.scrollTop;
     if(y2!==y) window.scrollTo(0,y);
@@ -868,6 +939,27 @@ render();
     favbtn.setAttribute('aria-pressed',only?'true':'false');
     apply();
   });
+  // ✕ на карточке — ручная пометка «недоступно» (переживает перезагрузку страницы)
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-unav]'):null;
+    if(!b) return;
+    e.preventDefault();
+    var id=b.dataset.unav;
+    if(deadUser.has(id)) deadUser.delete(id); else deadUser.set(id, new Date().toISOString().slice(0,10));
+    if(b.blur) b.blur();
+    saveDead(); apply(false);
+  });
+  deadbtn.addEventListener('click',function(){
+    hideDead=!hideDead;
+    deadbtn.setAttribute('aria-pressed',hideDead?'true':'false');
+    try{ localStorage.setItem(DHKEY,hideDead?'1':'0'); }catch(e){}
+    apply(false);
+  });
+  deadbtn.setAttribute('aria-pressed',hideDead?'true':'false');
+  // свежий список недоступных — рядом с сайтом, обновляет GitHub Actions
+  fetch('dead.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ if(j&&j.dead){ seedDead(j); apply(false); } })
+    .catch(function(){});
   sel.addEventListener('change',function(){ try{ localStorage.setItem(SKEY,sel.value); }catch(e){} apply(); });
   try{ var s=localStorage.getItem(SKEY); if(s&&SORT[s]) sel.value=s; }catch(e){}
   apply();
