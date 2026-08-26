@@ -135,7 +135,7 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 body.mapfs .totop{display:none;}
 
 /* ── строки каталога */
-.rows{display:grid; gap:10px;}
+.rows{display:grid; gap:10px; overflow-anchor:none;}
 .row{display:grid; grid-template-columns:180px 1fr; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
 .row .ph{position:relative; min-height:130px;}
 .row .ph img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
@@ -798,16 +798,27 @@ render();
     }
     favn.textContent=favs.size;
   }
-  function apply(){
-    var arr=items.slice().sort(SORT[sel.value]||SORT.q);
-    var frag=document.createDocumentFragment(), shown=0;
-    for(var i=0;i<arr.length;i++){
-      var el=arr[i], fav=favs.has(el.dataset.id);
-      el.classList.toggle('isfav',fav);
-      if(only&&!fav){ el.hidden=true; } else { el.hidden=false; shown++; }
-      frag.appendChild(el);
+  function paintRow(el){
+    var fav=favs.has(el.dataset.id);
+    el.classList.toggle('isfav',fav);
+    el.hidden=!!(only&&!fav);
+    return !el.hidden;
+  }
+  // reorder=false — только перекрашиваем строки, не двигая их в DOM:
+  // перестановка узлов сбивает браузеру привязку прокрутки и кидает страницу вверх
+  function apply(reorder){
+    var y=window.pageYOffset||document.documentElement.scrollTop, shown=0;
+    if(reorder===false){
+      for(var j=0;j<items.length;j++) if(paintRow(items[j])) shown++;
+    } else {
+      var arr=items.slice().sort(SORT[sel.value]||SORT.q);
+      var frag=document.createDocumentFragment();
+      for(var i=0;i<arr.length;i++){
+        if(paintRow(arr[i])) shown++;
+        frag.appendChild(arr[i]);
+      }
+      wrap.appendChild(frag);
     }
-    wrap.appendChild(frag);
     var orph=orphans();
     var txt=only?(shown+' в избранном'+(orph.length?(' + '+orph.length+' вне каталога'):'')):(shown+' домов в каталоге');
     tcount.textContent=txt;
@@ -822,6 +833,9 @@ render();
     if(dirty) save();
     syncStars();
     if(window.BHMAP&&window.BHMAP.render){ window.BHFAV.set=favs; window.BHFAV.only=only; window.BHMAP.render(); }
+    // страховка: если браузер всё же сдвинул прокрутку — возвращаем на место
+    var y2=window.pageYOffset||document.documentElement.scrollTop;
+    if(y2!==y) window.scrollTo(0,y);
   }
   document.addEventListener('click',function(e){
     var b=e.target.closest?e.target.closest('[data-fav]'):null;
@@ -829,7 +843,7 @@ render();
     e.preventDefault();
     var id=b.dataset.fav;
     if(favs.has(id)) favs.delete(id); else favs.set(id, snapshot(id));
-    save(); apply();
+    save(); apply(false);
   });
   favbtn.addEventListener('click',function(){
     only=!only;
