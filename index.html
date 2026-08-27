@@ -1389,7 +1389,7 @@ render();
   // прямо из браузера страницу OLX не проверить — CORS) + ручные пометки ✕ на карточке.
   // DEAD0 — снимок на дату сборки, работает и без dead.json (например, в копии-артефакте)
   var DKEY='bh:dead', DHKEY='bh:hidedead';
-  var DEAD0={"checked":"2026-08-26","dead":["ID10VGCy","ID10VIHk","ID10VKoY","ID10VMiI","ID10XyEJ","ID10lwgQ","ID10zsHI","ID115UZ2","IDK4XXl","IDZDJMM","IDZGMim","IDZJ6dS"]};
+  var DEAD0={"checked":"2026-08-27","dead":["ID10MSb1","ID10VGCy","ID10VKoY","ID10VMiI","ID10VTE1","ID10Xdey","ID10XyEJ","ID10lwgQ","ID10zsHI","ID115UZ2","IDYp5FA","IDZDJMM","IDZGMim","IDZJ6dS","IDZQsVN"]};
   var deadSrv=new Map(), deadUser=new Map(), hideDead=false;
   function seedDead(j){ deadSrv=new Map(); for(var si=0;si<j.dead.length;si++) deadSrv.set(j.dead[si], j.checked||''); }
   seedDead(DEAD0);
