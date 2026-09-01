@@ -212,18 +212,7 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .tbtn[aria-pressed="true"]{background:var(--amber-soft); border-color:var(--gold); color:var(--gold);}
 .tbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 .tcount{font-size:13px; color:var(--muted); margin-left:auto;}
-.orphn{opacity:.5; font-weight:400;}
 .empty{background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:22px; color:var(--muted); text-align:center;}
-.orphans{background:var(--card); border:1px solid var(--gold); border-radius:12px; padding:14px 18px; margin-top:12px;}
-.orphans h3{margin:0 0 4px; font-size:16px; font-family:Literata,Georgia,serif; color:var(--amber);}
-.orphans .orphnote{margin:0 0 8px; font-size:13px; color:var(--muted);}
-.orphans ul{margin:0; padding-left:18px; font-size:14.5px;}
-.orphans li{margin:4px 0;}
-.orphdel{border:none; background:none; color:var(--muted); cursor:pointer; font-size:13px; padding:0 4px;}
-.orphstar{font-size:13px; letter-spacing:-1px;}
-.orphstar.l1{color:var(--accent);}
-.orphstar.l2{color:var(--fav2);}
-.orphstar.l3{color:var(--gold);}
 
 
 /* ── заметка к объявлению: одна на дом, живёт в браузере (bh:note) */
@@ -527,7 +516,6 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   .clbar button:hover{border-color:var(--accent); color:var(--accent);}
   .tools .tolist:hover{border-color:var(--accent);}
   .tbtn:hover{border-color:var(--gold);}
-  .orphdel:hover{color:var(--amber);}
   .totop:hover{border-color:var(--accent);}
   .row .t a:hover{color:var(--accent);}
 }
@@ -857,7 +845,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <option value="mrent-desc">есть кому сдать (рынок аренды)</option>
     <option value="days-desc">больше шансов на торг (висит дольше)</option>
   </select>
-  <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное: сверху 3 звезды, под ними 2, ниже 1 — внутри уровня действует выбранная сортировка">★ <span class="fw">Избранное </span><span id="favn">0</span><span class="orphn" id="favo"></span></button>
+  <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное: сверху 3 звезды, под ними 2, ниже 1 — внутри уровня действует выбранная сортировка">★ <span class="fw">Избранное </span><span id="favn">0</span></button>
   <button class="tbtn" id="expbtn" title="Выгрузить избранное в Markdown (только ссылки, по уровням звёзд) — и импортировать его обратно на другом устройстве">⇅ <span class="fw">Экспорт </span>MD</button>
   <button class="tbtn" id="deadbtn" aria-pressed="false" title="Скрыть недоступные объявления из каталога и с карты"><span class="dx">✕</span> <span class="fw">Недоступные </span><span id="deadn">0</span></button>
   <button class="tbtn" id="delbtn" aria-pressed="false" title="Показать дома, удалённые из подборки корзиной на карточке"><svg width="13" height="14" viewBox="0 0 14 15" aria-hidden="true"><path d="M2 4.5h10M5.5 2.5h3M3.5 4.5l.6 8.5h5.8l.6-8.5M5.8 7v4M8.2 7v4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="fw">Удалённые </span><span id="deln">0</span></button>
@@ -1641,7 +1629,6 @@ render();
 <div class="row" id="row-FB2912694755779196" data-id="FB2912694755779196" data-rank="1" data-q="72" data-price="38500" data-src="fb" data-kind="flat" data-km="0" data-mbuy="100" data-mrent="100"><a class="ph" href="https://www.facebook.com/marketplace/item/2912694755779196/" target="_blank" rel="noopener"><span class="nophoto"></span></a><div class="b"><div class="t"><span class="tx"><span class="rnk">1</span><a href="https://www.facebook.com/marketplace/item/2912694755779196/" target="_blank" rel="noopener">Продаж укомплектованої квартири на Ювілейному - 38 500 $</a><span class="srcb srcb-fb" title="Объявление в Facebook Marketplace">ФЕЙСБУК</span><span class="kindb" title="Тип жилья">квартира</span></span><button class="fav" data-fav="FB2912694755779196" aria-pressed="false" title="В избранное" aria-label="В избранное">★</button></div><div class="m"><b>$38 500</b> · Ровно · Рівне</div><div class="ixs"><span class="ix ixq" title="Индекс цена/качество внутри своего набора: цена за м², площадь, комнаты, этаж, ремонт и близость к городу"><b>72</b><i>цена/качество</i></span><span class="ix ixp" title="Цена в объявлении"><b>$38 500</b><i>цена</i></span><span class="ix ixm" title="Рынок по ближайшему городу (Рівне) — в самом населённом пункте объявлений OLX для оценки не нашлось. ПРОДАТЬ 100/100: в радиусе 10 км продаётся 1000 квартир (1000 в самом населённом пункте), активные объявления висят в среднем 36 дн., свежих до 30 дней 48%, больше года — 5%. СДАТЬ 100/100: в населённом пункте сдают 0 домов и 142 квартир, медианная цена $337/мес; в радиусе 15 км — 148 объявлений. Красное кольцо — рынка нет, зелёное — живой."><span class="rgs"><svg class="rg" width="16" height="16" viewBox="0 0 16 16" style="--rh:120" role="img" aria-label="продать: 100 из 100"><circle class="rgt" cx="8" cy="8" r="6"/><circle class="rgv" cx="8" cy="8" r="6" stroke-dasharray="37.7" stroke-dashoffset="0.0"/></svg><svg class="rg" width="16" height="16" viewBox="0 0 16 16" style="--rh:120" role="img" aria-label="сдать: 100 из 100"><circle class="rgt" cx="8" cy="8" r="6"/><circle class="rgv" cx="8" cy="8" r="6" stroke-dasharray="37.7" stroke-dashoffset="0.0"/></svg></span><span class="vtx"><b>100 · 100</b><i>продать · сдать</i></span></span><span class="ix ixt" title="Расстояние по прямой до ближайшего города"><b>0 км</b><i>до Рівне</i></span></div></div></div>
 <div class="row" id="row-FB1567904098433062" data-id="FB1567904098433062" data-rank="2" data-q="69" data-price="39000" data-src="fb" data-kind="flat" data-km="19" data-mbuy="59" data-mrent="34"><a class="ph" href="https://www.facebook.com/marketplace/item/1567904098433062/" target="_blank" rel="noopener"><span class="nophoto"></span></a><div class="b"><div class="t"><span class="tx"><span class="rnk">2</span><a href="https://www.facebook.com/marketplace/item/1567904098433062/" target="_blank" rel="noopener">Продаж квартири, м. Черляни</a><span class="srcb srcb-fb" title="Объявление в Facebook Marketplace">ФЕЙСБУК</span><span class="kindb" title="Тип жилья">квартира</span></span><button class="fav" data-fav="FB1567904098433062" aria-pressed="false" title="В избранное" aria-label="В избранное">★</button></div><div class="m"><b>$39 000</b> · Городок · Стрий</div><div class="ixs"><span class="ix ixq" title="Индекс цена/качество внутри своего набора: цена за м², площадь, комнаты, этаж, ремонт и близость к городу"><b>69</b><i>цена/качество</i></span><span class="ix ixp" title="Цена в объявлении"><b>$39 000</b><i>цена</i></span><span class="ix ixm" title="Рынок вокруг этого жилья — по активным объявлениям OLX. ПРОДАТЬ 59/100: в радиусе 10 км продаётся 51 квартир (41 в самом населённом пункте), активные объявления висят в среднем 114 дн., свежих до 30 дней 19%, больше года — 21%. СДАТЬ 34/100: в населённом пункте сдают 0 домов и 2 квартир; в радиусе 15 км — 7 объявлений. Красное кольцо — рынка нет, зелёное — живой."><span class="rgs"><svg class="rg" width="16" height="16" viewBox="0 0 16 16" style="--rh:72" role="img" aria-label="продать: 59 из 100"><circle class="rgt" cx="8" cy="8" r="6"/><circle class="rgv" cx="8" cy="8" r="6" stroke-dasharray="37.7" stroke-dashoffset="15.5"/></svg><svg class="rg" width="16" height="16" viewBox="0 0 16 16" style="--rh:43" role="img" aria-label="сдать: 34 из 100"><circle class="rgt" cx="8" cy="8" r="6"/><circle class="rgv" cx="8" cy="8" r="6" stroke-dasharray="37.7" stroke-dashoffset="24.9"/></svg></span><span class="vtx"><b>59 · 34</b><i>продать · сдать</i></span></span><span class="ix ixt" style="--kh:35;--ka:0.68" title="Расстояние по прямой до ближайшего города"><b>19 км</b><i>до Стрий</i></span></div></div></div>
 </div>
-<div class="orphans" id="favorphans" hidden></div>
 <div class="empty" id="favempty" hidden>В избранном пока пусто. Нажмите ★ на любом доме — он сохранится в этом браузере. Повторные нажатия повышают уровень: зелёная → синяя → золотая.</div>
 
 <div class="mdlay" id="mdbox" hidden>
@@ -1740,9 +1727,6 @@ render();
     tt.appendChild(db);
   }
   var sel=document.getElementById('sortsel'), favbtn=document.getElementById('favbtn');
-  var favo=document.getElementById('favo');
-  var FAVBTN_TITLE=document.getElementById('favbtn').title;
-  var NLNL=String.fromCharCode(10,10);
   var favn=document.getElementById('favn'), tcount=document.getElementById('tcount'), empty=document.getElementById('favempty');
   var tcount2=document.getElementById('tcount2');
   var deadn=document.getElementById('deadn'), deadbtn=document.getElementById('deadbtn');
@@ -1776,28 +1760,6 @@ render();
     var a=row.querySelector('.t a');
     return { t:a?a.textContent.trim():'', p:row.dataset.price||'', u:a?a.getAttribute('href'):'' };
   }
-  // избранное, которого нет в текущем каталоге (объявление снято или ушло из фильтра)
-  function orphans(){
-    var out=[];
-    favs.forEach(function(v,id){ if(!document.getElementById('row-'+id)) out.push({id:id, v:v||{}}); });
-    return out;
-  }
-  function renderOrphans(list){
-    var box=document.getElementById('favorphans');
-    if(!box) return;
-    if(!only||!list.length){ box.hidden=true; box.innerHTML=''; return; }
-    var html='<h3>Из избранного нет в этой версии каталога — '+list.length+'</h3>'+
-      '<p class="orphnote">Объявление снято с OLX либо выпало из отбора при обновлении. Ссылки сохранены.</p><ul>';
-    for(var i=0;i<list.length;i++){
-      var o=list[i], t=o.v.t||o.id, p=o.v.p?('$'+Number(o.v.p).toLocaleString('en-US').replace(/,/g,' ')+' · '):'';
-      var ol=lvlOf(o.v);
-      html+='<li><span class="orphstar l'+ol+'">'+Array(ol+1).join('★')+'</span> '+p+
-            (o.v.u?('<a href="'+o.v.u+'" target="_blank" rel="noopener">'+t+'</a>'):t)+
-            ' <button class="orphdel" data-fav="'+o.id+'" title="Убрать из избранного">✕</button></li>';
-    }
-    box.innerHTML=html+'</ul>';
-    box.hidden=false;
-  }
   var LVL_TITLES={
     0:'В избранное (зелёная звезда)',
     1:'Зелёная (1 из 3). Нажмите — станет синей',
@@ -1815,12 +1777,7 @@ render();
       btns[i].textContent=lvl?Array(lvl+1).join('★'):'★';
       btns[i].title=LVL_TITLES[lvl];
     }
-    // счётчик кнопки — про этот каталог: избранное, которого в списке нет,
-    // идёт отдельным хвостом «+N», а не подмешивается в основное число
-    var oc=orphans().length;
-    favn.textContent=String(favs.size-oc);
-    favo.textContent=oc?(' +'+oc):'';
-    favbtn.title=oc?(FAVBTN_TITLE+NLNL+'Ещё '+oc+' в избранном нет в этой версии каталога — объявление снято либо выпало из отбора. Ссылки сохранены, видны в режиме «только избранное».'):FAVBTN_TITLE;
+    favn.textContent=favs.size;
   }
   // ── мультифильтры: источник, тип жилья, порог площади. Пустая группа = ничего не показываем
   var FKEY='bh:flt';
@@ -1960,13 +1917,11 @@ render();
       }
       wrap.appendChild(frag);
     }
-    var orph=orphans();
-    var txt=only?(shown+' в избранном'+(orph.length?(' + '+orph.length+' вне каталога'):'')):(shown+' объявлений');
+    var txt=only?(shown+' в избранном'):(shown+' объявлений');
     if(!only&&shown<items.length) txt=shown+' объявлений · '+(items.length-shown)+' скрыто фильтрами';
     tcount.textContent=txt;
     if(tcount2) tcount2.textContent='показано '+txt;
-    empty.hidden=!(only&&shown===0&&orph.length===0);
-    renderOrphans(orph);
+    empty.hidden=!(only&&shown===0);
     // дозаполняем снимки у избранного, сохранённого старой версией страницы
     var dirty=false;
     favs.forEach(function(v,id){
@@ -1984,15 +1939,14 @@ render();
     var y2=window.pageYOffset||document.documentElement.scrollTop;
     if(y2!==y) window.scrollTo(0,y);
   }
-  // клик по звезде идёт по кругу: нет → зелёная → синяя → золотая → нет;
-  // ✕ в списке «вне каталога» убирает сразу
+  // клик по звезде идёт по кругу: нет → зелёная → синяя → золотая → нет
   document.addEventListener('click',function(e){
     var b=e.target.closest?e.target.closest('[data-fav]'):null;
     if(!b) return;
     e.preventDefault();
     var id=b.dataset.fav;
     var v=favs.get(id);
-    if(b.classList.contains('orphdel')||(v&&lvlOf(v)>=3)){
+    if(v&&lvlOf(v)>=3){
       favs.delete(id);
     } else if(v){
       v.l=lvlOf(v)+1;
@@ -2449,10 +2403,8 @@ render();
   var mdadd=document.getElementById('mdadd'), mdrep=document.getElementById('mdrep');
   if(mdadd) mdadd.addEventListener('click',function(){ doImport(false); });
   if(mdrep) mdrep.addEventListener('click',function(){
-    var orph=orphans().length;
     var q='Снять все текущие метки (избранное '+favs.size+', недоступных вручную '+deadUser.size+
-          ', удалённых '+delUser.size+', заметок '+notes.size+') и проставить те, что в тексте?'+
-          (orph?('\n\nИз избранного '+orph+' вне текущего каталога — такие метки восстановить не получится.'):'');
+          ', удалённых '+delUser.size+', заметок '+notes.size+') и проставить те, что в тексте?';
     if((favs.size||deadUser.size||delUser.size||notes.size)&&!confirm(q)) return;
     doImport(true);
   });
@@ -2462,6 +2414,21 @@ render();
     .catch(function(){});
   sel.addEventListener('change',function(){ try{ localStorage.setItem(SKEY,sel.value); }catch(e){} apply(); });
   try{ var s=localStorage.getItem(SKEY); if(s&&SORT[s]) sel.value=s; }catch(e){}
+  // ── чистка хранилища: метка объявления, которого в этом каталоге нет, ничего
+  // не значит — её больше не показать, не снять и не восстановить. Такие записи
+  // удаляются при загрузке, поэтому счётчики на кнопках всегда про этот список.
+  // Необратимо: каталог, пересобранный урезанным, забирает метки с собой.
+  (function(){
+    var gone=function(id){ return !document.getElementById('row-'+id); }, n=0;
+    favs.forEach(function(v,id){ if(gone(id)){ favs.delete(id); n++; } });
+    deadUser.forEach(function(v,id){ if(gone(id)){ deadUser.delete(id); n++; } });
+    delUser.forEach(function(v,id){ if(gone(id)){ delUser.delete(id); n++; } });
+    notes.forEach(function(v,id){ if(gone(id)){ notes.delete(id); n++; } });
+    for(var id in ckRow) if(Object.prototype.hasOwnProperty.call(ckRow,id)&&gone(id)){ delete ckRow[id]; n++; }
+    if(!n) return;
+    save(); saveDead(); saveDel(); saveNotes(); ckSaveRow();
+  })();
+
   initFlt();
   apply();
 
