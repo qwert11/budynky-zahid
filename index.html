@@ -212,6 +212,7 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .tbtn[aria-pressed="true"]{background:var(--amber-soft); border-color:var(--gold); color:var(--gold);}
 .tbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 .tcount{font-size:13px; color:var(--muted); margin-left:auto;}
+.orphn{opacity:.5; font-weight:400;}
 .empty{background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:22px; color:var(--muted); text-align:center;}
 .orphans{background:var(--card); border:1px solid var(--gold); border-radius:12px; padding:14px 18px; margin-top:12px;}
 .orphans h3{margin:0 0 4px; font-size:16px; font-family:Literata,Georgia,serif; color:var(--amber);}
@@ -856,7 +857,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <option value="mrent-desc">есть кому сдать (рынок аренды)</option>
     <option value="days-desc">больше шансов на торг (висит дольше)</option>
   </select>
-  <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное: сверху 3 звезды, под ними 2, ниже 1 — внутри уровня действует выбранная сортировка">★ <span class="fw">Избранное </span><span id="favn">0</span></button>
+  <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное: сверху 3 звезды, под ними 2, ниже 1 — внутри уровня действует выбранная сортировка">★ <span class="fw">Избранное </span><span id="favn">0</span><span class="orphn" id="favo"></span></button>
   <button class="tbtn" id="expbtn" title="Выгрузить избранное в Markdown (только ссылки, по уровням звёзд) — и импортировать его обратно на другом устройстве">⇅ <span class="fw">Экспорт </span>MD</button>
   <button class="tbtn" id="deadbtn" aria-pressed="false" title="Скрыть недоступные объявления из каталога и с карты"><span class="dx">✕</span> <span class="fw">Недоступные </span><span id="deadn">0</span></button>
   <button class="tbtn" id="delbtn" aria-pressed="false" title="Показать дома, удалённые из подборки корзиной на карточке"><svg width="13" height="14" viewBox="0 0 14 15" aria-hidden="true"><path d="M2 4.5h10M5.5 2.5h3M3.5 4.5l.6 8.5h5.8l.6-8.5M5.8 7v4M8.2 7v4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="fw">Удалённые </span><span id="deln">0</span></button>
@@ -1739,6 +1740,9 @@ render();
     tt.appendChild(db);
   }
   var sel=document.getElementById('sortsel'), favbtn=document.getElementById('favbtn');
+  var favo=document.getElementById('favo');
+  var FAVBTN_TITLE=document.getElementById('favbtn').title;
+  var NLNL=String.fromCharCode(10,10);
   var favn=document.getElementById('favn'), tcount=document.getElementById('tcount'), empty=document.getElementById('favempty');
   var tcount2=document.getElementById('tcount2');
   var deadn=document.getElementById('deadn'), deadbtn=document.getElementById('deadbtn');
@@ -1811,7 +1815,12 @@ render();
       btns[i].textContent=lvl?Array(lvl+1).join('★'):'★';
       btns[i].title=LVL_TITLES[lvl];
     }
-    favn.textContent=favs.size;
+    // счётчик кнопки — про этот каталог: избранное, которого в списке нет,
+    // идёт отдельным хвостом «+N», а не подмешивается в основное число
+    var oc=orphans().length;
+    favn.textContent=String(favs.size-oc);
+    favo.textContent=oc?(' +'+oc):'';
+    favbtn.title=oc?(FAVBTN_TITLE+NLNL+'Ещё '+oc+' в избранном нет в этой версии каталога — объявление снято либо выпало из отбора. Ссылки сохранены, видны в режиме «только избранное».'):FAVBTN_TITLE;
   }
   // ── мультифильтры: источник, тип жилья, порог площади. Пустая группа = ничего не показываем
   var FKEY='bh:flt';
