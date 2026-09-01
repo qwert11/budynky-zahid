@@ -1712,6 +1712,8 @@ render();
   window.BHDEAD={has:isDead, hide:hideDead};
   // удалённые пользователем дома: корзина на карточке, по умолчанию скрыты
   var LKEY='bh:del', LSKEY='bh:showdel';
+  /* починка: из-за совпадения имени переменной удалённые какое-то время писались в ключ чек-листов — забираем их обратно */
+  try{ var _mig=JSON.parse(localStorage.getItem('bh:chkl')||'null'); if(Array.isArray(_mig)){ var _cur=JSON.parse(localStorage.getItem(LKEY)||'[]'); if(!Array.isArray(_cur)) _cur=[]; var _seen={}; for(var _mi=0;_mi<_cur.length;_mi++){ if(_cur[_mi]&&_cur[_mi].i) _seen[_cur[_mi].i]=1; } for(var _mj=0;_mj<_mig.length;_mj++){ var _me=_mig[_mj]; if(_me&&_me.i&&!_seen[_me.i]){ _cur.push(_me); _seen[_me.i]=1; } } localStorage.setItem(LKEY, JSON.stringify(_cur)); localStorage.removeItem('bh:chkl'); } }catch(e){}
   var delUser=new Map(), showDel=false;
   try{
     var lraw=JSON.parse(localStorage.getItem(LKEY)||'[]');
@@ -2126,12 +2128,12 @@ render();
 
   // ── чек-листы осмотра: общая памятка (bh:chk — один набор на все выезды, сброс кнопкой)
   // и персональные списки по домам (bh:chkl — {id:{n:длина, v:[индексы]}}, сбрасываются каждый свой).
-  var CKEY='bh:chk', LKEY='bh:chkl';
+  var CKEY='bh:chk', RKEY='bh:chkl';
   var ckDone=new Set(), ckRow={};
   try{ var raw=localStorage.getItem(CKEY); if(raw) JSON.parse(raw).forEach(function(k){ ckDone.add(k); }); }catch(e){}
-  try{ var raw2=localStorage.getItem(LKEY); if(raw2) ckRow=JSON.parse(raw2)||{}; }catch(e){}
+  try{ var raw2=localStorage.getItem(RKEY); if(raw2) ckRow=JSON.parse(raw2)||{}; }catch(e){}
   function ckSave(){ var a=[]; ckDone.forEach(function(k){ a.push(k); }); try{ localStorage.setItem(CKEY, JSON.stringify(a)); }catch(e){} }
-  function ckSaveRow(){ try{ localStorage.setItem(LKEY, JSON.stringify(ckRow)); }catch(e){} }
+  function ckSaveRow(){ try{ localStorage.setItem(RKEY, JSON.stringify(ckRow)); }catch(e){} }
   var chkc=document.getElementById('chkc'), chkprog=document.getElementById('chkprog');
   function ckSync(){
     var boxes=document.querySelectorAll('#chk input[data-chk]');
