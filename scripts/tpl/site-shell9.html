@@ -1,0 +1,1816 @@
+<title>Жильё Запада под удалёнку</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600;7..72,700&family=Golos+Text:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#FAF9F5; --card:#FFFFFF; --ink:#232820; --muted:#6C7263; --line:#E4E2D6;
+  --accent:#2E6B4E; --accent-soft:#EAF2ED; --amber:#996A14; --amber-soft:#F6EEDC;
+  --chip:#F0EFE8; --rank:#D8D5C6; --gold:#C9962B;
+  --fav2:#2F5FA8; --fav2-soft:#E8EEF8;
+  --dead:#A8442E; --dead-soft:#F6E3DC;
+  --kfs:82%; --kfl:63%; --kfa:.85;
+  --rgs:74%; --rgl:38%;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#181C18; --card:#20251F; --ink:#E7E5DA; --muted:#9AA191; --line:#30362E;
+    --accent:#84C29E; --accent-soft:#25332B; --amber:#D9A24A; --amber-soft:#332B1B;
+    --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
+    --fav2:#7EA6DE; --fav2-soft:#1E2836;
+    --dead:#DB8F76; --dead-soft:#372218;
+    --kfs:62%; --kfl:44%; --kfa:.6;
+    --rgs:58%; --rgl:56%;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#181C18; --card:#20251F; --ink:#E7E5DA; --muted:#9AA191; --line:#30362E;
+  --accent:#84C29E; --accent-soft:#25332B; --amber:#D9A24A; --amber-soft:#332B1B;
+  --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
+  --fav2:#7EA6DE; --fav2-soft:#1E2836;
+  --dead:#DB8F76; --dead-soft:#372218;
+  --kfs:62%; --kfl:44%; --kfa:.6;
+  --rgs:58%; --rgl:56%;
+}
+*{box-sizing:border-box}
+button{-webkit-tap-highlight-color:transparent;}
+/* display:grid/flex в наших правилах перебивает браузерное [hidden]{display:none} — фиксируем глобально */
+[hidden]{display:none !important;}
+body{background:var(--bg); color:var(--ink); font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.55; margin:0; padding:0 20px 72px;}
+main{max-width:980px; margin:0 auto;}
+a{color:var(--accent)}
+.eyebrow{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:44px 0 10px; font-weight:600;}
+h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw,46px); line-height:1.1; margin:0 0 12px; text-wrap:balance;}
+.lede{max-width:66ch; color:var(--muted); margin:0 0 34px;}
+.lede b{color:var(--ink); font-weight:600;}
+.filters{display:flex; flex-wrap:wrap; gap:7px; margin:0 0 18px; padding:0;}
+.filters span{font-size:13px; font-weight:600; padding:4px 11px; border-radius:999px;}
+.filters .fno{background:var(--amber-soft); color:var(--amber);}
+.filters .fno::before{content:"✕ "; font-weight:700;}
+.filters .fyes{background:var(--accent-soft); color:var(--accent);}
+.filters .fyes::before{content:"✓ "; font-weight:700;}
+
+/* ── избранное */
+.fav{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; cursor:pointer;
+  font-size:16px; line-height:1; padding:7px 9px; flex:none;}
+/* две-три звезды в одной кнопке — уплотняем, чтобы не распирало строку заголовка */
+.fav[data-lvl="2"],.fav[data-lvl="3"]{font-size:13px; letter-spacing:-1px; padding:8px 7px;}
+/* уровни избранного: 1 — зелёная, 2 — синяя, 3 — золотая */
+.fav[data-lvl="1"]{color:var(--accent); border-color:var(--accent); background:var(--accent-soft);}
+.fav[data-lvl="2"]{color:var(--fav2); border-color:var(--fav2); background:var(--fav2-soft);}
+.fav[data-lvl="3"]{color:var(--gold); border-color:var(--gold); background:var(--amber-soft);}
+.fav:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.row.favl1{border-color:var(--accent);}
+.row.favl2{border-color:var(--fav2);}
+.row.favl3{border-color:var(--gold);}
+
+/* ── недоступные (объявление снято с OLX) */
+.unav{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; cursor:pointer;
+  font-size:15px; line-height:1; padding:7px 9px; flex:none;}
+.unav[aria-pressed="true"]{color:var(--dead); border-color:var(--dead); background:var(--dead-soft);}
+.unav:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.row.isdead{border-color:var(--dead);}
+.row.isdead .ph img{filter:grayscale(1); opacity:.62;}
+.row.isdead .tx a{color:var(--muted); text-decoration:line-through; text-decoration-thickness:1.5px;}
+.row.isdead .m,.row.isdead .ixs{opacity:.66;}
+.deadtag{display:inline-block; font-size:11.5px; font-weight:600; padding:1px 8px; border-radius:999px;
+  background:var(--dead-soft); color:var(--dead); margin-left:6px; vertical-align:1px; white-space:nowrap;}
+#deadbtn .dx{color:var(--dead); font-weight:700;}
+#deadbtn[aria-pressed="true"]{background:var(--dead-soft); border-color:var(--dead); color:var(--dead);}
+
+/* ── удалённые пользователем (корзина на карточке; по умолчанию скрыты из каталога и с карты) */
+.delb{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; cursor:pointer;
+  line-height:0; padding:8px 8px; flex:none;}
+.delb[aria-pressed="true"]{color:var(--dead); border-color:var(--dead); background:var(--dead-soft);}
+.delb:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.row.isdel .ph img{filter:grayscale(1); opacity:.5;}
+.row.isdel .tx a{color:var(--muted);}
+.deltag{display:inline-block; font-size:11.5px; font-weight:600; padding:1px 8px; border-radius:999px;
+  background:var(--chip); color:var(--muted); border:1px solid var(--line); margin-left:6px; vertical-align:1px; white-space:nowrap;}
+
+/* ── карта */
+.map{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 14px 8px; margin:0 0 26px;}
+.map figcaption{color:var(--muted); font-size:13px; margin:10px 4px 8px; max-width:76ch;}
+.clwrap{position:relative; user-select:none; -webkit-user-select:none;}
+.clwrap [hidden]{display:none !important;}
+.clstage{position:relative; width:100%; height:520px; overflow:hidden;}
+#clsvg{display:block; width:100%; height:100%; touch-action:pan-y; cursor:grab;}
+#clsvg:active{cursor:grabbing;}
+.clwrap.fsmode{position:fixed; inset:0; z-index:1000; background:var(--card); padding:0; margin:0;}
+.clwrap.fsmode .clstage{height:100%; width:100%;}
+.clwrap.fsmode #clsvg{touch-action:none;}
+.clwrap.fsmode .cllegend{position:absolute; left:10px; right:10px; bottom:max(10px,env(safe-area-inset-bottom));
+  z-index:4; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin:0;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);}
+.clbar{position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px; z-index:4;}
+.clwrap.fsmode .clbar{top:max(12px,env(safe-area-inset-top)); right:max(12px,env(safe-area-inset-right));}
+.clbar button{width:38px; height:38px; border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  font-size:19px; font-weight:600; cursor:pointer; line-height:1; box-shadow:0 1px 4px rgba(0,0,0,.10);}
+.clbar button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.clpop{position:absolute; z-index:5; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.18); max-width:min(330px,88vw); font-size:13px; display:flex; flex-direction:column; gap:6px;}
+.clpop a{color:var(--accent); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; display:block;}
+.clhover{position:absolute; z-index:6; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:6px; box-shadow:0 6px 24px rgba(0,0,0,.18);}
+.clhover .hcap{font-size:12px; color:var(--muted); margin-top:5px; max-width:210px; line-height:1.45;}
+.clhover .ht{color:var(--ink); font-weight:600; margin-bottom:2px;}
+.clhover .hrank{color:var(--accent); font-family:Literata,Georgia,serif; font-weight:700;}
+.clfav{position:absolute; z-index:5; left:10px; top:10px; background:var(--amber-soft); color:var(--amber);
+  border:1px solid var(--gold); border-radius:999px; padding:5px 12px; font-size:12.5px; font-weight:600;}
+.clhint{position:absolute; z-index:7; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background:var(--ink);
+  color:var(--bg); font-size:14px; padding:10px 16px; border-radius:10px; opacity:.9; text-align:center; max-width:80%;}
+.cllegend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; color:var(--muted); margin:10px 2px 0;}
+.cllegend span{display:inline-flex; align-items:center; gap:6px;}
+.cllegend i{width:18px; height:18px; border-radius:50%; background:var(--accent); color:var(--bg); font-style:normal;
+  font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; flex:none;}
+.cllegend .lgs{width:12px; height:12px;}
+.cllegend .lgstar{background:none; color:#D9A24A; font-size:16px; width:14px; height:auto;}
+.cllegend .lgo{width:20px; height:0; border-radius:0; background:none; border-top:1.4px solid var(--muted); opacity:.6;}
+.cllegend .lgh{width:14px; height:14px; background:#F2C33C; opacity:.55;}
+.cllegend .lgb{width:20px; height:13px; border-radius:3px; background:rgba(242,195,60,.2); border:1.2px solid #B98F1F;}
+
+/* ── индексы */
+.ixs{display:flex; flex-wrap:wrap; gap:6px; margin:9px 0 2px;}
+.ix{display:inline-flex; flex-direction:column; line-height:1.15; background:var(--chip); border:1px solid transparent; border-radius:8px; padding:3px 8px;}
+.ix b{font-size:13.5px; font-variant-numeric:tabular-nums;}
+.ix i{font-style:normal; font-size:10.5px; color:var(--muted); letter-spacing:.02em;}
+.ix.ixq{background:var(--accent-soft);} .ix.ixq b{color:var(--accent);} .ix.ixq i{color:var(--accent); opacity:.85;}
+.ix.ixp b{color:var(--ink);}
+/* «просм/день»: спрос показывает глаз — появляется от 30 просмотров в день, зрачок растёт со спросом (лог-шкала до ~300) */
+.ix.ixv{flex-direction:row; align-items:center; gap:6px;}
+.ix.ixv .vtx{display:inline-flex; flex-direction:column; line-height:1.15;}
+.ix.ixv .eye{flex:none; display:block;}
+/* заливаемые плашки («до города», «просм/день»): тон --kh и сила --ka приходят из строки,
+   оттенок под тему — из --kf*, поэтому в тёмной теме красный не кричит */
+.ix.ixt{background-color:var(--chip);
+  background-image:linear-gradient(hsl(var(--kh,48) var(--kfs) var(--kfl)/calc(var(--ka,0)*var(--kfa))),
+                                   hsl(var(--kh,48) var(--kfs) var(--kfl)/calc(var(--ka,0)*var(--kfa))));
+  border-color:hsl(var(--kh,48) var(--kfs) calc(var(--kfl) - 14%)/calc(var(--ka,0)*var(--kfa)));}
+.ix.ixt i{color:var(--ink); opacity:.62;}
+/* ── рынок вокруг дома: два кольца, «продать» и «сдать». Тон от красного (рынка нет)
+   к зелёному (живой); насыщенность и светлота — из темы, как у заливаемых плашек */
+.ix.ixm{flex-direction:row; align-items:center; gap:7px;}
+.ix.ixm .rgs{display:flex; align-items:center; gap:4px;}
+.ix.ixm .vtx{display:inline-flex; flex-direction:column; line-height:1.15;}
+.ix.ixm b{font-variant-numeric:tabular-nums;}
+.rg{flex:none; transform:rotate(-90deg); overflow:visible;}
+.rg .rgt{fill:none; stroke:var(--ink); stroke-opacity:.13; stroke-width:3;}
+.rg .rgv{fill:none; stroke:hsl(var(--rh,60) var(--rgs) var(--rgl)); stroke-width:3; stroke-linecap:round;}
+.rg.rgn .rgt{stroke-dasharray:3 3; stroke-opacity:.32;}
+
+/* дата размещения — настоящая, из createdTime; OLX в интерфейсе её не показывает */
+.ix.ixd{white-space:nowrap;} .ix.ixd b{font-size:12.5px; font-weight:600;}
+
+/* ── бейджи источника и типа жилья в заголовке карточки */
+.srcb,.kindb{font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  padding:2px 6px; border-radius:5px; white-space:nowrap; vertical-align:middle; margin-left:6px;}
+.srcb-olx{background:var(--chip); color:var(--muted);}
+.srcb-lun{background:var(--amber-soft); color:var(--amber);}
+.srcb-tg{background:var(--fav2-soft); color:var(--fav2);}
+.srcb-fb{background:var(--accent-soft); color:var(--accent);}
+.kindb{background:transparent; color:var(--muted); border:1px solid var(--line); font-weight:600;}
+.nophoto{display:block; width:100%; height:100%; background:var(--chip);}
+
+/* ── мультифильтры: источник и тип жилья, любые комбинации */
+.flt{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin:0 0 12px;}
+.fltg{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;}
+.fltl{font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-right:2px;}
+.flt label{display:inline-flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;
+  border:1px solid var(--line); background:var(--card); border-radius:999px; padding:5px 11px; user-select:none;}
+.flt label:hover{border-color:var(--accent);}
+.flt label:has(input:checked){background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:600;}
+.flt input{accent-color:var(--accent); margin:0; width:14px; height:14px;}
+.flt label i{font-style:normal; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums;}
+.flt label:has(input:checked) i{color:var(--accent); opacity:.75;}
+.flt input:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.fltone{margin-left:auto;}
+@media (max-width:700px){
+  .flt{gap:6px 10px; margin-bottom:10px;}
+  .flt label{font-size:13px; padding:4px 9px;}
+  .fltl{width:100%; margin:0;}
+  .fltone{margin-left:0;}
+}
+
+/* ── панель сортировки */
+.tailh{font-family:Literata,Georgia,serif; font-weight:600; font-size:26px; margin:52px 0 6px; scroll-margin-top:64px;}
+.tailnote{color:var(--muted); font-size:14px; margin:0 0 14px; max-width:76ch;}
+.tools{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
+  background:var(--bg); border-bottom:1px solid var(--line); padding:10px 0 10px; margin:0 0 18px;}
+.tools .tolist{font-size:14px; font-weight:600; text-decoration:none; border:1px solid var(--line); border-radius:9px; padding:8px 11px;}
+.tools label{font-size:12.5px; color:var(--muted); font-weight:600;}
+.tools select{font:inherit; font-size:14.5px; color:var(--ink); background:var(--card); border:1px solid var(--line);
+  border-radius:9px; padding:8px 10px; max-width:100%;}
+.tools select:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+.tbtn{font:inherit; font-size:14.5px; font-weight:600; color:var(--ink); background:var(--card); border:1px solid var(--line);
+  border-radius:9px; padding:8px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+.tbtn[aria-pressed="true"]{background:var(--amber-soft); border-color:var(--gold); color:var(--gold);}
+.tbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.tcount{font-size:13px; color:var(--muted); margin-left:auto;}
+.orphn{opacity:.5; font-weight:400;}
+.empty{background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:22px; color:var(--muted); text-align:center;}
+.orphans{background:var(--card); border:1px solid var(--gold); border-radius:12px; padding:14px 18px; margin-top:12px;}
+.orphans h3{margin:0 0 4px; font-size:16px; font-family:Literata,Georgia,serif; color:var(--amber);}
+.orphans .orphnote{margin:0 0 8px; font-size:13px; color:var(--muted);}
+.orphans ul{margin:0; padding-left:18px; font-size:14.5px;}
+.orphans li{margin:4px 0;}
+.orphdel{border:none; background:none; color:var(--muted); cursor:pointer; font-size:13px; padding:0 4px;}
+.orphstar{font-size:13px; letter-spacing:-1px;}
+.orphstar.l1{color:var(--accent);}
+.orphstar.l2{color:var(--fav2);}
+.orphstar.l3{color:var(--gold);}
+
+
+/* ── заметка к объявлению: одна на дом, живёт в браузере (bh:note) */
+.cmt{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; cursor:pointer;
+  line-height:0; padding:8px 8px; flex:none;}
+.cmt[aria-pressed="true"]{color:var(--accent); border-color:var(--accent); background:var(--accent-soft);}
+.cmt:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.nview{margin-top:9px; font-size:13.5px; line-height:1.45; color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere;
+  background:var(--accent-soft); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:6px 10px 7px; cursor:text;}
+.nview::before{content:"заметка"; display:block; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+  font-weight:600; color:var(--accent); opacity:.8; margin-bottom:1px;}
+.ned{margin-top:9px; display:flex; flex-direction:column; gap:7px;}
+.ned textarea{font:inherit; font-size:13.5px; line-height:1.45; color:var(--ink); background:var(--bg);
+  border:1px solid var(--accent); border-radius:8px; padding:7px 9px; width:100%; resize:vertical; min-height:64px;}
+.ned textarea:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+.nact{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+.nact button{font:inherit; font-size:13px; font-weight:600; border-radius:8px; padding:5px 10px; cursor:pointer;
+  border:1px solid var(--line); background:var(--card); color:var(--ink);}
+.nact button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.nact .nsave{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.nact .ndel{border-color:var(--dead); color:var(--dead); background:var(--dead-soft);}
+.nact .nhint{font-size:12px; color:var(--muted); margin-left:auto;}
+
+/* ── экспорт/импорт избранного в Markdown */
+.mdlay{position:fixed; inset:0; z-index:60; background:rgba(18,20,16,.55); display:flex; align-items:center; justify-content:center; padding:16px;}
+.mdlay[hidden]{display:none !important;}
+.mdcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px 18px 13px;
+  width:min(760px,100%); max-height:min(88vh,900px); display:flex; flex-direction:column; box-shadow:0 12px 44px rgba(0,0,0,.3);}
+.mdtop{display:flex; align-items:flex-start; gap:10px;}
+.mdtop h3{margin:0; font-family:Literata,Georgia,serif; font-size:19px; flex:1;}
+.mdx{border:none; background:none; color:var(--muted); font-size:15px; cursor:pointer; padding:2px 6px; border-radius:6px; flex:none;}
+.mdnote{color:var(--muted); font-size:13.5px; margin:4px 0 10px;}
+.mdnote b{color:var(--ink); font-weight:600;}
+#mdta{flex:1; min-height:170px; width:100%; resize:vertical; white-space:pre; overflow:auto;
+  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--ink);
+  background:var(--bg); border:1px solid var(--line); border-radius:9px; padding:10px 11px;}
+#mdta:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+.mdact{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px;}
+.mdact .mdsep{flex:1; min-width:8px;}
+.mdact .prim{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.mdfilelab{position:relative; overflow:hidden; cursor:pointer;}
+.mdfilelab input{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer;}
+.mdmsg{margin:8px 0 0; font-size:13px; color:var(--accent); min-height:1.25em;}
+
+/* ── кнопка «вверх» */
+.totop{position:fixed; z-index:40; right:max(16px,env(safe-area-inset-right)); bottom:max(16px,env(safe-area-inset-bottom));
+  display:inline-flex; align-items:center; gap:7px; font:inherit; font-size:14.5px; font-weight:600;
+  color:var(--accent); background:var(--card); border:1px solid var(--line); border-radius:999px;
+  padding:10px 16px; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,.16);}
+.totop:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.totop[hidden]{display:none;}
+body.mapfs .totop{display:none;}
+
+/* ── «нам подходит»: разбор лота под конкретную семью — папа 45 на удалёнке,
+   мама 40 микробиолог, сын 20 репетитор английского. Кнопка — самая крупная иконка
+   карточки: три дуги (папа / мама / сын) вокруг общего балла, клик раскрывает текст. */
+.fitb{display:inline-flex; align-items:center; gap:9px; border:1px solid var(--line); background:var(--card);
+  border-radius:12px; padding:3px 12px 3px 4px; cursor:pointer; font:inherit; color:var(--ink); text-align:left;}
+.fitb:hover{border-color:var(--accent);}
+.fitb:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.fitb[aria-expanded="true"]{background:var(--accent-soft); border-color:var(--accent);}
+.fitb .fitw{display:inline-flex; flex-direction:column; line-height:1.2; min-width:0;}
+.fitb .fitw b{font-size:13.5px; font-weight:600;}
+.fitb .fitw i{font-style:normal; font-size:10.5px; color:var(--muted);}
+.fitb[aria-expanded="false"] .fitw i::after{content:" · развернуть";}
+.fitb[aria-expanded="true"] .fitw i::after{content:" · свернуть";}
+.fitr{flex:none; display:block; overflow:visible;}
+.fitr .fa{fill:none; stroke:var(--ink); stroke-opacity:.13; stroke-width:3.6; stroke-linecap:round;}
+.fitr .fv{fill:none; stroke:hsl(var(--rh,60) var(--rgs) var(--rgl)); stroke-width:3.6; stroke-linecap:round;}
+.fitr .fn{fill:var(--ink); font-family:Literata,Georgia,serif; font-weight:700; font-size:15px;
+  text-anchor:middle; font-variant-numeric:tabular-nums;}
+.fitr .fnd{fill:var(--muted); font-size:12px; text-anchor:middle;}
+/* раскрытый разбор */
+.fitbody{margin:10px 0 2px; border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:0 10px 10px 0; background:var(--bg); padding:11px 13px 8px; max-width:74ch;}
+.fitsum{margin:0 0 11px; font-size:14px; line-height:1.5; color:var(--ink);}
+.fittag{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  background:var(--accent-soft); color:var(--accent); border-radius:999px; padding:2px 9px; margin:0 0 8px;}
+.fsec{margin:0 0 10px; border-left:2px solid var(--line); padding-left:11px;}
+.fsec h5{margin:0 0 3px; font-size:12.5px; font-weight:700; color:var(--ink); display:flex; flex-wrap:wrap;
+  gap:3px 8px; align-items:baseline;}
+.fsec h5 span{font-size:10.5px; font-weight:700; letter-spacing:.05em; color:var(--muted);
+  font-variant-numeric:tabular-nums; white-space:nowrap;}
+.fsec p{margin:0; font-size:13.5px; line-height:1.5; color:var(--muted);}
+.fsec ul{margin:0; padding-left:16px;}
+.fsec li{font-size:13.5px; line-height:1.5; margin:3px 0; color:var(--muted);}
+.fsec li b,.fsec p b{color:var(--ink); font-weight:600;}
+.fsec-dad{border-left-color:var(--accent);} .fsec-dad h5 span{color:var(--accent);}
+.fsec-mom{border-left-color:var(--fav2);}   .fsec-mom h5 span{color:var(--fav2);}
+.fsec-son{border-left-color:var(--amber);}  .fsec-son h5 span{color:var(--amber);}
+.fsec-plus{border-left-color:var(--accent);}
+.fsec-risk{border-left-color:var(--dead);}
+.fsec-ask{border-left-color:var(--rank);}
+/* с раскрытым разбором карточка становится высокой — не даём фото растянуться на всю высоту */
+.row:has(.fitbody:not([hidden])) .ph{align-self:start; height:auto; min-height:170px;}
+/* блок «Кто заезжает» в чек-листе требований */
+.rqf{border-left-color:var(--fav2);}
+.rqf h4 em{background:var(--fav2-soft); color:var(--fav2);}
+@media (max-width:700px){
+  .fitb{padding:3px 10px 3px 3px; gap:7px;}
+  .fitb .fitw b{font-size:13px;}
+  .fitbody{padding:10px 11px 7px;}
+  .fsec li,.fsec p{font-size:13px;}
+}
+
+/* ── чек-листы осмотра: общая памятка в шапке (одна на все выезды, галочки в браузере,
+   сброс одной кнопкой) и персональный список на карточке избранного.
+   Вес пункта: stop — до аванса, trade — деньги и торг, nice — просто не забыть. */
+.chk{background:var(--card); border:1px solid var(--line); border-radius:12px; margin:0 0 24px; max-width:78ch;}
+.chk>summary{cursor:pointer; list-style:none; padding:12px 16px; display:flex; flex-wrap:wrap; align-items:baseline;
+  gap:4px 10px; font-size:14px; color:var(--muted);}
+.chk>summary::-webkit-details-marker{display:none;}
+.chk>summary b{font-family:Literata,Georgia,serif; font-weight:600; font-size:16px; color:var(--ink);}
+.chk>summary::after{content:"развернуть"; margin-left:auto; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:700; color:var(--accent); white-space:nowrap;}
+.chk[open]>summary::after{content:"свернуть";}
+.chk>summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:12px;}
+.chkc{font-variant-numeric:tabular-nums; font-weight:600; color:var(--accent);}
+.chkb2{padding:0 16px 14px;}
+.chkhint{margin:0 0 10px; font-size:14px; color:var(--muted);}
+.chkhint b{color:var(--ink); font-weight:600;}
+.chkbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 12px;}
+.chkbar .chkprog{flex:1; min-width:120px; height:6px; border-radius:999px; background:var(--chip); overflow:hidden;}
+.chkbar .chkprog i{display:block; height:100%; background:var(--accent); width:0;}
+.chkrst{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:var(--card);
+  color:var(--ink); border-radius:8px; padding:5px 11px; cursor:pointer; white-space:nowrap;}
+.chkrst:hover{border-color:var(--accent); color:var(--accent);}
+.chkrst:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.chkl{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
+.chkl li{margin:0;}
+.chkl label{display:flex; gap:9px; align-items:flex-start; padding:6px 8px; border-radius:8px; cursor:pointer;
+  font-size:14px; line-height:1.45; color:var(--ink); border-left:3px solid var(--line);}
+.chkl label:hover{background:var(--chip);}
+.chkl input{flex:none; margin:3px 0 0; width:17px; height:17px; accent-color:var(--accent); cursor:pointer;}
+.chkl input:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.chkl label.w-stop{border-left-color:var(--dead);}
+.chkl label.w-trade{border-left-color:var(--amber);}
+.chkl label.w-nice{border-left-color:var(--accent);}
+.chkl label:has(input:checked){color:var(--muted); background:var(--accent-soft); border-left-color:var(--accent);}
+.chkl label:has(input:checked) span{text-decoration:line-through; text-decoration-color:var(--muted); opacity:.75;}
+.chkgh{margin:14px 0 4px; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; font-weight:700; color:var(--muted);}
+.chkgh:first-child{margin-top:0;}
+.chkgh.g-stop{color:var(--dead);} .chkgh.g-trade{color:var(--amber);} .chkgh.g-nice{color:var(--accent);}
+/* кнопка и блок на карточке */
+.chkb{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:var(--card);
+  border-radius:12px; padding:6px 11px; cursor:pointer; font:inherit; color:var(--ink); text-align:left;}
+.chkb:hover{border-color:var(--amber);}
+.chkb:focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+.chkb[aria-expanded="true"]{background:var(--amber-soft); border-color:var(--amber);}
+.chkb svg{flex:none; display:block;}
+.chkb .fitw{display:inline-flex; flex-direction:column; line-height:1.2;}
+.chkb .fitw b{font-size:13px; font-weight:600;}
+.chkb .fitw i{font-style:normal; font-size:10.5px; color:var(--muted); font-variant-numeric:tabular-nums;}
+.chkbody{margin:10px 0 2px; border:1px solid var(--line); border-left:3px solid var(--amber);
+  border-radius:0 10px 10px 0; background:var(--bg); padding:11px 13px 10px; max-width:74ch;}
+.chkbody[hidden]{display:none !important;}
+.chkbody .chkl label{font-size:13.5px;}
+.chkbody .chkbar{margin-bottom:9px;}
+.chkbody .chkprog i{background:var(--amber);}
+.chkbody .chkt{margin:0 0 9px; font-size:11.5px; letter-spacing:.07em; text-transform:uppercase; font-weight:700; color:var(--amber);}
+.row:has(.chkbody:not([hidden])) .ph{align-self:start; height:auto; min-height:170px;}
+@media (max-width:700px){
+  .chk>summary{padding:11px 13px; font-size:13.5px;}
+  .chkb2{padding:0 13px 12px;}
+  .chkl label{font-size:13.5px; padding:6px 6px;}
+  .chkbody{padding:10px 11px 8px;}
+}
+
+/* ── блок «Сделка и деньги»: смета сверх цены, налоги, долги, согласие супруга */
+.rqd{border-left-color:var(--gold);}
+.rqd h4 em{background:var(--amber-soft); color:var(--amber);}
+.dealc{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px;}
+.dealc li{display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 10px; font-size:14.5px;
+  border-bottom:1px dashed var(--line); padding-bottom:6px;}
+.dealc li:last-child{border-bottom:none; padding-bottom:0;}
+.dealc li b{color:var(--ink); font-weight:600; flex:1 1 100%;}
+.dealc li span{color:var(--muted); font-size:13.5px; font-variant-numeric:tabular-nums;}
+.dealc li span em{font-style:normal; color:var(--amber); font-weight:600;}
+.dealsum{margin:10px 0 0; font-size:14px; color:var(--muted);}
+.dealsum b{color:var(--ink); font-weight:600;}
+.dealwarn{margin:0; font-size:14px; color:var(--dead); background:var(--dead-soft); border-radius:9px; padding:9px 12px;}
+.dealwarn b{color:var(--dead); font-weight:700;}
+@media (max-width:700px){
+  .dealc li{font-size:14px;}
+}
+
+/* ── блок «Проверить самому»: реестры и сервисы. Бейдж показывает цену входа:
+   открыто без ничего / нужен КЭП / платно. */
+.rql{border-left-color:var(--fav2);}
+.rql h4 em{background:var(--fav2-soft); color:var(--fav2);}
+.lnks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+.lnks li{font-size:14.5px; line-height:1.5; color:var(--muted); border-bottom:1px dashed var(--line); padding-bottom:9px;}
+.lnks li:last-child{border-bottom:none; padding-bottom:0;}
+.lnks a{color:var(--accent); font-weight:600; text-decoration:none; border-bottom:1px solid transparent; overflow-wrap:anywhere;}
+.lnks a:hover{border-bottom-color:var(--accent);}
+.lnks .lnkin{color:var(--ink); font-weight:600;}
+.lnkb{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  border-radius:999px; padding:2px 7px; margin-left:6px; vertical-align:1px; white-space:nowrap;}
+.lnkb.free{background:var(--accent-soft); color:var(--accent);}
+.lnkb.kep{background:var(--amber-soft); color:var(--amber);}
+.lnkb.pay{background:var(--chip); color:var(--muted);}
+.lnkb.ua{background:var(--dead-soft); color:var(--dead);}
+.lnknote{margin:0; font-size:13.5px; color:var(--muted);}
+@media (max-width:700px){ .lnks li{font-size:14px;} }
+
+/* ── строки каталога */
+.rows{display:grid; gap:10px; overflow-anchor:none;}
+.row{display:grid; grid-template-columns:180px 1fr; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+.row .ph{position:relative; min-height:130px;}
+.row .ph img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+.row .b{padding:10px 14px 12px; min-width:0;}
+.row .t{font-weight:600; font-size:15px; line-height:1.35; display:flex; gap:8px; align-items:flex-start;}
+.row .t .tx{flex:1; min-width:0;}
+.row .t a{color:var(--ink); text-decoration:none;}
+.row .rnk{color:var(--accent); font-family:Literata,Georgia,serif; font-weight:700; margin-right:6px; font-variant-numeric:tabular-nums;}
+.row .m{color:var(--muted); font-size:13.5px; margin-top:4px;}
+.row .m b{color:var(--ink); font-variant-numeric:tabular-nums;}
+.row .tagc{display:inline-block; font-size:11.5px; font-weight:500; padding:1px 8px; border-radius:999px; background:var(--accent-soft); color:var(--accent); margin-left:6px; vertical-align:1px;}
+.flash{animation:flashb 2.2s ease;}
+@keyframes flashb{0%,55%{outline:3px solid var(--accent); outline-offset:3px;} 100%{outline:3px solid transparent; outline-offset:3px;}}
+@media (prefers-reduced-motion: reduce){ .flash{animation:none; outline:3px solid var(--accent);} }
+.note{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:10px; padding:14px 18px; margin-top:38px; max-width:78ch;}
+.note h3{margin:0 0 8px; font-size:17px; font-family:Literata,Georgia,serif;}
+.note ul{margin:0; padding-left:20px;}
+.note li{margin:5px 0;}
+/* ── чек-лист требований: три группы по обратимости (стоп → торг → докупается) */
+.req{background:var(--card); border:1px solid var(--line); border-radius:12px; margin:0 0 24px; max-width:78ch;}
+.req>summary{cursor:pointer; list-style:none; padding:12px 16px; display:flex; flex-wrap:wrap; align-items:baseline;
+  gap:4px 10px; font-size:14px; color:var(--muted);}
+.req>summary::-webkit-details-marker{display:none;}
+.req>summary b{font-family:Literata,Georgia,serif; font-weight:600; font-size:16px; color:var(--ink);}
+.req>summary span::before{content:"· ";}
+.req>summary::after{content:"развернуть"; margin-left:auto; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:700; color:var(--accent); white-space:nowrap;}
+.req[open]>summary::after{content:"свернуть";}
+.req>summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:12px;}
+.reqb{padding:2px 16px 16px; display:flex; flex-direction:column; gap:18px;}
+.reqi,.reqf{margin:0; font-size:14px; color:var(--muted);}
+.reqi b,.reqf b{color:var(--ink); font-weight:600;}
+.reqf{border-top:1px solid var(--line); padding-top:13px;}
+.rq{border-left:3px solid var(--line); padding-left:14px;}
+.rq1{border-left-color:var(--dead);} .rq2{border-left-color:var(--amber);} .rq3{border-left-color:var(--accent);}
+.rq h4{margin:0 0 7px; font-size:14px; font-weight:400; color:var(--muted); display:flex; flex-wrap:wrap;
+  gap:4px 9px; align-items:baseline;}
+.rq h4 em{font-style:normal; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; font-weight:700;
+  padding:2px 9px; border-radius:999px; white-space:nowrap;}
+.rq1 h4 em{background:var(--dead-soft); color:var(--dead);}
+.rq2 h4 em{background:var(--amber-soft); color:var(--amber);}
+.rq3 h4 em{background:var(--accent-soft); color:var(--accent);}
+.rq ol{margin:0; padding-left:22px; font-size:14.5px;}
+.rq li{margin:7px 0; color:var(--muted);}
+.rq li b{color:var(--ink); font-weight:600;}
+.rq li::marker{color:var(--muted); font-weight:600;}
+@media (max-width:700px){
+  .req>summary{padding:11px 13px; font-size:13.5px;}
+  .req>summary b{font-size:15px;}
+  .req>summary span::before{content:none;}
+  .reqb{padding:2px 13px 14px; gap:16px;}
+  .rq{padding-left:11px;}
+  .rq ol{padding-left:19px; font-size:14px;}
+}
+footer{color:var(--muted); font-size:13px; margin-top:36px;}
+
+@media (max-width:700px){
+  body{padding:0 13px 60px;}
+  .eyebrow{margin:28px 0 8px;}
+  .map{padding:10px 10px 6px; border-radius:12px;}
+  .row{grid-template-columns:116px 1fr;}
+  .row .b{padding:9px 11px 11px;}
+  .row .t{font-size:14px;}
+  .row .m{font-size:12.5px;}
+  .ix{padding:2px 6px;} .ix b{font-size:12.5px;} .ix i{font-size:10px;}
+  .ix.ixd b{font-size:12px;}
+  .tools{gap:7px; padding:8px 0; margin-bottom:14px;}
+  .tools label{display:none;}
+  .tools select{flex:1; min-width:0; padding:7px 8px; font-size:14px;}
+  .tbtn,.tools .tolist{padding:7px 9px; font-size:14px;}
+  .fav,.unav{padding:6px 7px; font-size:14px;}
+  .delb{padding:7px 6px;}
+  .fw{display:none;}
+  .cmt{padding:7px 6px;}
+  .nact .nhint{display:none;}
+  .row .t{flex-wrap:wrap; row-gap:7px;}
+  .row .t .tx{flex:1 1 100%;}
+  .mdcard{padding:12px 13px 10px;}
+  .mdact .mdsep{display:none;}
+  #mdta{font-size:12px; padding:8px 9px;}
+  .tools .tcount{display:none;}
+  .tailh{font-size:22px; margin:38px 0 6px;}
+  .totop{padding:13px 15px; font-size:19px; line-height:1;}
+  .totop span{display:none;}
+}
+
+/* ── получистовая: часть объекта уже жилая, остальное достраивается своими силами */
+.semib{font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:2px 6px; border-radius:5px;
+  white-space:nowrap; vertical-align:middle; margin-left:6px; background:var(--amber-soft); color:var(--amber);}
+.ix.ixw{background:var(--amber-soft);} .ix.ixw b{color:var(--amber); font-size:12.5px;}
+.ix.ixw i{color:var(--amber); opacity:.8;}
+.ix.ixs{background:var(--accent-soft);} .ix.ixs b{color:var(--accent);}
+.ix.ixs i{color:var(--accent); opacity:.85;}
+.row[data-ready="semi"] .ph{box-shadow:inset 0 0 0 2px var(--amber-soft);}
+
+/* ── Шапка: чипы отбора и абзацы про наборы схлопнуты в один блок (bh:intro) */
+.intro{background:var(--card); border:1px solid var(--line); border-radius:12px; margin:0 0 20px; max-width:78ch;}
+.intro>summary{cursor:pointer; list-style:none; padding:12px 16px; display:flex; flex-wrap:wrap; align-items:baseline;
+  gap:4px 10px; font-size:14px; color:var(--muted);}
+.intro>summary::-webkit-details-marker{display:none;}
+.intro>summary b{font-family:Literata,Georgia,serif; font-weight:600; font-size:16px; color:var(--ink);}
+.intro>summary span::before{content:"· ";}
+.intro>summary::after{content:"развернуть"; margin-left:auto; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:700; color:var(--accent); white-space:nowrap;}
+.intro[open]>summary::after{content:"свернуть";}
+.intro>summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:12px;}
+.introb{padding:0 16px 2px; border-top:1px solid var(--line);}
+.introb .filters{margin:14px 0 14px;}
+.introb .lede{margin:0 0 16px;}
+.introb .lede:last-child{margin-bottom:14px;}
+/* ── Перекрёстный переход: артефакт ⇄ сайт */
+.xlink{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 18px; font-size:13px; color:var(--muted);}
+.xlink a{display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; border:1px solid transparent;
+  background:var(--accent-soft); color:var(--accent); font-weight:600; text-decoration:none; white-space:nowrap;}
+.xlink a:hover{border-color:var(--accent);}
+
+/* ── тот же объект в другом источнике: бейдж-ссылка на карточку-двойник */
+.dupb{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:2px 7px; border-radius:5px;
+  white-space:nowrap; vertical-align:middle; margin-left:6px; background:var(--fav2-soft); color:var(--fav2);
+  text-decoration:none; border:1px dashed var(--fav2); cursor:pointer;}
+.dupb:hover{border-style:solid;}
+
+/* ── легенда слоя промышленности */
+.cllegend .lgi{width:13px; height:13px; background:#A0421F; opacity:.55;}
+.cllegend .lgindl{display:inline-flex; align-items:center; gap:6px; cursor:pointer;}
+.cllegend .lgindl input{accent-color:#A0421F; margin:0; width:13px; height:13px;}
+
+@media (max-width:700px){
+  .intro>summary{padding:11px 13px; font-size:13.5px;}
+  .intro>summary b{font-size:15px;}
+  .intro>summary span::before{content:none;}
+  .introb{padding:0 13px 2px;}
+  .xlink{font-size:12.5px;}
+}
+
+/* hover — только для мыши: на тач-экранах он залипает после тапа */
+@media (hover:hover) and (pointer:fine){
+  .fav:hover{border-color:var(--gold); color:var(--gold);}
+  .unav:hover{border-color:var(--dead); color:var(--dead);}
+  .delb:hover{border-color:var(--dead); color:var(--dead);}
+  .cmt:hover{border-color:var(--accent); color:var(--accent);}
+  #deadbtn:hover{border-color:var(--dead);}
+  .clbar button:hover{border-color:var(--accent); color:var(--accent);}
+  .tools .tolist:hover{border-color:var(--accent);}
+  .tbtn:hover{border-color:var(--gold);}
+  .orphdel:hover{color:var(--amber);}
+  .totop:hover{border-color:var(--accent);}
+  .row .t a:hover{color:var(--accent);}
+}
+</style>
+<main>
+<p class="eyebrow">{{N}} объявлений · OLX + ЛУН + Телеграм + Фейсбук · 9 областей · до 10 км от города · обновлено {{DATE}}</p>
+<h1>Жильё Запада под удалёнку</h1>
+{{XLINK}}
+<details class="intro" id="intro">
+<summary><b>Как собран каталог</b><span>девять областей, топ-50 на область, правила 2 сентября</span></summary>
+<div class="introb">
+<p class="filters">
+  <span class="fyes">топ-50 на область — дома и квартиры отдельно, в каждом источнике</span>
+  <span class="fyes">только до 10 км от города</span>
+  <span class="fyes">близость к городу — двойной вес в индексе</span>
+  <span class="fyes">готовое жильё + ⚒ получистовая</span>
+  <span class="fyes">9 областей: запад + Хмельницкая, Житомирская, Винницкая</span>
+  <span class="fno">дальше 10 км от города</span>
+  <span class="fno">без недостроев и коробок, где негде жить</span>
+  <span class="fno">без аварийных</span>
+  <span class="fno">без дач</span>
+  <span class="fno">без Закарпатья</span>
+  <span class="fno">без снятых с продажи</span>
+  <span class="fno">без долей и частей дома</span>
+</p>
+<p class="lede">Жильё под удалённую работу в коридоре <b>$29–41 тыс.</b> по девяти областям: <b>Волынь, Ровенщина, Львовщина, Тернопольщина, Прикарпатье, Буковина, Хмельниччина, Житомирщина и Винничина</b>. Формат каталога — <b>топ-50 на область</b>, дома и квартиры отдельно, в каждом из четырёх источников (<b>OLX</b> — дома проверены по фотографиям, <b>ЛУН</b>, <b>каналы Телеграма</b>, <b>Facebook Marketplace</b>). Жёсткое правило отбора: <b>дальше 10 км от ближайшего города лоты не рассматриваются вообще</b>, а в индексе цена/качество близость к городу весит <b>вдвое больше</b> любой другой категории (цены за метр, площади, участка). Фильтры <b>«Область»</b>, <b>«Источник»</b>, <b>«Жильё»</b> и <b>«Готовность»</b> — над панелью сортировки, работают в любых комбинациях и запоминаются в браузере. Если один и тот же объект найден в двух источниках, на обеих карточках стоит бейдж-ссылка <b>«двойник»</b> — клик перебрасывает на вторую карточку. На карте появился слой <b>промышленности</b> (данные OpenStreetMap: заводские зоны и карьеры): чем краснее и крупнее пятно, тем больше там промышленных площадей — видно, какие города работают, а какие просто существуют.</p>
+<p class="lede"><b>Набор «получистовая»</b> перенесён без изменений: часть объекта уже пригодна для жизни, остальное достраивается по мере сил — у таких лотов вместо спроса и рынка плашки <b>«что готово»</b> и <b>«к рынку зоны»</b>, а переключатель «Готовность» отделяет их от готового жилья. Лоты, снятые покупателем корзиной, уходят в <b>excluded.json</b> и в каталог не возвращаются никогда; снятые с площадок объявления удаляются автоматической проверкой раз в сутки. Избранное с разбором «нам подходит» закреплено и не выпадает из каталога при пересборках.</p>
+</div>
+</details>
+<script>
+(function(){ /* шапка: помним, развёрнута ли вводная часть */
+  var d=document.getElementById('intro'); if(!d) return; var K='bh:intro';
+  try{ if(localStorage.getItem(K)==='1') d.open=true; }catch(e){}
+  d.addEventListener('toggle',function(){ try{ localStorage.setItem(K, d.open?'1':'0'); }catch(e){} });
+})();
+</script>
+
+<details class="chk" id="chk">
+<summary><b>Чек-лист осмотра</b><span>28 пунктов по важности · отмечено <span class="chkc" id="chkc">0</span></span></summary>
+<div class="chkb2">
+<p class="chkhint">Одна памятка на все выезды: <b>приехал — отметил — сбросил — поехал дальше</b>. Галочки сохраняются в этом браузере, кнопка <b>«Сбросить»</b> очищает их перед новым домом. Порядок по важности: сверху то, из-за чего разворачиваются и уезжают, снизу — то, что просто нужно не забыть посмотреть. У каждого разобранного дома в избранном есть ещё <b>свой</b> чек-лист — кнопкой на карточке.</p>
+<div class="chkbar">
+  <span class="chkprog" role="img" aria-label="прогресс чек-листа"><i id="chkprog"></i></span>
+  <button class="chkrst" id="chkrst" type="button" title="Снять все галочки перед следующим домом">Сбросить</button>
+</div>
+<p class="chkgh g-stop">Разворачиваемся и уезжаем — проверять до аванса</p>
+<ul class="chkl">
+<li><label class="w-stop"><input type="checkbox" data-chk="drrp"><span>Витяг з ДРРП на дом и на участок: кто собственник по документам, нет ли арестов, ипотек, совладельцев и детей в собственниках.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="who"><span>Продавец = собственник? Паспорт и ИНН в руках. Если доверенность — фото оригинала: дата, срок, нотариус, реестровый номер и есть ли право получать деньги.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="kadastr"><span>Кадастровый номер участка, границы вынесены в натуре, площадь совпадает с документами, нет наложений на соседей.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="tech"><span>Техпаспорт против того, что стоит во дворе: пристройки, мансарда, летняя кухня, гараж — узаконены или «мы просто построили».</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="status"><span>Целевое назначение земли (не садоводство и не дача) и статус дома: жилой, введён в эксплуатацию.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="crack"><span>Обойти дом снаружи и внутри с фонарём: диагональные трещины по фундаменту, углам и над окнами — это просадка, а не косметика.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="damp"><span>Сырость: подвал и цоколь, углы комнат, запах, высолы и плесень за мебелью и шторами. Уровень пола относительно улицы — не ниже?</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="roof"><span>Крыша и потолок верхнего этажа: подтёки, пятна, состояние стропил, возраст покрытия. Шифер = замена в обозримом будущем.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="net"><span>Интернет: какой провайдер по этому адресу, есть ли живой абонент на улице, видна ли муфта на столбе. Тут же замерить LTE на телефоне — сколько мегабит и какой оператор.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="water"><span>Открыть все краны и смыв: напор, слив, горячая вода. Откуда вода — скважина, колодец, центральная; что будет при отключении света (насос).</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="road"><span>Проехать последние 500 метров самому. Кто чистит зимой (община, село, сами), что тут после ливня, пройдёт ли машина мимо соседской.</span></label></li>
+<li><label class="w-stop"><input type="checkbox" data-chk="around"><span>Обойти квартал: кто соседи по обе стороны и через дорогу, есть ли заброшенные дома. Послушать шум — железная дорога, трасса, карьер, ферма, пилорама.</span></label></li>
+</ul>
+<p class="chkgh g-trade">Деньги и торг — смотреть на месте, считать вечером</p>
+<ul class="chkl">
+<li><label class="w-trade"><input type="checkbox" data-chk="power"><span>Электрика: щит, автоматы, медь или алюминий, три фазы или одна, счётчик. Включить чайник и обогреватель — не просаживается ли. Сколько раз в этом месяце отключали свет.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="heat"><span>Отопление: два источника или один, возраст котла, дата последнего обслуживания, дымоход. Счёт за газ за январь и февраль — на руки.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="gas"><span>Газ: договор, счётчик, пломба, нет ли долга по лицевому счёту. Если газа нет — есть ли ветка по улице и сколько стоит подключение.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="sewer"><span>Канализация: септик или выгреб, объём, как часто откачивают и за сколько, куда идёт сток. Есть ли центральная по улице.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="wc"><span>Санузел: в доме или во дворе, чем греется вода (бойлер, колонка), напор, вентиляция, куда уходит вода из душа.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="win"><span>Окна и двери: сколько лет, продувает ли по периметру, работает ли фурнитура, в порядке ли откосы и отливы.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="mobile"><span>Мобильная связь внутри дома, а не во дворе: проверить оба оператора. У границы — не цепляет ли телефон иностранную сеть (роуминг).</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="plot"><span>Участок по периметру: уклон, куда уходит вода при ливне, канавы и дренаж, ближайший канал или река, следы подтопления на цоколе и заборе.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="neigh"><span>Опросить двух-трёх соседей отдельно от продавца: подтопления, отключения, вода в колодцах, кто шумит, что за люди на улице, почему хозяева уезжают.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="stuff"><span>Что остаётся: список мебели и техники письменно, в переписке. Что забирают — уточнить до аванса, а не после.</span></label></li>
+<li><label class="w-trade"><input type="checkbox" data-chk="price"><span>Торг: сколько объявление висит, менялась ли цена, почему продают, кто платит нотариуса и налоги, согласны ли на безналичный расчёт и полную сумму в договоре.</span></label></li>
+</ul>
+<p class="chkgh g-nice">Не забыть посмотреть</p>
+<ul class="chkl">
+<li><label class="w-nice"><input type="checkbox" data-chk="office"><span>Где встанет рабочий стол: розетки, свет, тишина. Проверить звук — один говорит в комнате, второй слушает за закрытой дверью в соседней. Так же для второго рабочего места.</span></label></li>
+<li><label class="w-nice"><input type="checkbox" data-chk="walk"><span>Пройти пешком до магазина, аптеки, амбулатории и остановки — засечь минуты, а не поверить на слово.</span></label></li>
+<li><label class="w-nice"><input type="checkbox" data-chk="city"><span>Замерить дорогу до города по факту, туда и обратно; посмотреть расписание автобусов и поездов на остановке, а не в интернете.</span></label></li>
+<li><label class="w-nice"><input type="checkbox" data-chk="yard"><span>Двор и хозпостройки: гараж, навес, погреб, летняя кухня, хлев — состояние крыш и стен, есть ли смысл или это снос.</span></label></li>
+<li><label class="w-nice"><input type="checkbox" data-chk="photo"><span>Отснять всё: каждую комнату, щит, котёл, счётчики, документы, улицу, подъезд к дому. Вечером пересмотреть — на месте половина забывается.</span></label></li>
+</ul>
+</div>
+</details>
+
+<details class="req" id="req">
+<summary><b>Что критично при покупке</b><span>кто заезжает и 21 пункт по обратимости, а не по громкости</span></summary>
+<div class="reqb">
+<p class="reqi">Порядок здесь один: <b>сверху то, что после сделки не купить ни за какие деньги</b>, снизу — то, что закрывается деньгами за выходные и поэтому не должно влиять на выбор дома. Требования «интернет, электрика, газ, ближе к цивилизации, не развалюха, сервис Renault» разложены по этим трём уровням, а в конце — то, что касается только квартир.</p>
+
+<section class="rq rqf">
+<h4><em>Кто заезжает</em> под этих трёх людей и считается балл «нам подходит»</h4>
+<ol>
+<li><b>Папа, 45 — программист на удалёнке.</b> Проводная оптика по адресу (не «обещают подключить»), стабильный свет или инвертор, отдельная закрываемая комната под кабинет, тишина в рабочие часы. Отсюда же новое жёсткое требование к планировке: <b>в доме одновременно работают голосом двое</b> — папа на созвонах и сын на уроках, — поэтому две комнаты это уже теснота, а не «нормально для трёх человек».</li>
+<li><b>Мама, 40 — биолог-микробиолог.</b> Работа по специальности в пределах ежедневной поездки: больничные и частные лаборатории, областные центры контроля и профилактики болезней, кафедры вузов, пищевые производства и винодельни. В селе таких мест нет — значит важен город в 15–30 минутах, а не «природа и тишина».</li>
+<li><b>Сын, 20 — репетитор английского.</b> Тот же интернет плюс живой оффлайн-спрос: город, вуз или крупное селище рядом, транспорт и человеческая среда. В моноязычном селе на 700–1000 человек учеников он не найдёт.</li>
+</ol>
+<p class="reqi">У каждого разобранного лота на карточке появилась <b>самая большая иконка</b> — три дуги (папа, мама, сын) вокруг общего балла 0–100. Клик по ней раскрывает разбор: что здесь для каждого из трёх, плюсы, риски и что спросить до выезда. Балл считается как <b>0,34·папа + 0,30·мама + 0,22·сын + 0,14·«дом и сделка»</b> минус штрафы за недострой и неясные документы, продажу по доверенности, паводковую или промышленную зону, мёртвый рынок перепродажи и статус дачи. Это способ упорядочить список, а не приговор: решает текст под иконкой. Сортировка <b>«лучше всего подходит нам»</b> — в панели выше.</p>
+</section>
+
+<section class="rq rq1">
+<h4><em>Стоп-факторы</em> проверять до аванса; ремонтом не закрывается</h4>
+<ol>
+<li><b>Документы.</b> Дом и земля в Держреєстрі, границы вынесены в натуре, нет арестов, залогов и совладельцев-детей, пристройки узаконены, к участку ведёт своя или публичная дорога, а не проезд через двор соседа. Проверяет ваш нотариус, не риелтор продавца. Цена ошибки — вся сумма сделки.</li>
+<li><b>Конструктив — «не капітальна розвалюха».</b> Проверяется списком, а не общим впечатлением: диагональные трещины по фундаменту и стенам, сухой ли подвал, следы протечек на потолке верхнего этажа, плесень и запах сырости в углах, просадка перекрытий. Ехать со своим строителем. Цена ошибки — $10–25 тыс. при бюджете $30–40 тыс., то есть стоимость второго дома.</li>
+<li><b>Оптика по адресу.</b> Не «провайдер обещает подключить», а живой абонент в этом доме или на этой улице: адресная проверка у Київстар, Ланет, Датагруп и местного оператора, вопрос соседям, на месте — муфты и абонентские отводы на столбах. Протянуть последние 300–500 м самому — от $300–800 и месяцы согласований, а иногда никак. Для удалёнки это рабочий инструмент, а не удобство.</li>
+<li><b>Дорога круглый год.</b> Твёрдое покрытие до двора, известно, кто чистит снег (община, село, сами), и что делается с последними 500 м после ливня. Проехать самому в плохую погоду — солнечный день не показывает ничего.</li>
+<li><b>Расстояние до жизни.</b> Магазин, аптека, амбулатория, отделение почты и Нової пошти, банкомат — 10–15 минут; город — до 30 минут. «Ближче до цивілізації, бажано в ній» на практике означает пригород или большой посёлок со школой и заездом скорой, а не село в двенадцать хат.</li>
+<li><b>Участок: вода и склон.</b> Подтопление, уровень грунтовых вод, уклон и оползень. Смотреть после сильного дождя: следы воды на цоколе и в подвале, дренажные канавы у соседей, куда уходит вода с горы. Спросить соседей про весенние паводки за последние пять лет.</li>
+<li><b>Окружение.</b> Ферма, пилорама, зерносушилка, трасса, железная дорога, стая собак, сосед с трактором под окном. Приехать трижды — рабочий день, вечер и выходной: шум и запах в разное время разные, а для работы из дома это ежедневный фон.</li>
+</ol>
+</section>
+
+<section class="rq rq2">
+<h4><em>Повод торговаться</em> исправимо, но дорого или через третьих лиц — считать в бюджет</h4>
+<ol start="8">
+<li><b>Электрика.</b> Реальная выделенная мощность (в селе обычно 3–5 кВт), состояние ввода, щита и проводки (алюминий или медь), три фазы — если нужен электрокотёл, скважина, сварка, мастерская. Увеличение мощности идёт через облэнерго и занимает месяцы, замена проводки в доме — $1,5–4 тыс. Отдельно спросить соседей, как часто и надолго отключают свет.</li>
+<li><b>Два независимых источника тепла.</b> Ставка только на газ и ставка только на электричество уязвимы одинаково: нужен газ плюс твердотопливный котёл или камин, либо электричество и дрова. Просить счета за прошлую зиму именно по этому дому — расход в кубах и киловаттах говорит о доме больше, чем слово «утеплён».</li>
+<li><b>Газ — по факту, а не по трубе.</b> Труба на улице ≠ дом подключён: смотреть договор, счётчик, последнюю квитанцию. Новое подключение — деньги и очередь. Отсутствие газа не стоп-фактор, если пункт 9 закрыт.</li>
+<li><b>Вода.</b> Не «есть скважина», а глубина, дебит, свежий анализ (нитраты, железо, бактерии), возраст насоса и что будет при отключении света — накопительный бак или гидроаккумулятор. Центральная — давление и графики подачи.</li>
+<li><b>Канализация.</b> Центральная либо нормальный септик: где стоит, какой объём, когда откачивали в последний раз, подъедет ли ассенизатор к люку.</li>
+<li><b>Резерв связи.</b> Второй провайдер с независимой линией — правильно, но в селе редкость; реалистичный второй канал — LTE-роутер с внешней антенной ($100–200) или Starlink. Проверять на месте своим телефоном: скорость и сигнал у калитки и внутри дома, толстые каменные стены режут связь.</li>
+</ol>
+</section>
+
+<section class="rq rq3">
+<h4><em>Докупается потом</em> важно для работы, но не должно влиять на выбор дома</h4>
+<ol start="14">
+<li><b>Бесперебойность.</b> UPS на роутер и ONU — $80–120, инвертор с аккумулятором на 1–2 кВт — $400–900, генератор — сверху. Для удалёнки это разница между «работаю» и «не работаю», но покупается в любой день после переезда, поэтому не должно перебивать пункты 1–7.</li>
+<li><b>Машина и сервис.</b> Навес вместо гаража, нормальный заезд, место для второй машины; шиномонтаж и заправка в 10–15 минутах. Официальные Renault и Dacia есть во Львове, Луцке, Ровно, Тернополе, Ивано-Франковске и Черновцах — по нынешнему списку областей дилер есть в каждом облцентре. ТО раз в год: это справка о логистике, а не фильтр по дому.</li>
+<li><b>Всё видимое.</b> Отделка, окна, сантехника, полы, забор, ландшафт — то, что продаёт дом на фотографиях и торгуется в цене. Именно эти пункты решают эмоционально и именно они значат меньше всего.</li>
+</ol>
+</section>
+
+<section class="rq rq2">
+<h4><em>Если квартира</em> к чему список выше не применяется напрямую</h4>
+<ol start="17">
+<li><b>Дом и ОСББ.</b> Кто управляет домом, есть ли ОСББ и долги за ним, когда меняли крышу, стояки и лифт. Долг дома за тепло — ваша будущая проблема, а не проблема продавца. Просить протокол ОСББ и справку об отсутствии долгов по квартире.</li>
+<li><b>Отопление и счётчики.</b> Централизованное, индивидуальный котёл или электро: смотреть договоры, наличие счётчиков тепла и воды, счета за зимние месяцы. Индивидуальный котёл в квартире — это независимость от графиков, но обслуживание ваше.</li>
+<li><b>Этаж и стены.</b> Первый — сырость и шум с улицы, последний — крыша и жара; угловая квартира зимой холоднее. Панель против кирпича слышно с первого визита: приходить, когда соседи дома.</li>
+<li><b>Соседи и двор.</b> Соседи по стене и сверху, парковка во дворе, детская площадка, кто заходит в подъезд. Для работы из дома шум за стеной значит больше, чем вид из окна.</li>
+<li><b>Связь в квартире.</b> Оптика в подъезде есть почти всегда, но проверять надо провайдеров именно этого дома и уровень LTE внутри: несущие стены и лифтовые шахты режут сигнал.</li>
+</ol>
+</section>
+
+<p class="reqf">Порядок, который экономит поездки: <b>документы и оптика — по телефону, до выезда</b>; дорога, участок и соседи — на месте и желательно в плохую погоду; дом — со строителем; торг — в конце, со счетами за зиму на руках.</p>
+</div>
+</details>
+
+<details class="req" id="deal">
+<summary><b>Сделка и деньги</b><span>сколько сверх цены, налоги, долги, согласие супруга</span></summary>
+<div class="reqb">
+<p class="reqi">Цена в объявлении — не то, что вы заплатите. Обычная надбавка на оформление — <b>2,5–4% от суммы</b>, плюс отложенные расходы после сделки. Здесь всё, что может её раздуть, и то, из-за чего сделка вообще не состоится. Данные проверены 28.08.2026; ставки военного сбора и пенсионного сбора за последние два года правили несколько раз, поэтому итоговые цифры сверяйте со своим нотариусом на день сделки.</p>
+
+<section class="rq rqd">
+<h4><em>Обязательная надбавка</em> для дома за $35 000 — это ≈1,45 млн грн</h4>
+<ul class="dealc">
+<li><b>Сбор в Пенсионный фонд, 1%</b><span>~14 500 грн (~$350) · <em>покупатель</em>, до нотариального удостоверения</span></li>
+<li><b>Государственная пошлина, 1%</b><span>~14 500 грн · по закону продавец, на практике торгуются — договориться письменно заранее</span></li>
+<li><b>Услуги нотариуса</b><span>8 000–20 000 грн · договорная, обычно пополам</span></li>
+<li><b>Оценка недвижимости</b><span>1 500–3 000 грн · обязательна для расчёта налога, продавец</span></li>
+<li><b>Витяги из реестров и справки</b><span>1 000–3 000 грн · покупатель</span></li>
+<li><b>Техпаспорт, если его нет</b><span>2 000–5 000 грн · продавец</span></li>
+<li><b>Вынос границ участка в натуре</b><span>3 000–8 000 грн · если границы не вынесены, без этого не проверить площадь</span></li>
+<li><b>Переоформление счетов, договор с облгазом, ТО котла и дымохода</b><span>1 000–8 000 грн · <em>вы, уже после сделки</em></span></li>
+</ul>
+<p class="dealsum"><b>Экономия, которую чаще всего теряют:</b> от 1% в Пенсионный фонд освобождают того, кто покупает жильё <b>впервые</b> — но документы нужно принести <b>до подписания договора</b>: заявление об отсутствии права собственности на жильё, витяг из Держреєстру об отсутствии зарегистрированных прав и данные о неиспользовании жилищных чеков. Оплатили по незнанию — возврат возможен, но это отдельная процедура.</p>
+</section>
+
+<section class="rq rqd">
+<h4><em>Налоги продавца</em> он попробует переложить в цену</h4>
+<ol>
+<li><b>Резидент: 5% НДФЛ + 5% военного сбора.</b> Ноль выходит только если объект жилой, во владении три года и больше и это первая продажа за календарный год (для наследства требование трёх лет не применяется). Военный сбор с конца 2024 года — 5% вместо 1,5%.</li>
+<li><b>Нерезидент: 18% + 5%.</b> Обычная история на западе: собственник годами живёт за границей, а показывает дом родственник или риелтор. Разница 23% против 10% — отсюда и давление занизить сумму в договоре. Спрашивайте, где продавец живёт и где он налоговый резидент, до аванса.</li>
+<li><b>Занижать цену в договоре нельзя.</b> При оспаривании сделки вам вернут ровно ту сумму, что написана, а налог с вашей будущей продажи посчитают от той же занижённой базы. Фраза «оптимізуємо податки і збори» в объявлении — это именно такое предложение.</li>
+<li><b>Налог на недвижимость.</b> Льгота на дом — 120 м², за превышение платит собственник по ставке общины (до 1,5% минимальной зарплаты за м² в год). Для дома 150 м² это порядка 3–4 тыс. грн ежегодно.</li>
+</ol>
+</section>
+
+<section class="rq rqd">
+<h4><em>Что срывает переоформление</em> по убыванию вероятности</h4>
+<ol>
+<li><b>Дом оформлен не полностью.</b> Наследство без свидетельства, неузаконенные пристройки, дом «на етапі будівництва» — регистратор откажет. Узаконивание: техпаспорт, декларация о готовности, иногда суд — от $200 до нескольких тысяч и от месяца до года. До аванса — витяг з ДРРП на руки, а не «документы у нотариуса».</li>
+<li><b>Земля отдельно от дома.</b> Без кадастрового номера участок отчуждать нельзя: купите дом, а земля останется в подвешенном состоянии — плюс съёмка, плюс приватизация, плюс месяцы.</li>
+<li><b>Аресты, ипотека, исполнительные производства, банкротство продавца.</b> Реестры нотариус проверит в день сделки, но исполнительные производства и банкротство лучше глянуть заранее: сделку должника оспаривают, и ответчиком окажетесь вы.</li>
+<li><b>Продажа по доверенности.</b> Доверенность, оформленная за границей и старше двух месяцев, требует подтверждения доверителем, а доверенности иностранных нотариусов в украинском реестре не регистрируются — проверить отзыв невозможно в принципе. Смерть доверителя прекращает доверенность автоматически, договор становится ничтожным.</li>
+<li><b>Дети в собственниках или зарегистрированные в доме.</b> Нужно разрешение органа опеки — это время и риск отказа.</li>
+<li><b>Валюта.</b> Цены в объявлениях в долларах и евро, расчёт в гривне: в предварительном договоре фиксируйте валюту и курс (НБУ на день оплаты), иначе на скачке потеряете сотни долларов.</li>
+<li><b>Комиссия посредника.</b> Где написано «Комісія 2%» — это +$600–650 к цене дома за $32–33 тыс. Обсуждается, кто платит.</li>
+<li><b>Газ.</b> Ответственность за техническое состояние оборудования — на собственнике. При переоформлении договора поставки вылезают ТО, поверка счётчика, иногда замена котла или дымохода; пуск газа после замены делает облгаз по заявлению и после инструктажа.</li>
+</ol>
+</section>
+
+<section class="rq rqd">
+<h4><em>Супруг совладелец</em> два разных сценария</h4>
+<ol>
+<li><b>Жена (муж) продавца.</b> Имущество, купленное в браке, — общая совместная собственность, и на продажу нужно письменное согласие второго супруга. Правила ужесточились: для сделок, требующих нотариального удостоверения или госрегистрации, согласие оформляется <b>нотариально удостоверенным документом</b>, а не заявлением с заверенной подписью.</li>
+<li><b>Ваша добросовестность не защищает.</b> Без согласия сделку оспаривают по иску супруга, и Верховный Суд исходит из того, что отсутствие письменного согласия — само по себе основание признать договор недействительным.</li>
+<li><b>Что требовать:</b> паспорт продавца, свидетельство о браке или о разводе, нотариальное согласие супруга (лучше — его личное присутствие на сделке). Если продавец говорит, что имущество личное — документ, который это доказывает: наследство, дарение, покупка до брака, решение суда о разделе.</li>
+<li><b>Развод режим общей собственности не отменяет.</b> Пока имущество не разделено, согласие бывшего супруга всё равно нужно.</li>
+<li><b>Если совладелец — ваша жена.</b> Жильё, купленное в браке за общие средства, общее, даже когда в договоре одно имя; при будущей продаже понадобится нотариальное согласие второго — то же правило с другой стороны. Нотариус, как правило, попросит и заявление вашей супруги о согласии на покупку. Хотите, чтобы дом был личным имуществом одного из вас — это брачный договор либо документально подтверждённые личные средства (наследство, дарение). На налоги и на 1% число покупателей не влияет: считается от суммы договора.</li>
+</ol>
+</section>
+
+<section class="rq rqd">
+<h4><em>Долги</em> не переходят сами — но их можно взять на себя случайно</h4>
+<ol>
+<li>По общему правилу долги за коммунальные услуги на нового собственника <b>не переходят</b>: платит тот, кто пользовался услугами. Но они становятся вашими, если вы сами их приняли — фразой в договоре купли-продажи, отметкой в акте приёма-передачи или письменной договорённостью.</li>
+<li>До аванса — <b>справки об отсутствии задолженности</b> от каждого поставщика: газ, электроэнергия, вода, вывоз мусора, а если есть управитель или ОСББ — от него.</li>
+<li>В договоре и акте — ни одной фразы о принятии долгов; наоборот, пункт: задолженность до даты передачи остаётся на продавце.</li>
+<li>В акте приёма-передачи зафиксировать <b>показания всех счётчиков</b> на дату передачи.</li>
+<li><b>Придержать 5–10% суммы</b> до момента, когда лицевые счета переоформлены на вас с нулевым балансом — это единственный рычаг, если поставщик тянет.</li>
+<li>Долг всё же вылез — официальное обращение к поставщику с копией договора и акта и требованием заключить новый договор на ваше имя с нулевым балансом.</li>
+</ol>
+</section>
+
+<section class="rq rqd">
+<h4><em>Как строить расчёт</em> пять правил, которые экономят нервы</h4>
+<ol>
+<li>Полная сумма в договоре — без «оптимизации».</li>
+<li>Наличными между физлицами по нотариальному договору — не больше 50 000 грн, остальное безналичным.</li>
+<li>Деньги — на счёт <b>собственника</b>, а не поверенного или родственника; часть суммы — после регистрации права за вами.</li>
+<li>Свой нотариус, не риелтора продавца. Проверки в день сделки: ДРРП, реестр доверенностей, обременения и аресты, исполнительные производства, реестр судебных решений.</li>
+<li>Предварительный договор: сумма, валюта и курс, срок, кто платит пошлину, услуги нотариуса и оценку, условие возврата аванса при проблеме с документами.</li>
+</ol>
+</section>
+
+<p class="dealwarn"><b>По нашим лотам:</b> закладывайте +3–4% к цене как обычную надбавку. Отдельно — Лаврів (дачные земли: смена целевого назначения и вопрос, дадут ли прописку) и любой лот с ценой в евро, а не в долларах: валюту и курс фиксировать в договоре. Два повода для скидки, которые встречаются здесь чаще всего: продажа по доверенности вместо собственника и дом, не введённый в эксплуатацию.</p>
+</div>
+</details>
+
+<details class="req" id="links">
+<summary><b>Проверить самому</b><span>реестры и сервисы: кадастровый номер, адрес, фамилия продавца</span></summary>
+<div class="reqb">
+<p class="reqi">Всё, что можно проверить своими руками, имея <b>кадастровый номер, адрес и фамилию продавца</b> — до аванса и без юриста. Бейджи: <span class="lnkb free">открыто</span> ничего не нужно, <span class="lnkb kep">нужен КЭП</span> электронная подпись (Дія.Підпис или банковский), <span class="lnkb pay">платно</span> небольшая пошлина, <span class="lnkb ua">только из UA</span> часть госреестров не пускает из-за границы и с VPN. Ссылки открываются в новой вкладке.</p>
+
+<section class="rq rql">
+<h4><em>По кадастровому номеру</em> участок: площадь, назначение, ограничения</h4>
+<ul class="lnks">
+<li><a href="https://map.land.gov.ua/kadastrova-karta" target="_blank" rel="noopener">Публічна кадастрова карта</a><span class="lnkb free">открыто</span><span class="lnkb ua">только из UA</span><br>Вводите кадастровый номер — видите <span class="lnkin">границы, площадь, целевое назначение, форму собственности и ортофото</span>. Первое, что делают с любым участком: сверить площадь с объявлением и посмотреть, не идёт ли граница по чужому двору.</li>
+<li><a href="https://e.land.gov.ua" target="_blank" rel="noopener">Кабінет електронних сервісів Держгеокадастру</a><span class="lnkb kep">нужен КЭП</span><span class="lnkb pay">платно</span><br>Витяг з Державного земельного кадастру — официальный документ с ограничениями, обременениями и историей участка. Это уже доказательство, а не картинка.</li>
+<li><a href="https://opendatabot.ua" target="_blank" rel="noopener">Opendatabot</a><span class="lnkb pay">платно</span><br>Витяг по кадастровому номеру и сводка по недвижимости <span class="lnkin">без КЭП</span> — удобно, когда подписи нет, а посмотреть надо сегодня.</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>По адресу и объекту</em> кто собственник, нет ли арестов, узаконен ли дом</h4>
+<ul class="lnks">
+<li><a href="https://rrp.minjust.gov.ua/" target="_blank" rel="noopener">Державний реєстр речових прав (ДРРП)</a> · <a href="https://kap.minjust.gov.ua/" target="_blank" rel="noopener">кабінет електронних сервісів</a><span class="lnkb kep">нужен КЭП</span><span class="lnkb pay">платно</span><br>Информационная справка по объекту: <span class="lnkin">собственник, ипотеки, аресты, запреты отчуждения, история переходов права</span>. Ключевой документ — просить его до аванса, а не «у нотариуса на сделке».</li>
+<li><a href="https://diia.gov.ua" target="_blank" rel="noopener">Дія</a> · <a href="https://guide.diia.gov.ua" target="_blank" rel="noopener">гід по послугах</a><span class="lnkb kep">нужен КЭП</span><br>Те же витяги из ДРРП плюс инструкции: смена собственника объекта газоснабжения, регистрация места жительства, справки. Гид объясняет, какие документы нужны на каждую услугу.</li>
+<li><a href="https://e-construction.gov.ua" target="_blank" rel="noopener">Єдина державна електронна система у сфері будівництва</a><span class="lnkb free">открыто</span><br>Проверка, <span class="lnkin">введён ли дом в эксплуатацию</span>: декларации и сертификаты о готовности, разрешения на строительство, присвоенные адреса. Именно здесь ищут ответ на «Рік побудови: на етапі будівництва» — как в Королеве.</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>По фамилии продавца</em> долги, суды, исполнительные производства</h4>
+<ul class="lnks">
+<li><a href="https://erb.minjust.gov.ua" target="_blank" rel="noopener">Єдиний реєстр боржників</a><span class="lnkb free">открыто</span><br>ФИО и дата рождения — и видно, <span class="lnkin">есть ли открытые исполнительные производства</span>. Если продавец в списке, его имущество могут арестовать в любой момент, а сделку потом оспорить.</li>
+<li><a href="https://asvpweb.minjust.gov.ua" target="_blank" rel="noopener">Автоматизована система виконавчих проваджень</a><span class="lnkb free">открыто</span><br>Детали производств: кто взыскатель, какая сумма, на какой стадии. Крупный долг — повод не связываться вообще.</li>
+<li><a href="https://reyestr.court.gov.ua" target="_blank" rel="noopener">Єдиний реєстр судових рішень</a><span class="lnkb free">открыто</span><br>Поиск по ФИО: <span class="lnkin">споры о разделе имущества, наследственные дела, признание сделок недействительными</span>. Здесь всплывают «забытые» супруги и наследники.</li>
+<li><a href="https://court.gov.ua/fair/" target="_blank" rel="noopener">Стан розгляду справ</a><span class="lnkb free">открыто</span><br>Дела, которые идут <b>сейчас</b> — решения по ним ещё не опубликованы. Проверять вместе с реестром решений.</li>
+<li><a href="https://wanted.mvs.gov.ua" target="_blank" rel="noopener">Розшук МВС</a><span class="lnkb free">открыто</span><br>Быстрая проверка человека и, отдельным разделом, транспорта. Тридцать секунд, но иногда экономит всё.</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>Связь по адресу</em> оптика, мобильный интернет, резерв</h4>
+<ul class="lnks">
+<li><a href="https://kyivstar.ua" target="_blank" rel="noopener">Київстар</a> · <a href="https://www.lanet.ua" target="_blank" rel="noopener">Ланет</a> · <a href="https://volia.com" target="_blank" rel="noopener">Volia / Датагруп</a><span class="lnkb free">открыто</span><br>У каждого — проверка подключения по адресу. Вводите улицу и номер дома: <span class="lnkin">«подключение возможно» ≠ «кабель у дома»</span> — после проверки всё равно звоните и спрашивайте про живого абонента на этой улице.</li>
+<li><a href="https://nkek.gov.ua" target="_blank" rel="noopener">НКЕК — карти покриття</a> · <a href="https://www.vodafone.ua/coverage" target="_blank" rel="noopener">Vodafone</a> · <a href="https://www.lifecell.ua" target="_blank" rel="noopener">lifecell</a><span class="lnkb free">открыто</span><br>Покрытие мобильного интернета по точке на карте — это ваш резервный канал, когда кабель порвут. У границы смотрите заодно, не окажется ли ближайшая вышка иностранной.</li>
+<li><a href="https://www.starlink.com/map" target="_blank" rel="noopener">Starlink — доступность</a><span class="lnkb free">открыто</span><br>Третий вариант, если оптики нет и не будет: проверить, обслуживается ли район и нет ли листа ожидания.</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>Среда и риски</em> вода, пожары, воздух, свет</h4>
+<ul class="lnks">
+<li><a href="https://uk-ua.topographic-map.com/" target="_blank" rel="noopener">Топографічна карта висот</a><span class="lnkb free">открыто</span><br>Находите участок и смотрите <span class="lnkin">высоту над уровнем моря и рельеф вокруг</span>. Дом в низине у канала и дом на два метра выше — разные истории при паводке. По нынешнему списку это в первую очередь про поймы Стыри и Горыни (Волынь, Ровенщина), Днестра и Прута (Прикарпатье, Буковина).</li>
+<li><a href="https://firms.modaps.eosdis.nasa.gov/map/" target="_blank" rel="noopener">NASA FIRMS — активні пожежі</a><span class="lnkb free">открыто</span><br>Спутниковые термоточки за сутки, неделю или год. Ставите карту на село и видите, <span class="lnkin">горят ли поля и торфяники вокруг и как часто</span> — на Волыни и Ровенщине это особенно уместно: там осушенные торфяники горят каждое лето.</li>
+<li><a href="https://www.saveecobot.com" target="_blank" rel="noopener">SaveEcoBot</a><span class="lnkb free">открыто</span><br>Карта качества воздуха и радиационного фона по датчикам. Полезно там, где рядом промышленность (цемзавод под Здолбуновом) или АЭС (Острог — станция в ~10 км).</li>
+<li><a href="https://www.davr.gov.ua" target="_blank" rel="noopener">Держводагентство України</a><span class="lnkb free">открыто</span><br>Паводковая обстановка и состояние водных объектов по бассейновым управлениям: Припять (Волынь, Ровенщина), Днестр (Львовщина, Прикарпатье, Буковина), Западный Буг. Для дома в пойме — прямой источник, а не слухи.</li>
+<li><a href="https://loe.lviv.ua" target="_blank" rel="noopener">Львівобленерго</a> · <a href="https://oe.if.ua" target="_blank" rel="noopener">Прикарпаття</a> · <a href="https://voe.com.ua" target="_blank" rel="noopener">Волинь</a> · <a href="https://roe.vsei.ua" target="_blank" rel="noopener">Рівне</a> · <a href="https://oblenergo.cv.ua" target="_blank" rel="noopener">Чернівці</a><span class="lnkb free">открыто</span><br>Графики отключений и аварийные работы по конкретному населённому пункту: сколько реально сидят без света — это про ваш инвертор и рабочий день.</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>Община и инфраструктура</em> ставки налога, школы, медицина</h4>
+<ul class="lnks">
+<li><a href="https://gromada.info" target="_blank" rel="noopener">Портал громад</a><span class="lnkb free">открыто</span><br>Паспорт общины: состав, контакты, сайт, решения сессий. На сайте общины ищите <span class="lnkin">ставку налога на недвижимость</span> (за метры свыше 120) и тариф на вывоз мусора.</li>
+<li><a href="https://isuo.org" target="_blank" rel="noopener">ІСУО — реєстр закладів освіти</a><span class="lnkb free">открыто</span><br>Школы по населённому пункту: <span class="lnkin">живая школа или доживает</span> — по числу учеников и классов. Детей школьного возраста у нас нет, но живая школа означает, что село не вымирает.</li>
+<li><a href="https://nszu.gov.ua" target="_blank" rel="noopener">НСЗУ</a><span class="lnkb free">открыто</span><br>Где заключены договоры с врачами и амбулаториями — то есть куда вы реально попадёте с семейным врачом, а не «в райцентре что-то есть».</li>
+</ul>
+</section>
+
+<section class="rq rql">
+<h4><em>После сделки</em> счета, налоги, переоформление</h4>
+<ul class="lnks">
+<li><a href="https://cabinet.tax.gov.ua" target="_blank" rel="noopener">Електронний кабінет платника</a><span class="lnkb kep">нужен КЭП</span><br>Начисления налога на недвижимость и землю, задолженность, уплаченные суммы. Проверять раз в год: уведомления по адресу иногда не доходят, а долг растёт.</li>
+<li><a href="https://my.gas.ua" target="_blank" rel="noopener">Кабінет споживача газу</a><span class="lnkb free">открыто</span><br>Лицевой счёт по адресу: баланс, показания, задолженность. Смотреть <b>до</b> сделки и сразу после переоформления — с нулевым балансом на ваше имя.</li>
+<li><a href="https://guide.diia.gov.ua/view/pryiednannia-pobutovoho-spozhyvacha-do-umov-dohovoru-postachannia-pryrodnoho-hazu-u-razi-zminy-vlasnyka-obiektu-hazopostachannia" target="_blank" rel="noopener">Зміна власника об’єкта газопостачання</a><span class="lnkb free">открыто</span><br>Пошаговая инструкция и список документов на переоформление газа — самая частая заминка после покупки дома.</li>
+</ul>
+</section>
+
+<p class="lnknote">Что не проверить самому: <b>реестр доверенностей</b> (только нотариус, и только украинских нотариусов), <b>справка о судимости</b> (только сам человек), <b>сведения о смерти доверителя</b> (витяг из Спадкового реєстру выдают по свидетельству о смерти). Для доверенностей, оформленных за границей, публичной проверки не существует вообще — отсюда правило про видеозвонок с собственником и свежую консульскую доверенность.</p>
+</div>
+</details>
+
+<div class="flt" id="flt">
+  <span class="fltg" role="group" aria-label="Источник объявлений">
+    <span class="fltl">Источник</span>
+    <label><input type="checkbox" data-f="src" value="olx" checked> OLX <i data-cnt="src:olx"></i></label>
+    <label><input type="checkbox" data-f="src" value="lun" checked> ЛУН <i data-cnt="src:lun"></i></label>
+    <label><input type="checkbox" data-f="src" value="tg" checked> Телеграм <i data-cnt="src:tg"></i></label>
+    <label><input type="checkbox" data-f="src" value="fb" checked> Фейсбук <i data-cnt="src:fb"></i></label>
+  </span>
+  <span class="fltg" role="group" aria-label="Тип жилья">
+    <span class="fltl">Жильё</span>
+    <label><input type="checkbox" data-f="kind" value="house" checked> дома <i data-cnt="kind:house"></i></label>
+    <label><input type="checkbox" data-f="kind" value="flat" checked> квартиры <i data-cnt="kind:flat"></i></label>
+  </span>
+  <span class="fltg" role="group" aria-label="Готовность жилья">
+    <span class="fltl">Готовность</span>
+    <label title="Жильё, готовое к заезду: отделка сделана, доводить нечего"><input type="checkbox" data-f="ready" value="done" checked> готовое <i data-cnt="ready:done"></i></label>
+    <label title="Часть уже пригодна для жизни — этаж, половина дома, флигель или комнаты с ремонтом. Заезжаете сразу, остальное достраиваете когда есть время и деньги"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
+  </span>
+  <span class="fltg" role="group" aria-label="Область">
+    <span class="fltl">Область</span>
+    <label><input type="checkbox" data-f="obl" value="vol" checked> Волынь <i data-cnt="obl:vol"></i></label>
+    <label><input type="checkbox" data-f="obl" value="rov" checked> Ровенщина <i data-cnt="obl:rov"></i></label>
+    <label><input type="checkbox" data-f="obl" value="lv" checked> Львовщина <i data-cnt="obl:lv"></i></label>
+    <label><input type="checkbox" data-f="obl" value="ter" checked> Тернопольщина <i data-cnt="obl:ter"></i></label>
+    <label><input type="checkbox" data-f="obl" value="if" checked> Прикарпатье <i data-cnt="obl:if"></i></label>
+    <label><input type="checkbox" data-f="obl" value="chv" checked> Буковина <i data-cnt="obl:chv"></i></label>
+    <label><input type="checkbox" data-f="obl" value="khm" checked> Хмельниччина <i data-cnt="obl:khm"></i></label>
+    <label><input type="checkbox" data-f="obl" value="zht" checked> Житомирщина <i data-cnt="obl:zht"></i></label>
+    <label><input type="checkbox" data-f="obl" value="vin" checked> Винничина <i data-cnt="obl:vin"></i></label>
+  </span>
+  <label class="fltone" title="Оставить только жильё площадью от 65 м²"><input type="checkbox" id="big65"> только 65+ м² <i data-cnt="big65"></i></label>
+</div>
+
+<div class="tools" id="tools">
+  <label for="sortsel">Сортировка:</label>
+  <select id="sortsel" aria-label="Сортировка каталога">
+    <option value="q">лучший индекс цена/качество</option>
+    <option value="fit-desc">лучше всего подходит нам (разобранное избранное)</option>
+    <option value="price-asc">сначала дешёвые</option>
+    <option value="ppm-asc">выгоднее за м²</option>
+    <option value="area-desc">больше площадь дома</option>
+    <option value="land-desc">больше участок</option>
+    <option value="km-asc">ближе к городу</option>
+    <option value="vpd-desc">выше спрос (просмотры/день)</option>
+    <option value="mbuy-desc">легче продать потом (живой рынок)</option>
+    <option value="mrent-desc">есть кому сдать (рынок аренды)</option>
+    <option value="days-desc">больше шансов на торг (висит дольше)</option>
+  </select>
+  <button class="tbtn" id="favbtn" aria-pressed="false" title="Показать только избранное: сверху 3 звезды, под ними 2, ниже 1 — внутри уровня действует выбранная сортировка">★ <span class="fw">Избранное </span><span id="favn">0</span><span class="orphn" id="favo"></span></button>
+  <button class="tbtn" id="expbtn" title="Выгрузить избранное в Markdown (только ссылки, по уровням звёзд) — и импортировать его обратно на другом устройстве">⇅ <span class="fw">Экспорт </span>MD</button>
+  <button class="tbtn" id="deadbtn" aria-pressed="false" title="Скрыть недоступные объявления из каталога и с карты"><span class="dx">✕</span> <span class="fw">Недоступные </span><span id="deadn">0</span></button>
+  <button class="tbtn" id="delbtn" aria-pressed="false" title="Показать дома, удалённые из подборки корзиной на карточке"><svg width="13" height="14" viewBox="0 0 14 15" aria-hidden="true"><path d="M2 4.5h10M5.5 2.5h3M3.5 4.5l.6 8.5h5.8l.6-8.5M5.8 7v4M8.2 7v4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg> <span class="fw">Удалённые </span><span id="deln">0</span></button>
+  <a class="tolist" href="#catalog">Каталог <span class="fw">{{N}} </span>↓</a>
+  <span class="tcount" id="tcount"></span>
+</div>
+
+{{MAP}}
+
+<h2 class="tailh" id="catalog">Каталог — {{N}} объявлений</h2>
+<p class="tailnote">Формат каталога — <b>топ-50 на область</b>: дома и квартиры отдельно, в каждом источнике; номер на карточке — место лота внутри своей области и своего набора. Порядок по умолчанию — индекс цена/качество; с 2 сентября <b>близость к городу весит в нём вдвое больше</b> любой другой категории (цены за метр, площади, участка), а лоты дальше <b>10 км от города</b> в каталог не попадают вовсе. Спрос показывает <b>глаз</b> у «просм/день»: он открывается от 30 просмотров в день, и чем больше зрачок, тем горячее лот; низкий спрос при большом сроке — вероятен торг. Плашка <b>«до города»</b> залита по расстоянию: в городе — нейтральная, к 10 км желтеет. Плашка <b>«рынок»</b> — два кольца по объявлениям OLX вокруг дома: левое, <b>продать</b> — как быстро уходит предложение в радиусе 10 км; правое, <b>сдать</b> — есть ли аренда в самом населённом пункте. Красное кольцо — рынка нет, зелёное — живой, пунктир — данных мало. Плашка даты — <b>настоящая дата размещения</b>, а не дата поднятия, которую показывает OLX. У набора <b>«получистовая»</b> вместо спроса и рынка две свои плашки: <b>«что готово»</b> — какая часть уже пригодна для жизни, и <b>«к рынку зоны»</b> — насколько цена за м² ниже медианы готового жилья на таком же удалении. Бейдж <b>«двойник»</b> означает, что тот же объект найден и в другом источнике — клик ведёт на вторую карточку. Сейчас <span id="tcount2"></span>.</p>
+<div class="rows" id="rows">
+{{ROWS}}
+</div>
+<div class="orphans" id="favorphans" hidden></div>
+<div class="empty" id="favempty" hidden>В избранном пока пусто. Нажмите ★ на любом доме — он сохранится в этом браузере. Повторные нажатия повышают уровень: зелёная → синяя → золотая.</div>
+
+<div class="mdlay" id="mdbox" hidden>
+  <div class="mdcard" role="dialog" aria-modal="true" aria-labelledby="mdh">
+    <div class="mdtop">
+      <h3 id="mdh">Избранное в Markdown</h3>
+      <button class="mdx" id="mdclose" aria-label="Закрыть">✕</button>
+    </div>
+    <p class="mdnote">Только ссылки, сгруппированные по уровням звёзд (<b>3 → 2 → 1</b>), внутри уровня — в порядке текущей сортировки каталога; ниже — дома, помеченные недоступными, удалённые из подборки и с заметками. <b>Заметка</b> идёт цитатой под своей ссылкой. В конце каждой строки — <b>ID объявления</b>: вставьте сюда текст файла и нажмите «Добавить» или «Заменить», и метки встанут на те же дома в другом браузере. Импорт <b>только расставляет метки</b> по домам каталога: названия и цены берутся со страницы, а строки с ID, которых в каталоге нет, пропускаются.</p>
+    <textarea id="mdta" spellcheck="false" aria-label="Markdown избранного"></textarea>
+    <div class="mdact">
+      <button class="tbtn prim" id="mddl">↓ Скачать .md</button>
+      <button class="tbtn" id="mdcopy">Скопировать</button>
+      <span class="mdsep"></span>
+      <label class="tbtn mdfilelab">Открыть файл<input type="file" id="mdfile" accept=".md,.markdown,.txt,text/markdown,text/plain"></label>
+      <button class="tbtn" id="mdadd" title="Добавить импортируемые дома к текущему избранному">Добавить</button>
+      <button class="tbtn" id="mdrep" title="Стереть текущее избранное и поставить то, что в тексте">Заменить</button>
+    </div>
+    <p class="mdmsg" id="mdmsg" role="status"></p>
+  </div>
+</div>
+
+<div class="note">
+<h3>Перед сделкой</h3>
+<ul>
+<li>Все цены договорные: обычный торг 5–15%, у срочных продаж больше.</li>
+<li>«Житловий стан» на OLX означает «жить можно», а не «ремонт не нужен» — фото галереи здесь уже проверены, но осмотр обязателен.</li>
+<li>Планируете єОселя / ваучеры / єВідновлення — уточняйте форму расчёта сразу: часть продавцов берёт только наличные.</li>
+<li>На Буковине проверяйте документы на пристройки и целевое назначение земли — там это частая проблема при отличном состоянии дома.</li>
+</ul>
+</div>
+
+<button class="totop" id="totop" hidden aria-label="Вернуться наверх" title="Вернуться наверх">↑<span>вверх</span></button>
+
+<footer>Каталог: топ-50 на область по домам и по квартирам в каждом из четырёх источников (OLX, ЛУН, Телеграм, Фейсбук) плюс набор «получистовая». Девять областей: Волынь, Ровенщина, Львовщина, Тернопольщина, Прикарпатье, Буковина, Хмельниччина, Житомирщина, Винничина; Закарпатье исключено по решению покупателя. Бюджет $29 000–41 000 (получистовая — ниже), дома от 65 м², квартиры от 50 м² и двух комнат, только до 10 км от ближайшего города; недострои, коробки и аварийные исключены, дома OLX проверены по фотографиям. Данные собраны {{DATE}}; снятые с площадок объявления удаляются автоматической проверкой раз в сутки, лоты из excluded.json не возвращаются. ЛУН — витрина объявлений риелторов и других сайтов (rieltor.ua, olx.ua, dom.ria.com), ссылка ведёт на страницу объявления на lun.ua. Посты Телеграма и карточки Facebook — не витрины с модерацией: цену, адрес и наличие объекта проверяйте звонком. Кольца рынка считаются по активным объявлениям OLX вокруг лота. Цены, наличие и площади меняются ежедневно — проверяйте на странице объявления. Фото — из объявлений. Мини-карты, границы и слой промышленных зон (landuse=industrial и quarry) — © участники OpenStreetMap.</footer>
+</main>
+<script>
+(function(){
+  var KEY='bh:fav', SKEY='bh:sort';
+  // избранное хранится по ID объявления OLX + снимок (заголовок, цена, ссылка),
+  // чтобы дом не потерялся, если при обновлении каталога он из него выпадет.
+  // l — уровень 1..3 (зелёная/синяя/золотая); записи без l — старые одиночные
+  // звёзды, читаем их как уровень 1
+  var favs=new Map(), only=false;
+  function lvlOf(v){ var l=(v&&v.l)|0; return l>=1&&l<=3?l:1; }
+  try{
+    var raw=JSON.parse(localStorage.getItem(KEY)||'[]');
+    for(var ri=0;ri<raw.length;ri++){
+      var e=raw[ri];
+      if(typeof e==='string') favs.set(e,{l:1});                    // старый формат: только id
+      else if(e&&e.i) favs.set(e.i,{t:e.t||'',p:e.p||'',u:e.u||'',l:lvlOf(e)});
+    }
+  }catch(e){}
+  window.BHFAV={set:favs, only:false};
+  // ── недоступные: серверный список dead.json (обновляет GitHub Actions раз в сутки,
+  // прямо из браузера страницу OLX не проверить — CORS) + ручные пометки ✕ на карточке.
+  // DEAD0 — снимок на дату сборки, работает и без dead.json (например, в копии-артефакте)
+  var DKEY='bh:dead', DHKEY='bh:hidedead';
+  var DEAD0={{DEAD0}};
+  var deadSrv=new Map(), deadUser=new Map(), hideDead=false;
+  function seedDead(j){ deadSrv=new Map(); for(var si=0;si<j.dead.length;si++) deadSrv.set(j.dead[si], j.checked||''); }
+  seedDead(DEAD0);
+  try{
+    var draw=JSON.parse(localStorage.getItem(DKEY)||'[]');
+    for(var di=0;di<draw.length;di++){ var de=draw[di]; if(de&&de.i) deadUser.set(de.i, de.d||''); }
+  }catch(e){}
+  try{ hideDead=localStorage.getItem(DHKEY)==='1'; }catch(e){}
+  function isDead(id){ return deadSrv.has(id)||deadUser.has(id); }
+  window.BHDEAD={has:isDead, hide:hideDead};
+  // удалённые пользователем дома: корзина на карточке, по умолчанию скрыты
+  var LKEY='bh:del', LSKEY='bh:showdel';
+  /* починка: из-за совпадения имени переменной удалённые какое-то время писались в ключ чек-листов — забираем их обратно */
+  try{ var _mig=JSON.parse(localStorage.getItem('bh:chkl')||'null'); if(Array.isArray(_mig)){ var _cur=JSON.parse(localStorage.getItem(LKEY)||'[]'); if(!Array.isArray(_cur)) _cur=[]; var _seen={}; for(var _mi=0;_mi<_cur.length;_mi++){ if(_cur[_mi]&&_cur[_mi].i) _seen[_cur[_mi].i]=1; } for(var _mj=0;_mj<_mig.length;_mj++){ var _me=_mig[_mj]; if(_me&&_me.i&&!_seen[_me.i]){ _cur.push(_me); _seen[_me.i]=1; } } localStorage.setItem(LKEY, JSON.stringify(_cur)); localStorage.removeItem('bh:chkl'); } }catch(e){}
+  var delUser=new Map(), showDel=false;
+  try{
+    var lraw=JSON.parse(localStorage.getItem(LKEY)||'[]');
+    for(var li=0;li<lraw.length;li++){ var le=lraw[li]; if(le&&le.i) delUser.set(le.i, le.d||''); }
+  }catch(e){}
+  try{ showDel=localStorage.getItem(LSKEY)==='1'; }catch(e){}
+  function isDel(id){ return delUser.has(id); }
+  window.BHDEL={has:isDel, show:showDel};
+  var wrap=document.getElementById('rows');
+  var items=Array.prototype.slice.call(wrap.children);
+  // кнопка «✕ недоступно» на каждой карточке — рядом со звездой избранного
+  for(var bi=0;bi<items.length;bi++){
+    var tt=items[bi].querySelector('.t');
+    if(!tt) continue;
+    var ub=document.createElement('button');
+    ub.className='unav'; ub.dataset.unav=items[bi].dataset.id;
+    ub.setAttribute('aria-pressed','false'); ub.textContent='✕';
+    tt.appendChild(ub);
+    var db=document.createElement('button');
+    db.className='delb'; db.dataset.del=items[bi].dataset.id;
+    db.setAttribute('aria-pressed','false');
+    db.innerHTML='<svg width="13" height="14" viewBox="0 0 14 15" aria-hidden="true"><path d="M2 4.5h10M5.5 2.5h3M3.5 4.5l.6 8.5h5.8l.6-8.5M5.8 7v4M8.2 7v4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    tt.appendChild(db);
+  }
+  var sel=document.getElementById('sortsel'), favbtn=document.getElementById('favbtn');
+  var favo=document.getElementById('favo');
+  var FAVBTN_TITLE=document.getElementById('favbtn').title;
+  var NLNL=String.fromCharCode(10,10);
+  var favn=document.getElementById('favn'), tcount=document.getElementById('tcount'), empty=document.getElementById('favempty');
+  var tcount2=document.getElementById('tcount2');
+  var deadn=document.getElementById('deadn'), deadbtn=document.getElementById('deadbtn');
+  var deln=document.getElementById('deln'), delbtn=document.getElementById('delbtn');
+  var num=function(v){ var x=parseFloat(v); return isNaN(x)?null:x; };
+  var rankOf=function(el){ return num(el.dataset.rank)||9999; };
+  function by(key,dir){
+    return function(a,b){
+      var x=num(a.dataset[key]), y=num(b.dataset[key]);
+      if(x===null&&y===null) return rankOf(a)-rankOf(b);
+      if(x===null) return 1;
+      if(y===null) return -1;
+      return dir*(x-y)||rankOf(a)-rankOf(b);
+    };
+  }
+  // все сортировки — лучшее сверху
+  var SORT={
+    'q':by('q',-1), 'price-asc':by('price',1), 'ppm-asc':by('ppm',1),
+    'area-desc':by('area',-1), 'land-desc':by('land',-1),
+    'km-asc':by('km',1), 'vpd-desc':by('vpd',-1), 'days-desc':by('days',-1),
+    'mbuy-desc':by('mbuy',-1), 'mrent-desc':by('mrent',-1), 'fit-desc':by('fit',-1)
+  };
+  function save(){
+    var a=[];
+    favs.forEach(function(v,id){ a.push({i:id, t:(v&&v.t)||'', p:(v&&v.p)||'', u:(v&&v.u)||'', l:lvlOf(v)}); });
+    try{ localStorage.setItem(KEY, JSON.stringify(a)); }catch(e){}
+  }
+  function snapshot(id){
+    var row=document.getElementById('row-'+id);
+    if(!row) return {};
+    var a=row.querySelector('.t a');
+    return { t:a?a.textContent.trim():'', p:row.dataset.price||'', u:a?a.getAttribute('href'):'' };
+  }
+  // избранное, которого нет в текущем каталоге (объявление снято или ушло из фильтра)
+  function orphans(){
+    var out=[];
+    favs.forEach(function(v,id){ if(!document.getElementById('row-'+id)) out.push({id:id, v:v||{}}); });
+    return out;
+  }
+  function renderOrphans(list){
+    var box=document.getElementById('favorphans');
+    if(!box) return;
+    if(!only||!list.length){ box.hidden=true; box.innerHTML=''; return; }
+    var html='<h3>Из избранного нет в этой версии каталога — '+list.length+'</h3>'+
+      '<p class="orphnote">Объявление снято с OLX либо выпало из отбора при обновлении. Ссылки сохранены.</p><ul>';
+    for(var i=0;i<list.length;i++){
+      var o=list[i], t=o.v.t||o.id, p=o.v.p?('$'+Number(o.v.p).toLocaleString('en-US').replace(/,/g,' ')+' · '):'';
+      var ol=lvlOf(o.v);
+      html+='<li><span class="orphstar l'+ol+'">'+Array(ol+1).join('★')+'</span> '+p+
+            (o.v.u?('<a href="'+o.v.u+'" target="_blank" rel="noopener">'+t+'</a>'):t)+
+            ' <button class="orphdel" data-fav="'+o.id+'" title="Убрать из избранного">✕</button></li>';
+    }
+    box.innerHTML=html+'</ul>';
+    box.hidden=false;
+  }
+  var LVL_TITLES={
+    0:'В избранное (зелёная звезда)',
+    1:'Зелёная (1 из 3). Нажмите — станет синей',
+    2:'Синяя (2 из 3). Нажмите — станет золотой',
+    3:'Золотая (3 из 3). Нажмите — уберёт из избранного'
+  };
+  function syncStars(){
+    var btns=document.querySelectorAll('button.fav[data-fav]');
+    for(var i=0;i<btns.length;i++){
+      var v=favs.get(btns[i].dataset.fav);
+      var lvl=v?lvlOf(v):0;
+      btns[i].setAttribute('aria-pressed',lvl?'true':'false');
+      if(lvl) btns[i].setAttribute('data-lvl',String(lvl));
+      else btns[i].removeAttribute('data-lvl');
+      btns[i].textContent=lvl?Array(lvl+1).join('★'):'★';
+      btns[i].title=LVL_TITLES[lvl];
+    }
+    // счётчик кнопки — про этот каталог: избранное, которого в списке нет,
+    // идёт отдельным хвостом «+N», а не подмешивается в основное число
+    var oc=orphans().length;
+    favn.textContent=String(favs.size-oc);
+    favo.textContent=oc?(" +"+oc):"";
+    favbtn.title=oc?(FAVBTN_TITLE+NLNL+'Ещё '+oc+' в избранном нет в этой версии каталога — объявление снято либо выпало из отбора. Ссылки сохранены, видны в режиме «только избранное».'):FAVBTN_TITLE;
+  }
+  // ── мультифильтры: источник, тип жилья, порог площади. Пустая группа = ничего не показываем
+  var FKEY='bh:flt';
+  var OBLS=['vol','rov','lv','ter','if','chv','khm','zht','vin'];
+  var flt={src:{olx:true,lun:true,tg:true,fb:true}, kind:{house:true,flat:true},
+           ready:{done:true,semi:true}, obl:{vol:true,rov:true,lv:true,ter:true,if:true,chv:true,khm:true,zht:true,vin:true},
+           big65:false};
+  try{
+    var fraw=JSON.parse(localStorage.getItem(FKEY)||'null');
+    if(fraw){
+      if(fraw.src) flt.src={olx:fraw.src.olx!==false, lun:fraw.src.lun!==false,
+        tg:fraw.src.tg!==false, fb:fraw.src.fb!==false};
+      if(fraw.kind) flt.kind={house:fraw.kind.house!==false, flat:fraw.kind.flat!==false};
+      if(fraw.ready) flt.ready={done:fraw.ready.done!==false, semi:fraw.ready.semi!==false};
+      if(fraw.obl) for(var oi=0;oi<OBLS.length;oi++) flt.obl[OBLS[oi]]=fraw.obl[OBLS[oi]]!==false;
+      flt.big65=!!fraw.big65;
+    }
+  }catch(e){}
+  function saveFlt(){ try{ localStorage.setItem(FKEY, JSON.stringify(flt)); }catch(e){} }
+  function passFlt(el){
+    if(!flt.src[el.dataset.src||'olx']) return false;
+    if(!flt.kind[el.dataset.kind||'house']) return false;
+    if(!flt.ready[el.dataset.ready||'done']) return false;
+    if(el.dataset.obl && flt.obl[el.dataset.obl]===false) return false;
+    if(flt.big65 && !(parseFloat(el.dataset.area||'0')>=65)) return false;
+    return true;
+  }
+  // карта читает те же правила
+  window.BHSK={pass:function(p){
+    if(!flt.src[p.s||'olx']) return false;
+    if(!flt.kind[p.k||'house']) return false;
+    if(!flt.ready[p.g||'done']) return false;
+    if(p.o && flt.obl[p.o]===false) return false;
+    if(flt.big65 && !(p.a>=65)) return false;
+    return true;
+  }};
+  function fltCounts(){
+    var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'kind:house':0,'kind:flat':0,
+           'ready:done':0,'ready:semi':0,'big65':0,
+           'obl:vol':0,'obl:rov':0,'obl:lv':0,'obl:ter':0,'obl:if':0,'obl:chv':0,'obl:khm':0,'obl:zht':0,'obl:vin':0};
+    for(var i=0;i<items.length;i++){
+      var d=items[i].dataset;
+      c['src:'+(d.src||'olx')]++;
+      c['kind:'+(d.kind||'house')]++;
+      c['ready:'+(d.ready||'done')]++;
+      if(d.obl&&c['obl:'+d.obl]!=null) c['obl:'+d.obl]++;
+      if(parseFloat(d.area||'0')>=65) c.big65++;
+    }
+    var badges=document.querySelectorAll('[data-cnt]');
+    for(var k=0;k<badges.length;k++){
+      var key=badges[k].getAttribute('data-cnt');
+      if(c[key]!=null) badges[k].textContent=c[key];
+    }
+  }
+  function initFlt(){
+    var boxes=document.querySelectorAll('#flt input[data-f]');
+    for(var i=0;i<boxes.length;i++){
+      var b=boxes[i], g=b.getAttribute('data-f'), v=b.value;
+      b.checked=!!flt[g][v];
+    }
+    var big=document.getElementById('big65');
+    if(big) big.checked=flt.big65;
+    var box=document.getElementById('flt');
+    if(box) box.addEventListener('change',function(e){
+      var t=e.target;
+      if(t.id==='big65'){ flt.big65=t.checked; }
+      else if(t.getAttribute && t.getAttribute('data-f')){ flt[t.getAttribute('data-f')][t.value]=t.checked; }
+      else return;
+      saveFlt(); apply(false);
+    });
+    fltCounts();
+  }
+
+  function paintRow(el){
+    var v=favs.get(el.dataset.id);
+    var fav=!!v, lvl=fav?lvlOf(v):0;
+    el.classList.toggle('isfav',fav);
+    el.classList.toggle('favl1',lvl===1);
+    el.classList.toggle('favl2',lvl===2);
+    el.classList.toggle('favl3',lvl===3);
+    el.hidden=!!((only&&!fav)||(hideDead&&isDead(el.dataset.id))||(!showDel&&isDel(el.dataset.id))||!passFlt(el));
+    return !el.hidden;
+  }
+  function saveDead(){
+    var a=[]; deadUser.forEach(function(d,id){ a.push({i:id,d:d||''}); });
+    try{ localStorage.setItem(DKEY, JSON.stringify(a)); }catch(e){}
+  }
+  function fmtD(d){ return d?(' с '+d.slice(8,10)+'.'+d.slice(5,7)):''; }
+  function syncDead(){
+    var n=0;
+    for(var i=0;i<items.length;i++){
+      var el=items[i], id=el.dataset.id, dead=isDead(id);
+      if(dead) n++;
+      el.classList.toggle('isdead',dead);
+      var m=el.querySelector('.m'), tag=el.querySelector('.deadtag');
+      if(dead&&!tag&&m){ tag=document.createElement('span'); tag.className='deadtag'; tag.textContent='недоступно'; m.appendChild(tag); }
+      else if(!dead&&tag) tag.remove();
+      var b=el.querySelector('[data-unav]');
+      if(b){
+        b.setAttribute('aria-pressed',dead?'true':'false');
+        b.title=deadSrv.has(id)?('Снято с OLX — подтверждено проверкой'+fmtD(deadSrv.get(id))):
+          (deadUser.has(id)?('Помечено вручную'+fmtD(deadUser.get(id))+'. Нажмите, чтобы снять пометку'):'Пометить недоступным (объявление удалено с OLX)');
+      }
+    }
+    deadn.textContent=n;
+  }
+  function saveDel(){
+    var a=[]; delUser.forEach(function(d,id){ a.push({i:id,d:d||''}); });
+    try{ localStorage.setItem(LKEY, JSON.stringify(a)); }catch(e){}
+  }
+  function syncDel(){
+    var n=0;
+    for(var i=0;i<items.length;i++){
+      var el=items[i], id=el.dataset.id, dl=isDel(id);
+      if(dl) n++;
+      el.classList.toggle('isdel',dl);
+      var m=el.querySelector('.m'), tag=el.querySelector('.deltag');
+      if(dl&&!tag&&m){ tag=document.createElement('span'); tag.className='deltag'; tag.textContent='удалено'; m.appendChild(tag); }
+      else if(!dl&&tag) tag.remove();
+      var b=el.querySelector('[data-del]');
+      if(b){
+        b.setAttribute('aria-pressed',dl?'true':'false');
+        b.title=dl?('Удалено из подборки'+fmtD(delUser.get(id))+'. Нажмите, чтобы вернуть'):'Удалить дом из подборки (скроется из каталога и с карты)';
+      }
+    }
+    deln.textContent=n;
+  }
+  // reorder=false — только перекрашиваем строки, не двигая их в DOM:
+  // перестановка узлов сбивает браузеру привязку прокрутки и кидает страницу вверх
+  // в режиме «только избранное» сверху золотые, ниже синие, ниже зелёные
+  function favLvlOf(el){ var v=favs.get(el.dataset.id); return v?lvlOf(v):0; }
+  function byStars(cmp){
+    return function(a,b){
+      var la=favLvlOf(a), lb=favLvlOf(b);
+      if(la!==lb) return lb-la;
+      return cmp(a,b);
+    };
+  }
+  function apply(reorder){
+    var y=window.pageYOffset||document.documentElement.scrollTop, shown=0;
+    if(reorder===false){
+      for(var j=0;j<items.length;j++) if(paintRow(items[j])) shown++;
+    } else {
+      var cmp=SORT[sel.value]||SORT.q;
+      var arr=items.slice().sort(only?byStars(cmp):cmp);
+      var frag=document.createDocumentFragment();
+      for(var i=0;i<arr.length;i++){
+        if(paintRow(arr[i])) shown++;
+        frag.appendChild(arr[i]);
+      }
+      wrap.appendChild(frag);
+    }
+    var orph=orphans();
+    var txt=only?(shown+' в избранном'+(orph.length?(' + '+orph.length+' вне каталога'):'')):(shown+' объявлений');
+    if(!only&&shown<items.length) txt=shown+' объявлений · '+(items.length-shown)+' скрыто фильтрами';
+    tcount.textContent=txt;
+    if(tcount2) tcount2.textContent='показано '+txt;
+    empty.hidden=!(only&&shown===0&&orph.length===0);
+    renderOrphans(orph);
+    // дозаполняем снимки у избранного, сохранённого старой версией страницы
+    var dirty=false;
+    favs.forEach(function(v,id){
+      if((!v||!v.u)&&document.getElementById('row-'+id)){
+        var s1=snapshot(id); s1.l=lvlOf(v);   // уровень звезды не теряем
+        favs.set(id,s1); dirty=true;
+      }
+    });
+    if(dirty) save();
+    syncStars();
+    syncDead();
+    syncDel();
+    if(window.BHMAP&&window.BHMAP.render){ window.BHFAV.set=favs; window.BHFAV.only=only; window.BHDEAD.hide=hideDead; window.BHDEL.show=showDel; window.BHMAP.render(); }
+    // страховка: если браузер всё же сдвинул прокрутку — возвращаем на место
+    var y2=window.pageYOffset||document.documentElement.scrollTop;
+    if(y2!==y) window.scrollTo(0,y);
+  }
+  // клик по звезде идёт по кругу: нет → зелёная → синяя → золотая → нет;
+  // ✕ в списке «вне каталога» убирает сразу
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-fav]'):null;
+    if(!b) return;
+    e.preventDefault();
+    var id=b.dataset.fav;
+    var v=favs.get(id);
+    if(b.classList.contains('orphdel')||(v&&lvlOf(v)>=3)){
+      favs.delete(id);
+    } else if(v){
+      v.l=lvlOf(v)+1;
+      favs.set(id,v);
+    } else {
+      var s0=snapshot(id); s0.l=1;
+      favs.set(id,s0);
+    }
+    if(b.blur) b.blur();
+    save(); apply(only);   // в режиме избранного уровень меняет группу — переставляем
+  });
+  // ── «двойник»: тот же объект в другом источнике. Клик ведёт на карточку-пару;
+  // если она скрыта фильтрами — включаем нужные источник/тип/область/готовность.
+  function syncFltBoxes(){
+    var boxes=document.querySelectorAll('#flt input[data-f]');
+    for(var i=0;i<boxes.length;i++){
+      var b2=boxes[i], g=b2.getAttribute('data-f');
+      b2.checked=!!flt[g][b2.value];
+    }
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('a.dupb'):null;
+    if(!a) return;
+    e.preventDefault();
+    var id=(a.getAttribute('href')||'').replace('#row-','');
+    var row=document.getElementById('row-'+id);
+    if(!row) return;
+    var changed=false, d=row.dataset;
+    if(!flt.src[d.src||'olx']){ flt.src[d.src||'olx']=true; changed=true; }
+    if(!flt.kind[d.kind||'house']){ flt.kind[d.kind||'house']=true; changed=true; }
+    if(!flt.ready[d.ready||'done']){ flt.ready[d.ready||'done']=true; changed=true; }
+    if(d.obl&&flt.obl[d.obl]===false){ flt.obl[d.obl]=true; changed=true; }
+    if(changed){ saveFlt(); syncFltBoxes(); apply(false); }
+    row.scrollIntoView({behavior:'smooth', block:'center'});
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+  });
+  favbtn.addEventListener('click',function(){
+    only=!only;
+    favbtn.setAttribute('aria-pressed',only?'true':'false');
+    apply();
+  });
+  // ✕ на карточке — ручная пометка «недоступно» (переживает перезагрузку страницы)
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-unav]'):null;
+    if(!b) return;
+    e.preventDefault();
+    var id=b.dataset.unav;
+    if(deadUser.has(id)) deadUser.delete(id); else deadUser.set(id, new Date().toISOString().slice(0,10));
+    if(b.blur) b.blur();
+    saveDead(); apply(false);
+  });
+  deadbtn.addEventListener('click',function(){
+    hideDead=!hideDead;
+    deadbtn.setAttribute('aria-pressed',hideDead?'true':'false');
+    try{ localStorage.setItem(DHKEY,hideDead?'1':'0'); }catch(e){}
+    apply(false);
+  });
+  deadbtn.setAttribute('aria-pressed',hideDead?'true':'false');
+  // корзина на карточке — удалить дом из подборки (вернуть можно, показав удалённые)
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-del]'):null;
+    if(!b) return;
+    e.preventDefault();
+    var id=b.dataset.del;
+    if(delUser.has(id)) delUser.delete(id); else delUser.set(id, new Date().toISOString().slice(0,10));
+    if(b.blur) b.blur();
+    saveDel(); apply(false);
+  });
+  delbtn.addEventListener('click',function(){
+    showDel=!showDel;
+    delbtn.setAttribute('aria-pressed',showDel?'true':'false');
+    try{ localStorage.setItem(LSKEY,showDel?'1':'0'); }catch(e){}
+    apply(false);
+  });
+  delbtn.setAttribute('aria-pressed',showDel?'true':'false');
+  // ── заметка к объявлению: одна на дом, редактируется и удаляется на карточке.
+  // Хранится в браузере (bh:note) по ID объявления — как звёзды и пометки.
+  var NKEY='bh:note', NMAX=1000;
+  var notes=new Map();
+  try{
+    var nraw=JSON.parse(localStorage.getItem(NKEY)||'[]');
+    for(var xi=0;xi<nraw.length;xi++){ var xe=nraw[xi]; if(xe&&xe.i&&xe.c) notes.set(xe.i,{c:String(xe.c).slice(0,NMAX), d:xe.d||''}); }
+  }catch(e){}
+  function saveNotes(){
+    var a=[]; notes.forEach(function(v,id){ a.push({i:id, c:v.c, d:v.d||''}); });
+    try{ localStorage.setItem(NKEY, JSON.stringify(a)); }catch(e){}
+  }
+  var CMT_SVG='<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2.3h10v7.1H6.3L3.5 11.8V9.4H2z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+  for(var ci=0;ci<items.length;ci++){
+    var ct=items[ci].querySelector('.t');
+    if(!ct) continue;
+    var cbt=document.createElement('button');
+    cbt.className='cmt'; cbt.dataset.note=items[ci].dataset.id;
+    cbt.setAttribute('aria-pressed','false'); cbt.innerHTML=CMT_SVG;
+    ct.appendChild(cbt);
+  }
+  function syncNotes(){
+    for(var i=0;i<items.length;i++){
+      var el=items[i], n=notes.get(el.dataset.id);
+      var b=el.querySelector('[data-note]'), body=el.querySelector('.b');
+      var view=el.querySelector('.nview');
+      if(b){
+        b.setAttribute('aria-pressed', n?'true':'false');
+        b.title=n?'Заметка: нажмите, чтобы изменить или удалить':'Добавить заметку к этому дому';
+        b.setAttribute('aria-label', b.title);
+      }
+      if(el.querySelector('.ned')) continue;         // открыт редактор — вид не трогаем
+      if(n&&!view&&body){ view=document.createElement('div'); view.className='nview'; body.appendChild(view); }
+      if(n&&view) view.textContent=n.c;
+      if(!n&&view) view.remove();
+    }
+  }
+  function closeEd(el){
+    var ed=el.querySelector('.ned');
+    if(ed) ed.remove();
+    syncNotes();
+  }
+  function openEd(id){
+    var el=document.getElementById('row-'+id);
+    if(!el) return;
+    var prev=document.querySelector('.row .ned');      // одновременно открыт один редактор
+    if(prev&&prev.closest('.row')) closeEd(prev.closest('.row'));
+    var view=el.querySelector('.nview'); if(view) view.remove();
+    var body=el.querySelector('.b'); if(!body) return;
+    var n=notes.get(id);
+    var ed=document.createElement('div'); ed.className='ned';
+    var ta=document.createElement('textarea');
+    ta.maxLength=NMAX; ta.value=n?n.c:'';
+    ta.placeholder='Что важно помнить об этом доме: договорённости, что уточнить, впечатление от фото…';
+    ta.setAttribute('aria-label','Заметка к объявлению');
+    var act=document.createElement('div'); act.className='nact';
+    act.innerHTML='<button class="nsave" data-nsave="'+id+'">Сохранить</button>'+
+      '<button data-ncancel="'+id+'">Отмена</button>'+
+      (n?('<button class="ndel" data-ndel="'+id+'">Удалить</button>'):'')+
+      '<span class="nhint">Ctrl+Enter — сохранить, Esc — отмена</span>';
+    ed.appendChild(ta); ed.appendChild(act);
+    body.appendChild(ed);
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
+  function saveNote(id){
+    var el=document.getElementById('row-'+id); if(!el) return;
+    var ta=el.querySelector('.ned textarea'); if(!ta) return;
+    var t=ta.value.replace(/\s+$/,'');
+    if(t) notes.set(id,{c:t.slice(0,NMAX), d:new Date().toISOString().slice(0,10)});
+    else notes.delete(id);                            // пустая заметка = удалить
+    saveNotes(); closeEd(el);
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-note],[data-nsave],[data-ncancel],[data-ndel],.nview'):null;
+    if(!b) return;
+    var row=b.closest('.row'); if(!row) return;
+    e.preventDefault();
+    var id=row.dataset.id;
+    if(b.classList.contains('nview')||b.hasAttribute('data-note')){ openEd(id); return; }
+    if(b.hasAttribute('data-nsave')){ saveNote(id); return; }
+    if(b.hasAttribute('data-ncancel')){ closeEd(row); return; }
+    if(b.hasAttribute('data-ndel')){ notes.delete(id); saveNotes(); closeEd(row); }
+  });
+  document.addEventListener('keydown',function(e){
+    var ta=e.target;
+    if(!ta||ta.tagName!=='TEXTAREA'||!ta.closest||!ta.closest('.ned')) return;
+    var row=ta.closest('.row'); if(!row) return;
+    if(e.key==='Escape'){ e.preventDefault(); closeEd(row); }
+    else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); saveNote(row.dataset.id); }
+  });
+  syncNotes();
+
+  // ── чек-листы осмотра: общая памятка (bh:chk — один набор на все выезды, сброс кнопкой)
+  // и персональные списки по домам (bh:chkl — {id:{n:длина, v:[индексы]}}, сбрасываются каждый свой).
+  var CKEY='bh:chk', RKEY='bh:chkl';
+  var ckDone=new Set(), ckRow={};
+  try{ var raw=localStorage.getItem(CKEY); if(raw) JSON.parse(raw).forEach(function(k){ ckDone.add(k); }); }catch(e){}
+  try{ var raw2=localStorage.getItem(RKEY); if(raw2) ckRow=JSON.parse(raw2)||{}; }catch(e){}
+  function ckSave(){ var a=[]; ckDone.forEach(function(k){ a.push(k); }); try{ localStorage.setItem(CKEY, JSON.stringify(a)); }catch(e){} }
+  function ckSaveRow(){ try{ localStorage.setItem(RKEY, JSON.stringify(ckRow)); }catch(e){} }
+  var chkc=document.getElementById('chkc'), chkprog=document.getElementById('chkprog');
+  function ckSync(){
+    var boxes=document.querySelectorAll('#chk input[data-chk]');
+    var n=0;
+    for(var i=0;i<boxes.length;i++){
+      var on=ckDone.has(boxes[i].dataset.chk);
+      boxes[i].checked=on; if(on) n++;
+    }
+    if(chkc) chkc.textContent=n+' из '+boxes.length;
+    if(chkprog) chkprog.style.width=(boxes.length?Math.round(n/boxes.length*100):0)+'%';
+  }
+  function ckSyncRow(row){
+    var id=row.dataset.id, st=ckRow[id];
+    var boxes=row.querySelectorAll('.chkbody input[data-ci]');
+    if(!boxes.length) return;
+    if(st&&st.n!==boxes.length){ delete ckRow[id]; st=null; ckSaveRow(); }   // список изменился — отметки не врут
+    var v=(st&&st.v)||[], n=0;
+    for(var i=0;i<boxes.length;i++){
+      var on=v.indexOf(+boxes[i].dataset.ci)>=0;
+      boxes[i].checked=on; if(on) n++;
+    }
+    var cnt=row.querySelector('.chkb .chkn'); if(cnt) cnt.textContent=n+' из '+boxes.length;
+    var pr=row.querySelector('.chkbody .chkprog i'); if(pr) pr.style.width=Math.round(n/boxes.length*100)+'%';
+  }
+  document.addEventListener('change',function(e){
+    var t=e.target;
+    if(t&&t.dataset&&t.dataset.chk!==undefined){
+      if(t.checked) ckDone.add(t.dataset.chk); else ckDone.delete(t.dataset.chk);
+      ckSave(); ckSync(); return;
+    }
+    if(t&&t.dataset&&t.dataset.ci!==undefined){
+      var row=t.closest('.row'); if(!row) return;
+      var id=row.dataset.id, boxes=row.querySelectorAll('.chkbody input[data-ci]');
+      var v=[];
+      for(var i=0;i<boxes.length;i++) if(boxes[i].checked) v.push(+boxes[i].dataset.ci);
+      if(v.length) ckRow[id]={n:boxes.length, v:v}; else delete ckRow[id];
+      ckSaveRow(); ckSyncRow(row);
+    }
+  });
+  var chkrst=document.getElementById('chkrst');
+  if(chkrst) chkrst.addEventListener('click',function(){ ckDone.clear(); ckSave(); ckSync(); });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.chkb'):null;
+    if(b){
+      e.preventDefault();
+      var row=b.closest('.row'); if(!row) return;
+      var box=row.querySelector('.chkbody'); if(!box) return;
+      var opening=box.hidden;
+      box.hidden=!opening;
+      b.setAttribute('aria-expanded',opening?'true':'false');
+      if(opening) ckSyncRow(row);
+      return;
+    }
+    var r=e.target.closest?e.target.closest('[data-crst]'):null;
+    if(!r) return;
+    e.preventDefault();
+    var row2=r.closest('.row'); if(!row2) return;
+    delete ckRow[row2.dataset.id]; ckSaveRow(); ckSyncRow(row2);
+  });
+  ckSync();
+  var cbRows=document.querySelectorAll('.row .chkbody');
+  for(var ci=0;ci<cbRows.length;ci++) ckSyncRow(cbRows[ci].closest('.row'));
+
+  // ── «нам подходит»: раскрытие разбора лота под семью (кнопка есть только у разобранных)
+  document.addEventListener('click',function(e){
+    var fb=e.target.closest?e.target.closest('.fitb'):null;
+    if(!fb) return;
+    e.preventDefault();
+    var frow=fb.closest('.row'); if(!frow) return;
+    var fbox=frow.querySelector('.fitbody'); if(!fbox) return;
+    var opening=fbox.hidden;
+    fbox.hidden=!opening;
+    fb.setAttribute('aria-expanded',opening?'true':'false');
+  });
+
+  // ── экспорт/импорт в Markdown: избранное по уровням звёзд + ручные пометки
+  // «недоступно» и «удалено». Формат строки — "- [название](ссылка) — $цена · `ID`":
+  // ID вынесен явно, чтобы импорт не зависел от вида ссылки OLX, а файл оставался
+  // обычным читаемым мд. Истина при импорте — заголовок секции, а не хвост строки.
+  var expbtn=document.getElementById('expbtn'), mdbox=document.getElementById('mdbox');
+  var mdta=document.getElementById('mdta'), mdmsg=document.getElementById('mdmsg');
+  var LVL_HEAD={3:'★★★ 3 звезды — золотые',2:'★★ 2 звезды — синие',1:'★ 1 звезда — зелёные'};
+  var inFrame=false; try{ inFrame=window.self!==window.top; }catch(e){ inFrame=true; }
+  function msg(t){ if(mdmsg) mdmsg.textContent=t||''; }
+  function rowOf(id){ return document.getElementById('row-'+id); }
+  function mdTitle(id,v){
+    var row=rowOf(id), a=row&&row.querySelector('.t a');
+    var t=(a?a.textContent.trim():'')||(v&&v.t)||id;
+    return t.replace(/[\[\]]/g,'').replace(/\s+/g,' ');    // квадратные скобки сломали бы мд-ссылку
+  }
+  function mdUrl(id,v){
+    var row=rowOf(id), a=row&&row.querySelector('.t a');
+    return (a?a.getAttribute('href'):'')||(v&&v.u)||'';
+  }
+  function mdPrice(id,v){
+    var row=rowOf(id), p=(row&&row.dataset.price)||(v&&v.p)||'';
+    return p?('$'+Number(p).toLocaleString('en-US').replace(/,/g,' ')):'';
+  }
+  // заметка уходит в файл вложенной мд-цитатой под своей ссылкой
+  function mdLine(id,extra){
+    var v=favs.get(id)||{}, u=mdUrl(id,v), t=mdTitle(id,v), tail=[];
+    var p=mdPrice(id,v);
+    if(p) tail.push(p);
+    // источник и тип жилья: в каталоге теперь и OLX, и ЛУН, и дома, и квартиры
+    var rw=rowOf(id);
+    if(rw){
+      var lbl=[];
+      if(rw.dataset.kind) lbl.push(rw.dataset.kind==='flat'?'квартира':'дом');
+      if(rw.dataset.src) lbl.push({lun:'ЛУН',tg:'Телеграм',fb:'Фейсбук'}[rw.dataset.src]||'OLX');
+      if(lbl.length) tail.push(lbl.join(' '));
+    }
+    tail.push('`'+id+'`');
+    if(extra) tail.push(extra);
+    if(!rowOf(id)) tail.push('вне текущего каталога');
+    var line='- '+(u?('['+t+']('+u+')'):t)+' — '+tail.join(' · ');
+    var n=notes.get(id);
+    if(n&&n.c) line+='\n'+n.c.split('\n').map(function(x){ return '  > '+x; }).join('\n');
+    return line;
+  }
+  // порядок выгрузки — как в каталоге сейчас (выбранная сортировка), остальное в конец
+  function mdOrder(){
+    var out=[], seen={}, rest=[];
+    var live=Array.prototype.slice.call(wrap.children);
+    for(var i=0;i<live.length;i++){ var lid=live[i].dataset.id; if(!seen[lid]){ seen[lid]=1; out.push(lid); } }
+    var push=function(v,id){ if(!seen[id]){ seen[id]=1; rest.push(id); } };
+    favs.forEach(push); deadUser.forEach(push); delUser.forEach(push); notes.forEach(push);
+    return out.concat(rest);
+  }
+  function buildMd(){
+    var order=mdOrder(), g={1:[],2:[],3:[]}, dl=[], dd=[], nOnly=[], i;
+    for(i=0;i<order.length;i++){
+      var id=order[i], v=favs.get(id);
+      if(v) g[lvlOf(v)].push(id);
+      if(deadUser.has(id)) dd.push(id);
+      if(delUser.has(id)) dl.push(id);
+      // заметка попадает в файл вместе со своей строкой; дом без других меток — отдельной секцией
+      if(notes.has(id)&&!v&&!deadUser.has(id)&&!delUser.has(id)) nOnly.push(id);
+    }
+    var out=['# Избранное — дома Западной Украины','',
+      'Экспорт '+new Date().toLocaleDateString('ru-RU')+' · в избранном '+favs.size+
+      ' · помечено недоступными вручную '+dd.length+' · удалено из подборки '+dl.length+
+      ' · заметок '+notes.size,'',
+      'Источник: https://qwert11.github.io/budynky-zahid/ — этот файл вставляется обратно через кнопку «⇅ Экспорт MD».',''];
+    [3,2,1].forEach(function(l){
+      out.push('## '+LVL_HEAD[l]+' ('+g[l].length+')','');
+      if(!g[l].length) out.push('_пусто_');
+      for(var k=0;k<g[l].length;k++) out.push(mdLine(g[l][k], isDead(g[l][k])?'снято с OLX':''));
+      out.push('');
+    });
+    out.push('## ✕ Недоступные — помечены вручную ('+dd.length+')','');
+    if(!dd.length) out.push('_пусто_');
+    for(i=0;i<dd.length;i++) out.push(mdLine(dd[i], 'помечено '+(deadUser.get(dd[i])||'')));
+    out.push('','## Удалённые из подборки ('+dl.length+')','');
+    if(!dl.length) out.push('_пусто_');
+    for(i=0;i<dl.length;i++) out.push(mdLine(dl[i], 'удалено '+(delUser.get(dl[i])||'')));
+    out.push('','## Заметки без других меток ('+nOnly.length+')','');
+    if(!nOnly.length) out.push('_пусто_');
+    for(i=0;i<nOnly.length;i++) out.push(mdLine(nOnly[i], ''));
+    out.push('');
+    return out.join('\n');
+  }
+  // парсер терпимый: секция берётся из заголовка (★, «недоступные», «удалённые»),
+  // ID — из бэктиков, а если их нет — из хвоста ссылки OLX (…-ID109SMl.html)
+  function parseMd(text){
+    var lines=String(text).replace(/\r/g,'').split('\n');
+    var sect='fav', lvl=1, favIn=[], deadIn=[], delIn=[], noteIn=[];
+    var curId=null, buf=null;
+    function flush(){                                   // цитаты под строкой — заметка этого дома
+      if(curId&&buf){
+        var c=buf.join('\n').replace(/\s+$/,'');
+        if(c) noteIn.push({i:curId, c:c});
+      }
+      curId=null; buf=null;
+    }
+    for(var i=0;i<lines.length;i++){
+      var ln=lines[i];
+      var q=/^\s{0,8}>\s?(.*)$/.exec(ln);
+      if(q&&curId){ (buf=buf||[]).push(q[1]); continue; }
+      if(!ln.trim()) continue;
+      var h=/^#{1,6}\s+(.*)$/.exec(ln.trim());
+      if(h){
+        flush();
+        var ht=h[1], st=/★+/.exec(ht), nz=/(\d)\s*звезд/i.exec(ht);
+        if(/недоступ/i.test(ht)) sect='dead';
+        else if(/удал[её]н/i.test(ht)) sect='del';
+        else if(/заметк/i.test(ht)) sect='note';
+        else if(st||nz){ sect='fav'; lvl=Math.min(3,Math.max(1,st?st[0].length:+nz[1])); }
+        continue;
+      }
+      if(ln.indexOf('http')<0&&ln.indexOf('`')<0){ flush(); continue; }
+      flush();
+      var id='', bt=/`([A-Za-z0-9_-]{4,24})`/.exec(ln);
+      if(bt) id=bt[1];
+      var u='', mmd=/\]\((https?:\/\/[^)\s]+)\)/.exec(ln);
+      if(mmd) u=mmd[1];
+      else { var mraw=/https?:\/\/[^\s)<>\"]+/.exec(ln); if(mraw) u=mraw[0].replace(/[`'"]+$/,''); }
+      if(!id&&u){ var mi=/-([A-Za-z0-9]{5,})\.html/.exec(u); if(mi) id=mi[1]; }
+      if(!id) continue;
+      var md=/(\d{4}-\d{2}-\d{2})/.exec(ln), dt=md?md[1]:'';
+      curId=id;                                        // следующие строки-цитаты — заметка этого дома
+      if(sect==='dead') deadIn.push({i:id,d:dt});
+      else if(sect==='del') delIn.push({i:id,d:dt});
+      else if(sect!=='note') favIn.push({i:id, l:lvl});   // в секции заметок метку не ставим
+    }
+    flush();
+    return {fav:favIn, dead:deadIn, del:delIn, notes:noteIn};
+  }
+  // Импорт только расставляет метки на дома текущего каталога: названия, цены и
+  // ссылки всегда берутся из карточки на странице, из файла берутся ID и метка.
+  // Строки с ID, которых в каталоге нет, пропускаются — новых записей импорт не создаёт.
+  function doImport(replace){
+    var r=parseMd(mdta.value);
+    if(!(r.fav.length+r.dead.length+r.del.length+r.notes.length)){ msg('В тексте не нашлось ни одного объявления с ID или ссылкой OLX.'); return; }
+    if(replace){ favs.clear(); deadUser.clear(); delUser.clear(); notes.clear(); }
+    var mark=0, skip=0;
+    r.fav.forEach(function(e){
+      if(!rowOf(e.i)){ skip++; return; }
+      var s=snapshot(e.i); s.l=e.l;
+      favs.set(e.i,s); mark++;
+    });
+    r.dead.forEach(function(e){
+      if(!rowOf(e.i)){ skip++; return; }
+      deadUser.set(e.i, e.d||deadUser.get(e.i)||''); mark++;
+    });
+    r.del.forEach(function(e){
+      if(!rowOf(e.i)){ skip++; return; }
+      delUser.set(e.i, e.d||delUser.get(e.i)||''); mark++;
+    });
+    r.notes.forEach(function(e){
+      if(!rowOf(e.i)){ skip++; return; }
+      var old=notes.get(e.i);
+      notes.set(e.i,{c:e.c.slice(0,NMAX), d:(old&&old.d)||new Date().toISOString().slice(0,10)}); mark++;
+    });
+    save(); saveDead(); saveDel(); saveNotes(); apply(false); syncNotes();
+    msg('Проставлено меток: '+mark+' (избранное '+favs.size+', недоступных вручную '+deadUser.size+
+        ', удалённых '+delUser.size+', заметок '+notes.size+')'+
+        (skip?('. Пропущено строк, которых нет в каталоге: '+skip):'')+'.');
+  }
+  function mdOpen(){
+    mdta.value=buildMd();
+    mdbox.hidden=false;
+    msg(favs.size?'':'Избранное пусто — в файле только заголовки. Файл всё равно можно вставить сюда для импорта.');
+    mdta.focus(); mdta.setSelectionRange(0,0); mdta.scrollTop=0;
+  }
+  function mdClose(){ mdbox.hidden=true; if(expbtn&&expbtn.focus) expbtn.focus(); }
+  if(expbtn) expbtn.addEventListener('click',mdOpen);
+  var mdcl=document.getElementById('mdclose');
+  if(mdcl) mdcl.addEventListener('click',mdClose);
+  if(mdbox) mdbox.addEventListener('click',function(e){ if(e.target===mdbox) mdClose(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&mdbox&&!mdbox.hidden) mdClose(); });
+  // Сохранение файла: на сайте — обычная ссылка с blob, в копии-артефакте страница
+  // живёт во фрейме, где такая ссылка молча не работает, и файл отдаёт capability
+  // downloads (viewer подтверждает сохранение).
+  function blobSave(name){
+    try{
+      var blob=new Blob([mdta.value],{type:'text/markdown;charset=utf-8'});
+      var a=document.createElement('a'), href=URL.createObjectURL(blob);
+      a.href=href; a.download=name; a.style.display='none';
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(href); a.remove(); },2000);
+      msg(inFrame?('Если файл не появился в загрузках — эта копия открыта во фрейме, там скачивание блокируется: нажмите «Скопировать».')
+                 :('Файл '+name+' — в загрузках браузера.'));
+    }catch(err){ msg('Скачать не удалось — нажмите «Скопировать» и сохраните текст в файл сами.'); }
+  }
+  var DLERR={declined:'Сохранение отменено.',too_large:'Файл слишком большой для сохранения.',
+    rate_limited:'Окно сохранения уже открыто — попробуйте ещё раз через секунду.'};
+  var mddl=document.getElementById('mddl');
+  if(mddl) mddl.addEventListener('click',function(){
+    var name='izbrannoe-'+new Date().toISOString().slice(0,10)+'.md';
+    var cap=null;
+    try{ cap=(window.claude&&window.claude.use)?window.claude.use('downloads'):null; }catch(e){ cap=null; }
+    if(!cap||!cap.then){ blobSave(name); return; }
+    msg('Готовим файл…');
+    cap.then(function(d){
+      if(!d||!d.save){ blobSave(name); return; }
+      d.save({filename:name, data:mdta.value}).then(
+        function(){ msg('Файл '+name+' сохранён.'); },
+        function(err){ msg(DLERR[err&&err.code]||('Сохранить не удалось — нажмите «Скопировать».')); });
+    },function(){ blobSave(name); });
+  });
+  var mdcp=document.getElementById('mdcopy');
+  if(mdcp) mdcp.addEventListener('click',function(){
+    mdta.focus(); mdta.select();
+    var ok=false;
+    try{ ok=document.execCommand('copy'); }catch(e){}
+    if(ok){ msg('Скопировано в буфер обмена.'); return; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(mdta.value).then(function(){ msg('Скопировано в буфер обмена.'); },
+        function(){ msg('Автоматически не вышло — текст выделен, нажмите Ctrl+C.'); });
+      return;
+    }
+    msg('Текст выделен — нажмите Ctrl+C.');
+  });
+  var mdfile=document.getElementById('mdfile');
+  if(mdfile) mdfile.addEventListener('change',function(){
+    var f=mdfile.files&&mdfile.files[0];
+    if(!f) return;
+    var fr=new FileReader();
+    fr.onload=function(){ mdta.value=String(fr.result||''); msg('Файл «'+f.name+'» загружен — нажмите «Добавить» или «Заменить».'); };
+    fr.onerror=function(){ msg('Файл прочитать не удалось.'); };
+    fr.readAsText(f);
+    mdfile.value='';
+  });
+  var mdadd=document.getElementById('mdadd'), mdrep=document.getElementById('mdrep');
+  if(mdadd) mdadd.addEventListener('click',function(){ doImport(false); });
+  if(mdrep) mdrep.addEventListener('click',function(){
+    var orph=orphans().length;
+    var q='Снять все текущие метки (избранное '+favs.size+', недоступных вручную '+deadUser.size+
+          ', удалённых '+delUser.size+', заметок '+notes.size+') и проставить те, что в тексте?'+
+          (orph?('\n\nИз избранного '+orph+' вне текущего каталога — такие метки восстановить не получится.'):'');
+    if((favs.size||deadUser.size||delUser.size||notes.size)&&!confirm(q)) return;
+    doImport(true);
+  });
+  // свежий список недоступных — рядом с сайтом, обновляет GitHub Actions
+  fetch('dead.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ if(j&&j.dead){ seedDead(j); apply(false); } })
+    .catch(function(){});
+  sel.addEventListener('change',function(){ try{ localStorage.setItem(SKEY,sel.value); }catch(e){} apply(); });
+  try{ var s=localStorage.getItem(SKEY); if(s&&SORT[s]) sel.value=s; }catch(e){}
+  initFlt();
+  apply();
+
+  // ── кнопка «вверх»
+  var totop=document.getElementById('totop');
+  function onScroll(){ totop.hidden=(window.scrollY||document.documentElement.scrollTop)<600; }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  totop.addEventListener('click',function(){
+    window.scrollTo({top:0,behavior:'smooth'});
+    var h=document.querySelector('h1'); if(h) h.setAttribute('tabindex','-1'), h.focus({preventScroll:true});
+  });
+  onScroll();
+})();
+</script>

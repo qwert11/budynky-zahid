@@ -1,0 +1,398 @@
+<figure class="map">
+<div class="clwrap" id="clwrap">
+  <div class="clstage" id="clstage">
+    <svg id="clsvg" role="img" aria-label="Интерактивная карта: все {{N}} объявлений каталога, кластеры с количеством объявлений, слой населённости и границы крупных городов">
+      <defs>
+        <clipPath id="clclip"><rect id="clcliprect" x="1" y="1" width="600" height="500" rx="10"/></clipPath>
+        <radialGradient id="clheat">
+          <stop offset="0%" stop-color="#F2C33C" stop-opacity="0.55"/>
+          <stop offset="55%" stop-color="#F2C33C" stop-opacity="0.24"/>
+          <stop offset="100%" stop-color="#F2C33C" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g id="clg"></g>
+    </svg>
+    <div class="clbar">
+      <button id="clfs" aria-label="На весь экран" title="На весь экран">⛶</button>
+      <button id="clzin" aria-label="Приблизить" title="Приблизить">+</button>
+      <button id="clzout" aria-label="Отдалить" title="Отдалить">−</button>
+      <button id="clrst" aria-label="Сбросить вид" title="Сбросить вид">⌂</button>
+    </div>
+    <div class="clfav" id="clfav" hidden>★ на карте только избранное</div>
+    <div class="clpop" id="clpop" hidden></div>
+    <div class="clhover" id="clhover" hidden></div>
+    <div class="clhint" id="clhint" hidden></div>
+  </div>
+  <div class="cllegend">
+    <span><i class="lgc">7</i>объявлений в точке — клик приближает</span>
+    <span><i class="lgs"></i>одно объявление — клик открывает источник</span>
+    <span><i class="lgstar" style="color:#3FA46C">★</i><i class="lgstar" style="color:#4C82D8">★</i><i class="lgstar">★</i>избранное: 1 зелёная → 2 синяя → 3 золотая</span>
+    <span><i class="lgh"></i>населённость</span>
+    <span><label class="lgindl" title="Промышленные зоны и карьеры из OpenStreetMap: чем краснее и крупнее пятно, тем больше промышленных площадей — видно, где город работает, а не просто существует"><input type="checkbox" id="lgind" checked><i class="lgi"></i>промышленность (OSM)</label></span>
+    <span><i class="lgb"></i>города 100 тыс.+</span>
+    <span><i class="lgo"></i>границы областей</span>
+  </div>
+</div>
+<figcaption>Точки — жильё каталога ({{N}}). Число на маркере — сколько объявлений в этой точке; приближайте — группы распадаются. <b class="clhow"></b> Позиции — по селу из объявления.</figcaption>
+</figure>
+<script>
+(function(){
+const PTS = {{PTS}};
+const CITIES = [["Львов",49.8397,24.0297,1],["Луцк",50.7472,25.3254,1],["Ровно",50.6199,26.2516,1],["Тернополь",49.5535,25.5948,1],["Ивано-Франковск",48.9226,24.7111,1],["Черновцы",48.2915,25.9403,1],["Хмельницкий",49.4229,26.9871,1],["Житомир",50.2547,28.6587,1],["Винница",49.2331,28.4682,1],["Калуш",49.0447,24.3597,0],["Дрогобыч",49.3494,23.5058,0],["Дубно",50.4200,25.7500,0],["Коломыя",48.5300,25.0400,0],["Каменец-Подольский",48.6845,26.5850,0],["Бердичев",49.8919,28.6003,0],["Коростень",50.9500,28.6500,0],["Могилёв-Подольский",48.4442,27.7850,0]];
+// слой населённости: [lat, lon, население в тыс.]
+const HEAT=[[49.8397,24.0297,717],[48.2915,25.9403,265],[50.6199,26.2516,243],[48.9226,24.7111,238],[49.5535,25.5948,225],[50.7472,25.3254,215],[48.6845,26.585,98],[49.3494,23.5058,73],[51.2153,24.7089,67],[49.0447,24.3597,66],[50.3822,24.2275,66],[48.53,25.04,61],[49.262,23.856,59],[50.7333,24.1622,50],[50.8482,24.3225,38],[50.42,25.75,37],[50.34,26.642,37],[50.3,26.87,35],[49.287,23.425,33],[49.518,23.199,32],[50.88,26.45,31],[49.931,23.573,30],[48.5205,26.2431,24],[49.279,23.507,28],[49.017,25.798,27],[50.5205,26.2431,24],[50.078,25.15,23],[49.807,24.9,23],[48.633,24.578,22],[48.97,24.011,20],[50.108,25.727,20],[50.486,24.283,20],[49.294,23.563,20],[49.816,24.13,18],[49.445,24.935,17],[50.329,26.516,15],[49.258,24.627,15],[49.783,23.643,15],[50.833,25.461,14],[49.523,23.975,14],[48.16,25.7203,14],[50.055,23.972,13],[49.664,25.775,13],[49.3,25.7,13],[50.915,25.267,13],[49.939,23.393,13],[49.062,25.387,12],[49.064,23.863,10],[50.13,25.258,10],[49.9,24.08,10],[48.444,25.567,10],[51.1226,24.029,10],[48.507,26.49,9],[48.665,25.5,9],[48.089,25.94,9],[50.5,24.76,9],[48.901,24.849,9],[50.506,25.613,8],[48.313,25.095,8],[48.522,25.84,8],[48.451,24.555,8],[48.805,24.539,8],[48.866,25,8],[49.122,24.731,6],
+[49.4229,26.9871,274],[48.6845,26.585,98],[50.185,27.0637,40],[50.3389,26.6417,37],[50.3013,26.8685,35],[49.7574,27.2039,34],[50.1177,27.5077,20],[49.6467,26.9708,19],[49.5333,26.2167,18],[50.1194,26.8236,17],[49.1614,26.5734,16],[48.8903,26.8567,15],[49.2678,27.4364,10],
+[50.2547,28.6587,261],[49.8919,28.6003,74],[50.95,28.65,63],[50.5833,27.6333,56],[50.7683,29.2372,25],[50.3186,29.0586,25],[51.3244,28.8081,15],[50.4972,29.2333,14],[50.4548,28.6667,11],[50.3,27.6667,11],[51.2258,27.6533,10],
+[49.2331,28.4682,370],[49.0372,28.1122,34],[48.4442,27.785,30],[49.5589,27.9578,27],[48.8094,29.3906,25],[49.7169,28.8336,22],[48.6833,29.2333,22],[49.4536,28.5231,18],[48.6744,28.8497,15],[49.0778,27.6822,14],[48.3717,29.5314,12],[48.9711,28.8364,11],[49.1036,29.2114,11],[49.0833,28.35,12]];
+// промышленные зоны OSM: [lat, lon, км²] — агрегированные ячейки ~4×4 км
+const IND={{INDUSTRY}};
+const CITYSHAPES={{CITYSHAPES}};
+const OBLASTS={{OBLASTS}};
+const TOUCH = matchMedia('(pointer:coarse)').matches;
+
+// ── проекция: линейная по долготе, с поправкой 1.52 по широте (широта ~49°)
+// границы расширены под 9 областей (добавлены Хмельницкая, Житомирская, Винницкая)
+const LON0=21.82, LON1=30.05, LAT1=51.80, LAT0=47.75;
+// готовые path границ городов лежат в старой системе координат: X=(lon-21.9)*123.3+20, Y=(51.15-lat)*187.5+20
+const OLDK=123.3, OLDKY=187.5, KY=OLDKY/OLDK;
+const CW=LON1-LON0, CH=(LAT1-LAT0)*KY;
+
+const svg=document.getElementById('clsvg'), g=document.getElementById('clg');
+const stage=document.getElementById('clstage'), wrap=document.getElementById('clwrap');
+const pop=document.getElementById('clpop'), hov=document.getElementById('clhover'), hint=document.getElementById('clhint');
+const clipR=document.getElementById('clcliprect');
+let W=600,H=500,b=110,ox=0,oy=0,A=0,B=0,k=1,s=1,tx=0,ty=0,clusters=[];
+const wx=lon=>ox+(lon-LON0)*b, wy=lat=>oy+(LAT1-lat)*KY*b;
+
+// контуры областей — рисуются под слоем населённости, чтобы было понятно, где что
+let oblHTML='';
+for(const o of OBLASTS){
+  oblHTML+='<path d="'+o.path+'" fill="none" stroke="var(--muted)" stroke-opacity="0.5" stroke-width="1.3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+}
+let heatHTML='';
+for(const [la,lo,pp] of HEAT){
+  heatHTML+='<circle cx="'+((lo-21.9)*OLDK+20).toFixed(1)+'" cy="'+((51.15-la)*OLDKY+20).toFixed(1)+'" r="'+(3+Math.sqrt(pp)*1.05).toFixed(1)+'" fill="url(#clheat)"/>';
+}
+for(const c of CITYSHAPES){
+  heatHTML+='<path d="'+c.path+'" fill="#F2C33C" fill-opacity="0.20" stroke="#B98F1F" stroke-opacity="0.85" stroke-width="1.1" vector-effect="non-scaling-stroke"/>';
+}
+// ── слой промышленности: ячейки OSM (landuse=industrial|quarry), краснее и крупнее —
+// больше промышленных площадей. Показывает, где город «занимается делом».
+let indHTML='';
+for(const [la,lo,k2] of IND){
+  const r=(2.0+2.6*Math.sqrt(k2)).toFixed(1);
+  const op=(0.16+0.44*Math.min(1,k2/3)).toFixed(2);
+  indHTML+='<circle cx="'+((lo-21.9)*OLDK+20).toFixed(1)+'" cy="'+((51.15-la)*OLDKY+20).toFixed(1)+'" r="'+r+'" fill="#A0421F" fill-opacity="'+op+'"/>';
+}
+let showInd=true;
+try{ showInd=localStorage.getItem('bh:ind')!=='0'; }catch(e){}
+
+function project(){
+  b=Math.min((W-10)/CW,(H-10)/CH);
+  ox=(W-CW*b)/2; oy=(H-CH*b)/2;
+  PTS.forEach(p=>{p.x=wx(p.lon); p.y=wy(p.lat);});
+  k=b/OLDK; A=wx(21.9)-20*k; B=wy(51.15)-20*k;
+}
+function viewGeo(){ // географический центр текущего вида
+  return [LON0+((W/2-tx)/s-ox)/b, LAT1-((H/2-ty)/s-oy)/(KY*b)];
+}
+function setViewGeo(lon,lat){
+  tx=W/2-wx(lon)*s; ty=H/2-wy(lat)*s;
+}
+function fit(keep){
+  const fs=wrap.classList.contains('fsmode');
+  const c=keep?viewGeo():null;
+  stage.style.height=fs
+    ? window.innerHeight+'px'
+    : Math.min(Math.round(window.innerHeight*(TOUCH?0.52:0.62)),620)+'px';
+  W=Math.max(240,Math.round(stage.clientWidth)); H=Math.max(200,Math.round(stage.clientHeight));
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  clipR.setAttribute('width',W-2); clipR.setAttribute('height',H-2);
+  project();
+  if(c) setViewGeo(c[0],c[1]); else if(s===1){tx=0;ty=0;}
+}
+function toggleFs(){
+  wrap.classList.toggle('fsmode');
+  const fs=wrap.classList.contains('fsmode');
+  document.documentElement.style.overflow=fs?'hidden':'';
+  document.body.style.overflow=fs?'hidden':'';
+  document.body.classList.toggle('mapfs',fs);   // прячем кнопку «вверх» в фулскрине
+  const btn=document.getElementById('clfs');
+  btn.textContent=fs?'✕':'⛶';
+  btn.title=fs?'Выйти из полноэкранного режима':'На весь экран';
+  btn.setAttribute('aria-label',btn.title);
+  pop.hidden=true; hov.hidden=true;
+  fit(true); render();
+}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+const favSet=()=>(window.BHFAV&&window.BHFAV.set)||null;
+const favOnly=()=>!!(window.BHFAV&&window.BHFAV.only);
+
+// пятиконечная звезда для избранного
+function starPath(cx,cy,r){
+  let p='';
+  for(let i=0;i<10;i++){
+    const a=-Math.PI/2+i*Math.PI/5, rr=(i%2)?r*0.44:r;
+    p+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);
+  }
+  return p+'Z';
+}
+const FAVC='#EFB01C';
+// цвет звезды по уровню избранного: 1 — зелёная, 2 — синяя, 3 — золотая
+const FAVCOLORS={1:'#3FA46C',2:'#4C82D8',3:'#EFB01C'};
+function favLvl(fv,id){ if(!fv||!fv.has(id)) return 0; const v=fv.get(id); return Math.min(3,Math.max(1,(v&&v.l)||1)); }
+function favColor(l){ return FAVCOLORS[l]||FAVC; }
+function render(){
+  const fs=wrap.classList.contains('fsmode');
+  const cell=TOUCH?54:46, map=new Map(), only=favOnly(), fv=favSet();
+  const badge=document.getElementById('clfav');
+  if(badge){
+    badge.hidden=!only;
+    if(only) badge.textContent='★ на карте только избранное'+(fv?' ('+fv.size+')':'');
+  }
+  let skipped=0;
+  const delShown=[];   // удалённые при «показать удалённые»: отдельными перечёркнутыми маркерами, в кластеры не идут
+  for(const p of PTS){
+    if(only&&fv&&!fv.has(p.i)){ skipped++; continue; }
+    if(window.BHSK&&!window.BHSK.pass(p)){ skipped++; continue; }
+    if(window.BHDEAD&&window.BHDEAD.hide&&window.BHDEAD.has(p.i)){ skipped++; continue; }
+    const isdel=window.BHDEL&&window.BHDEL.has(p.i);
+    if(isdel&&!window.BHDEL.show){ skipped++; continue; }
+    const X=p.x*s+tx, Y=p.y*s+ty;
+    if(X<-60||Y<-60||X>W+60||Y>H+60) continue;
+    if(isdel){ const one=[{p,X,Y}]; one.del=true; delShown.push(one); continue; }
+    const key=Math.floor(X/cell)+':'+Math.floor(Y/cell);
+    (map.get(key)||map.set(key,[]).get(key)).push({p,X,Y});
+  }
+  clusters=[...map.values(),...delShown];
+  let out='<g clip-path="url(#clclip)" pointer-events="none"><g transform="translate('+tx+' '+ty+') scale('+s+') translate('+A+' '+B+') scale('+k+')">'+oblHTML+heatHTML+(showInd?indHTML:'')+'</g></g>';
+  // подписи областей — в экранных координатах, чтобы не раздувались при зуме
+  const oblFont=W<430?10:11;
+  for(const o of OBLASTS){
+    const X=tx+s*(A+k*o.lx), Y=ty+s*(B+k*o.ly);
+    if(Y<14||Y>H-6||X<-40||X>W+40) continue;
+    // подпись целиком держим внутри карты
+    const tw=o.name.length*(oblFont*0.62+1.2);
+    let anch='middle', lx=X;
+    if(X-tw/2<6){ anch='start'; lx=6; }
+    else if(X+tw/2>W-6){ anch='end'; lx=W-6; }
+    out+='<text x="'+lx.toFixed(1)+'" y="'+Y.toFixed(1)+'" font-size="'+oblFont+'" fill="var(--muted)" fill-opacity="0.75" '+
+         'letter-spacing="1.2" text-anchor="'+anch+'" pointer-events="none">'+o.name.toUpperCase()+'</text>';
+  }
+  const cityFont=W<430?11:12;
+  for(const c of CITIES){
+    if(W<430&&!c[3]&&s<2) continue;
+    const X=wx(c[2])*s+tx, Y=wy(c[1])*s+ty;
+    if(X<-40||Y<-40||X>W+40||Y>H+40) continue;
+    // подпись не должна уезжать за край карты
+    var anch='middle', lx=X;
+    if(X<48){ anch='start'; lx=Math.max(4,X-14); }
+    else if(X>W-48){ anch='end'; lx=Math.min(W-4,X+14); }
+    out+='<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="4" fill="var(--muted)"/>'+
+         '<text x="'+lx.toFixed(1)+'" y="'+(Y-9).toFixed(1)+'" font-size="'+cityFont+'" fill="var(--muted)" text-anchor="'+anch+'">'+c[0]+'</text>';
+  }
+  const rSingle=TOUCH?10:8;
+  clusters.forEach((cl,i)=>{
+    const X=cl.reduce((a,q)=>a+q.X,0)/cl.length, Y=cl.reduce((a,q)=>a+q.Y,0)/cl.length;
+    cl.cx=X; cl.cy=Y;
+    const nf=fv?cl.filter(q=>fv.has(q.p.i)).length:0;
+    if(cl.length>1){
+      const r=(TOUCH?15:13)+Math.min(9,cl.length);
+      // звёздочка сбоку окрашена по СТАРШЕМУ уровню избранного в группе
+      const maxl=nf?Math.max.apply(null,cl.map(q=>favLvl(fv,q.p.i))):0;
+      out+='<g data-k="'+i+'" style="cursor:pointer">'+
+        '<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+r+'" fill="var(--accent)"/>'+
+        '<text x="'+X.toFixed(1)+'" y="'+(Y+4.5).toFixed(1)+'" font-size="'+(TOUCH?14:13)+'" font-weight="700" fill="var(--bg)" text-anchor="middle" pointer-events="none">'+cl.length+'</text>'+
+        (nf?'<path d="'+starPath(X+r*0.85,Y-r*0.85,TOUCH?13:12)+'" fill="'+favColor(maxl)+'" stroke="var(--bg)" stroke-width="2.2" stroke-linejoin="round" pointer-events="none"/>':'')+
+        '</g>';
+    } else {
+      const p=cl[0].p, lvl=favLvl(fv,p.i), isf=lvl>0;
+      out+='<a href="'+esc(p.u||'#')+'" target="_blank" rel="noopener"><g data-k="'+i+'" style="cursor:pointer">'+
+        (cl.del
+          ? '<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+rSingle+'" fill="var(--chip)" stroke="var(--muted)" stroke-width="1.6"/>'+
+            '<path d="M'+(X-4).toFixed(1)+' '+(Y-4).toFixed(1)+'L'+(X+4).toFixed(1)+' '+(Y+4).toFixed(1)+'M'+(X+4).toFixed(1)+' '+(Y-4).toFixed(1)+'L'+(X-4).toFixed(1)+' '+(Y+4).toFixed(1)+'" stroke="var(--dead)" stroke-width="2" stroke-linecap="round" fill="none" pointer-events="none"/>'
+          : isf
+          ? '<path d="'+starPath(X,Y,TOUCH?19:17)+'" fill="'+favColor(lvl)+'" stroke="var(--bg)" stroke-width="2.4" stroke-linejoin="round"/>'
+          : '<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+rSingle+'" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.8"/>')+
+        '</g></a>';
+      if(s>=3.5||(fs&&s>=2)) out+='<text x="'+X.toFixed(1)+'" y="'+(Y+rSingle+13).toFixed(1)+'" font-size="11" fill="var(--muted)" text-anchor="middle" pointer-events="none">'+esc(p.n)+'</text>';
+    }
+  });
+  g.innerHTML=out;
+}
+window.BHMAP={render:render};
+
+function zoomAt(f,cx,cy){
+  const ns=Math.max(1,Math.min(20,s*f)); f=ns/s;
+  tx=cx-(cx-tx)*f; ty=cy-(cy-ty)*f; s=ns;
+  if(s===1){tx=0;ty=0;}
+  pop.hidden=true; hov.hidden=true; render();
+}
+function svgPoint(e){
+  const r=svg.getBoundingClientRect();
+  return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];
+}
+function showHint(txt){
+  hint.textContent=txt; hint.hidden=false;
+  clearTimeout(showHint.t); showHint.t=setTimeout(()=>{hint.hidden=true;},1700);
+}
+document.querySelector('.clhow').textContent=TOUCH
+  ? 'На телефоне: зум — двумя пальцами, кнопка ⛶ — на весь экран (там карта тянется одним пальцем).'
+  : 'Зум — Ctrl + колесо или кнопки +/−, перетаскивание — мышью.';
+
+// ── колесо (desktop): только с Ctrl, иначе страница скроллится
+svg.addEventListener('wheel',e=>{
+  if(!e.ctrlKey){ showHint('Зум карты — Ctrl + прокрутка (или кнопки +/−)'); return; }
+  e.preventDefault(); hint.hidden=true;
+  const [cx,cy]=svgPoint(e); zoomAt(e.deltaY<0?1.5:1/1.5,cx,cy);
+},{passive:false});
+
+const lgind=document.getElementById('lgind');
+if(lgind){
+  lgind.checked=showInd;
+  lgind.addEventListener('change',()=>{
+    showInd=lgind.checked;
+    try{ localStorage.setItem('bh:ind', showInd?'1':'0'); }catch(e){}
+    render();
+  });
+}
+document.getElementById('clfs').onclick=toggleFs;
+document.getElementById('clzin').onclick=()=>zoomAt(1.6,W/2,H/2);
+document.getElementById('clzout').onclick=()=>zoomAt(1/1.6,W/2,H/2);
+document.getElementById('clrst').onclick=()=>{s=1;tx=0;ty=0;pop.hidden=true;hov.hidden=true;render();};
+
+// ── жесты: 1 палец — панорама (в фулскрине / мышью), 2 пальца — щипок-зум
+const ptrs=new Map();
+let drag=null, pinch=null, suppressClick=false;
+function midOf(){
+  const a=[...ptrs.values()];
+  const r=svg.getBoundingClientRect(), kk=W/r.width;
+  const mx=((a[0].x+a[1].x)/2-r.left)*kk, my=((a[0].y+a[1].y)/2-r.top)*kk;
+  return [mx,my,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)*kk];
+}
+svg.addEventListener('pointerdown',e=>{
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){
+    const [mx,my,d]=midOf();
+    pinch={d:d||1,s0:s,tx0:tx,ty0:ty,mx,my}; drag=null; pop.hidden=true; hov.hidden=true;
+    return;
+  }
+  if(ptrs.size>2){ pinch=null; return; }
+  const panOk=e.pointerType!=='touch'||wrap.classList.contains('fsmode');
+  drag={x:e.clientX,y:e.clientY,tx,ty,moved:false,pid:e.pointerId,pan:panOk,
+        el:(e.target.closest?e.target.closest('[data-k]'):null)};
+},{passive:true});
+svg.addEventListener('pointermove',e=>{
+  if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size>=2){
+    const [mx,my,d]=midOf();
+    const ns=Math.max(1,Math.min(20,pinch.s0*(d/pinch.d)));
+    const f=ns/pinch.s0;
+    tx=pinch.mx-(pinch.mx-pinch.tx0)*f; ty=pinch.my-(pinch.my-pinch.ty0)*f; s=ns;
+    suppressClick=true; render();
+    return;
+  }
+  if(!drag) return;
+  const r=svg.getBoundingClientRect(), kk=W/r.width;
+  const dx=(e.clientX-drag.x)*kk, dy=(e.clientY-drag.y)*kk;
+  if(!drag.moved&&Math.abs(dx)+Math.abs(dy)>5){
+    if(!drag.pan){ drag=null; return; }   // одним пальцем в обычном режиме — скроллим страницу
+    drag.moved=true;
+    try{svg.setPointerCapture(drag.pid);}catch(err){}
+  }
+  if(drag.moved){tx=drag.tx+dx; ty=drag.ty+dy; pop.hidden=true; hov.hidden=true; render();}
+});
+function endPtr(e){
+  ptrs.delete(e.pointerId);
+  if(ptrs.size<2&&pinch){ pinch=null; setTimeout(()=>{suppressClick=false;},60); }
+  const d=drag; drag=null;
+  if(!d||d.pid!==e.pointerId) return;
+  if(d.moved){ suppressClick=true; setTimeout(()=>{suppressClick=false;},60); return; }
+  const t=d.el;
+  if(!t){pop.hidden=true; return;}
+  const cl=clusters[+t.dataset.k];
+  if(!cl) return;
+  if(cl.length===1){ if(TOUCH) hov.hidden=true; return; }  // одиночный — ссылка, браузер откроет OLX
+  const spread=Math.max(...cl.map(q=>Math.hypot(q.p.x-cl[0].p.x,q.p.y-cl[0].p.y)));
+  if(s>=16||spread*s<8){ showList(cl); } else { zoomAt(2.2,cl.cx,cl.cy); }
+}
+svg.addEventListener('pointerup',endPtr);
+svg.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId); pinch=null; drag=null;});
+svg.addEventListener('click',e=>{ if(suppressClick){e.preventDefault(); e.stopPropagation();} },true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&wrap.classList.contains('fsmode')) toggleFs(); });
+window.addEventListener('resize',()=>{fit(true);render();});
+
+function showList(cl){
+  const r=svg.getBoundingClientRect(), wr=stage.getBoundingClientRect();
+  const _fv=favSet();
+  pop.innerHTML='<b>'+cl.length+' объявлений — '+esc(cl[0].p.n)+'</b>'+cl.map(q=>{
+    const _l=favLvl(_fv,q.p.i);
+    return '<a href="'+esc(q.p.u||'#')+'" target="_blank" rel="noopener">'+
+      (_l?'<span style="color:'+favColor(_l)+'">'+'★'.repeat(_l)+'</span> ':'')+
+      '№'+q.p.r+' · $'+q.p.p.toLocaleString('en-US').replace(/,/g,' ')+' · '+esc(q.p.t)+' →</a>';
+  }).join('');
+  pop.hidden=false;
+  const px=cl.cx*r.width/W+(r.left-wr.left), py=cl.cy*r.height/H+(r.top-wr.top);
+  pop.style.left=Math.max(6,Math.min(px-40, wr.width-pop.offsetWidth-8))+'px';
+  pop.style.top=(py-pop.offsetHeight-16>8?py-pop.offsetHeight-16:py+22)+'px';
+}
+// hover-превью (только мышь): фото берём из уже отрисованных карточек страницы
+const thumbCache=new Map();
+function thumbFor(p){
+  if(thumbCache.has(p.i)) return thumbCache.get(p.i);
+  const el=document.querySelector('[data-id="'+p.i+'"] img');
+  const src=el?el.src:null; thumbCache.set(p.i,src); return src;
+}
+function showHover(cl){
+  let inner='';
+  if(cl.length===1){
+    const p=cl[0].p, src=thumbFor(p);
+    if(!src) return;
+    // подробности берём из уже отрисованной строки каталога — там всё посчитано
+    const row=document.getElementById('row-'+p.i), ds=row?row.dataset:{};
+    const money=function(v){ return '$'+Number(v).toLocaleString('en-US').replace(/,/g,' '); };
+    const kmChip=row?row.querySelector('.ix.ixt'):null;
+    const kmTxt=kmChip?(kmChip.querySelector('b').textContent+' '+kmChip.querySelector('i').textContent):'';
+    const dChip=row?row.querySelector('.ix.ixd i'):null;
+    const dead=window.BHDEAD&&window.BHDEAD.has(p.i), del=window.BHDEL&&window.BHDEL.has(p.i);
+    const l2=[money(p.p), esc(p.n), ds.area?ds.area+' м²':'', ds.land?ds.land+' сот':''].filter(Boolean).join(' · ');
+    const l3=[ds.q?'цена/качество '+ds.q:'', ds.vpd?ds.vpd+' просм/день':'', ds.ppm?money(ds.ppm)+' за м²':''].filter(Boolean).join(' · ');
+    const l4=[kmTxt?esc(kmTxt):'', dChip?esc(dChip.textContent):''].filter(Boolean).join(' · ');
+    inner='<img src="'+src+'" style="width:210px;height:140px;object-fit:cover;border-radius:6px;display:block'+((dead||del)?';filter:grayscale(1);opacity:.7':'')+'">'+
+      '<div class="hcap"><div class="ht"><span class="hrank">'+p.r+'</span> '+esc(p.t)+'</div>'+
+      '<div>'+l2+'</div>'+
+      (l3?'<div>'+l3+'</div>':'')+
+      (l4?'<div>'+l4+'</div>':'')+
+      ((dead||del)?'<div style="margin-top:3px">'+(dead?'<span class="deadtag" style="margin-left:0;margin-right:6px">недоступно</span>':'')+(del?'<span class="deltag" style="margin-left:0">удалено</span>':'')+'</div>':'')+
+      '</div>';
+  } else {
+    const n=cl.length, cols=n<=4?2:3, cellN=Math.min(n,cols*cols);
+    const show=cl.slice(0,n>cellN?cellN-1:cellN), size=cols===2?84:64;
+    inner='<div style="display:grid;grid-template-columns:repeat('+cols+','+size+'px);gap:3px">'+
+      show.map(q=>{const s2=thumbFor(q.p); return s2?'<img src="'+s2+'" style="width:'+size+'px;height:'+Math.round(size*0.72)+'px;object-fit:cover;border-radius:4px;display:block">':'';}).join('')+
+      (n>cellN?'<div style="width:'+size+'px;height:'+Math.round(size*0.72)+'px;border-radius:4px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px">+'+(n-cellN+1)+'</div>':'')+
+      '</div><div class="hcap">'+n+' домов · '+esc(cl[0].p.n)+(cl.some(q=>q.p.n!==cl[0].p.n)?' и рядом':'')+'</div>';
+  }
+  hov.innerHTML=inner; hov.hidden=false;
+  const r=svg.getBoundingClientRect(), wr=stage.getBoundingClientRect();
+  const px=cl.cx*r.width/W+(r.left-wr.left), py=cl.cy*r.height/H+(r.top-wr.top);
+  hov.style.left=Math.max(6,Math.min(px-hov.offsetWidth/2,wr.width-hov.offsetWidth-6))+'px';
+  hov.style.top=Math.max(6,py-hov.offsetHeight-18)+'px';
+}
+if(!TOUCH){
+  svg.addEventListener('pointerover',e=>{
+    if((drag&&drag.moved)||pinch) return;
+    const t=e.target.closest?e.target.closest('[data-k]'):null;
+    if(!t){hov.hidden=true; return;}
+    const cl=clusters[+t.dataset.k];
+    if(cl) showHover(cl);
+  });
+  svg.addEventListener('pointerleave',()=>{hov.hidden=true;});
+  svg.addEventListener('pointerout',e=>{
+    if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('[data-k]')) hov.hidden=true;
+  });
+}
+fit(false);
+render();
+})();
+</script>
