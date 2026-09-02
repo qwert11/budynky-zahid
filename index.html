@@ -190,6 +190,11 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .flt label:has(input:checked) i{color:var(--accent); opacity:.75;}
 .flt input:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 .fltone{margin-left:auto;}
+/* кнопки «выбрать все / убрать все» в группе областей */
+.fltbtn{font:inherit; font-size:12.5px; font-weight:600; color:var(--muted); background:none;
+  border:1px dashed var(--line); border-radius:999px; padding:4px 11px; cursor:pointer; white-space:nowrap;}
+.fltbtn:hover{color:var(--accent); border-color:var(--accent);}
+.fltbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 @media (max-width:700px){
   .flt{gap:6px 10px; margin-bottom:10px;}
   .flt label{font-size:13px; padding:4px 9px;}
@@ -915,6 +920,8 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <label><input type="checkbox" data-f="obl" value="khm" checked> Хмельниччина <i data-cnt="obl:khm"></i></label>
     <label><input type="checkbox" data-f="obl" value="zht" checked> Житомирщина <i data-cnt="obl:zht"></i></label>
     <label><input type="checkbox" data-f="obl" value="vin" checked> Винничина <i data-cnt="obl:vin"></i></label>
+    <button class="fltbtn" type="button" data-oblall="1" title="Включить все девять областей">выбрать все</button>
+    <button class="fltbtn" type="button" data-oblall="0" title="Снять все области — затем включайте нужные по одной">убрать все</button>
   </span>
   <label class="fltone" title="Оставить только жильё площадью от 65 м²"><input type="checkbox" id="big65"> только 65+ м² <i data-cnt="big65"></i></label>
 </div>
@@ -2368,6 +2375,15 @@ render();
       if(t.id==='big65'){ flt.big65=t.checked; }
       else if(t.getAttribute && t.getAttribute('data-f')){ flt[t.getAttribute('data-f')][t.value]=t.checked; }
       else return;
+      saveFlt(); apply(false);
+    });
+    // «выбрать все / убрать все» — только для группы областей
+    var oblBtns=document.querySelectorAll('#flt [data-oblall]');
+    for(var ob=0;ob<oblBtns.length;ob++) oblBtns[ob].addEventListener('click',function(){
+      var on=this.getAttribute('data-oblall')==='1';
+      for(var oi2=0;oi2<OBLS.length;oi2++) flt.obl[OBLS[oi2]]=on;
+      var obBoxes=document.querySelectorAll('#flt input[data-f="obl"]');
+      for(var oj=0;oj<obBoxes.length;oj++) obBoxes[oj].checked=on;
       saveFlt(); apply(false);
     });
     fltCounts();
