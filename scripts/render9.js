@@ -25,6 +25,7 @@ const thumbUrlsOld = ex(D5 + 'thumb-urls.json') ? rd(D5 + 'thumb-urls.json') : {
 const shell = fs.readFileSync(path.join(__dirname, 'tpl', 'site-shell9.html'), 'utf8');
 const clusterTpl = fs.readFileSync(path.join(__dirname, 'tpl', 'clustermap9.html'), 'utf8');
 const industry = ex(D + 'industry.json') ? rd(D + 'industry.json') : { cells: [] };
+const addr9 = ex(D + 'addr9.json') ? rd(D + 'addr9.json') : {};
 const shapes = rd(D + 'oblast-shapes9.json');
 const dead0 = ex(path.join(__dirname, '..', 'dead.json')) ? rd(path.join(__dirname, '..', 'dead.json')) : { checked: '', dead: [] };
 
@@ -290,16 +291,38 @@ for (const u of [...units, ...semi]) {
   };
   if (u.obl) p.o = u.obl;
   if (u.ready === 'semi') p.g = 'semi';
+  // откуда взята точка: h — адрес с номером дома, s — улица, p — село названо в тексте
+  if (u.geoSrc === 'house') p.w = 'h';
+  else if (u.geoSrc === 'street') p.w = 's';
+  else if (u.geoSrc === 'place') p.w = 'p';
+  const a = addr9[u.id];
+  if (a && a.src === 'street') p.ad = 'вул. ' + a.street + (a.house ? ' ' + a.house : '');
   pts.push(p);
 }
 
 const N = units.length + semi.length;
+const acc = { h: 0, s: 0, p: 0 };
+for (const p of pts) if (p.w) acc[p.w]++;
+const exact = acc.h + acc.s;
+const GEOACC = exact
+  ? `Точность метки разная: у ${exact} объявлений адрес указан в тексте (${acc.h} с номером дома, ${acc.s} до улицы) — метка стоит по нему; ` +
+    `у остальных известен только населённый пункт, и точка стоит в его центре. Проверяйте адрес у продавца.`
+  : 'Позиции — по селу из объявления, точного адреса в объявлениях нет: точка стоит в центре населённого пункта.';
+const GEOLEDE = `<b>Метка на карте — это не адрес дома.</b> Точный адрес продавцы указывают редко: ` +
+  `у <b>${acc.h + acc.s}</b> объявлений улица (а у ${acc.h} и номер дома) нашлась в заголовке или описании — ` +
+  `их метки стоят по этому адресу; ещё у <b>${acc.p}</b> в тексте назван другой населённый пункт, чем в поле объявления, ` +
+  `и метка перенесена туда. У остальных <b>${N - acc.h - acc.s - acc.p}</b> известен только населённый пункт: ` +
+  `точка стоит в его центре, и все лоты одного села лежат в одной точке — кластер на карте означает «в одном селе», ` +
+  `а не «дома рядом». Перед выездом адрес уточняйте у продавца.`;
+const GEOFOOT = `Метка на карте показывает адрес из объявления только там, где продавец его назвал ` +
+  `(таких ${acc.h + acc.s} из ${N}); иначе это центр населённого пункта, а не место дома.`;
 const IND = industry.cells.map(c => [c.lat, c.lon, c.km2]);
 const cluster = clusterTpl
   .replace('{{PTS}}', () => JSON.stringify(pts).replace(/<\//g, '<\\/'))
   .replace('{{INDUSTRY}}', () => JSON.stringify(IND))
   .replace('{{CITYSHAPES}}', () => JSON.stringify(rd(D2 + 'city-shapes.json').filter(c => c.name !== 'Ужгород')))
   .replace('{{OBLASTS}}', () => JSON.stringify(shapes.map(o => ({ name: o.name, path: o.path, lx: o.lx, ly: o.ly }))))
+  .replace('{{GEOACC}}', () => GEOACC)
   .replace(/\{\{N\}\}/g, String(N));
 
 const SITE = 'https://qwert11.github.io/budynky-zahid/';
@@ -314,6 +337,8 @@ function build(mode) {
     .replace('{{MAP}}', () => cluster)
     .replace('{{ROWS}}', () => rowsFor(mode))
     .replace('{{DEAD0}}', () => JSON.stringify(dead0))
+    .replace('{{GEOLEDE}}', () => GEOLEDE)
+    .replace('{{GEOFOOT}}', () => GEOFOOT)
     .replace('{{XLINK}}', () => XLINK[mode === 'data' ? 'artifact' : 'site'])
     .replace(/\{\{DATE\}\}/g, DATE)
     .replace(/\{\{N\}\}/g, String(N));

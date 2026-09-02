@@ -28,6 +28,7 @@ const views9 = ex(D + 'views9.json') ? rd(D + 'views9.json') : {};
 const family = ex(D + 'family.json') ? rd(D + 'family.json') : (ex(D5 + 'family.json') ? rd(D5 + 'family.json') : {});
 const PINNED = new Set(Object.keys(family));
 const legacyVetted = new Set((ex(D2 + 'ranked.json') ? rd(D2 + 'ranked.json') : []).map(r => r.id));
+const addr9 = ex(D + 'addr9.json') ? rd(D + 'addr9.json') : {};
 const livePts = ex(D + 'live-pts.json') ? Object.fromEntries(rd(D + 'live-pts.json').map(p => [p.i, p])) : {};
 
 const NOW = Date.now();
@@ -39,18 +40,21 @@ const drop = { dead: 0, excluded: 0, share: 0, unfin: 0, far: 0, nogeo: 0, badty
 let pinnedKept = 0;
 
 function coordsFor(u) {
+  // адрес из текста объявления точнее центра населённого пункта
+  const a = addr9[u.id];
+  if (a && a.lat) return { lat: a.lat, lon: a.lon, src: a.src === 'street' ? (a.house ? 'house' : 'street') : 'place' };
   const k = (u.loc || '') + '|' + (u.region || '');
   const g = geo9[k];
-  if (g && g.lat) return { lat: g.lat, lon: g.lon };
-  if (u.lat && u.lon) return { lat: u.lat, lon: u.lon };
+  if (g && g.lat) return { lat: g.lat, lon: g.lon, src: 'loc' };
+  if (u.lat && u.lon) return { lat: u.lat, lon: u.lon, src: 'olxmap' };
   const lp = livePts[u.id];
-  if (lp) return { lat: lp.lat, lon: lp.lon };
+  if (lp) return { lat: lp.lat, lon: lp.lon, src: 'live' };
   return null;
 }
 function finish(u) {
   // координаты → км до города → область → индекс
   const c = coordsFor(u);
-  if (c) { u.lat = c.lat; u.lon = c.lon; }
+  if (c) { u.lat = c.lat; u.lon = c.lon; u.geoSrc = c.src; }
   if (u.lat && u.lon) {
     const n = L.nearestCity(u.lat, u.lon);
     u.km = n.km; u.city = n.city;
