@@ -25,7 +25,7 @@
   </div>
   <div class="cllegend">
     <span><i class="lgc">7</i>объявлений в точке — клик приближает</span>
-    <span><i class="lgs"></i>одно объявление — клик открывает источник</span>
+    <span><i class="lgs"></i>одно объявление — клик открывает карточку: ссылка, ★ избранное, ✕ недоступно, корзина</span>
     <span><i class="lgstar" style="color:#3FA46C">★</i><i class="lgstar" style="color:#4C82D8">★</i><i class="lgstar">★</i>избранное: 1 зелёная → 2 синяя → 3 золотая</span>
     <span><i class="lgh"></i>населённость</span>
     <span><label class="lgindl" title="Промышленные зоны и карьеры из OpenStreetMap: чем краснее и крупнее пятно, тем больше промышленных площадей — видно, где город работает, а не просто существует"><input type="checkbox" id="lgind" checked><i class="lgi"></i>промышленность (OSM)</label></span>
@@ -207,14 +207,15 @@ function render(){
         '</g>';
     } else {
       const p=cl[0].p, lvl=favLvl(fv,p.i), isf=lvl>0;
-      out+='<a href="'+esc(p.u||'#')+'" target="_blank" rel="noopener"><g data-k="'+i+'" style="cursor:pointer">'+
+      // одиночный маркер — не ссылка: клик открывает карточку с действиями (ссылка на источник внутри)
+      out+='<g data-k="'+i+'" style="cursor:pointer">'+
         (cl.del
           ? '<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+rSingle+'" fill="var(--chip)" stroke="var(--muted)" stroke-width="1.6"/>'+
             '<path d="M'+(X-4).toFixed(1)+' '+(Y-4).toFixed(1)+'L'+(X+4).toFixed(1)+' '+(Y+4).toFixed(1)+'M'+(X+4).toFixed(1)+' '+(Y-4).toFixed(1)+'L'+(X-4).toFixed(1)+' '+(Y+4).toFixed(1)+'" stroke="var(--dead)" stroke-width="2" stroke-linecap="round" fill="none" pointer-events="none"/>'
           : isf
           ? '<path d="'+starPath(X,Y,TOUCH?19:17)+'" fill="'+favColor(lvl)+'" stroke="var(--bg)" stroke-width="2.4" stroke-linejoin="round"/>'
           : '<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+rSingle+'" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.8"/>')+
-        '</g></a>';
+        '</g>';
       if(s>=3.5||(fs&&s>=2)) out+='<text x="'+X.toFixed(1)+'" y="'+(Y+rSingle+13).toFixed(1)+'" font-size="11" fill="var(--muted)" text-anchor="middle" pointer-events="none">'+esc(p.n)+'</text>';
     }
   });
@@ -312,7 +313,7 @@ function endPtr(e){
   if(!t){pop.hidden=true; return;}
   const cl=clusters[+t.dataset.k];
   if(!cl) return;
-  if(cl.length===1){ if(TOUCH) hov.hidden=true; return; }  // одиночный — ссылка, браузер откроет OLX
+  if(cl.length===1){ hov.hidden=true; showList(cl); return; }  // одиночный — карточка с действиями и ссылкой на источник
   const spread=Math.max(...cl.map(q=>Math.hypot(q.p.x-cl[0].p.x,q.p.y-cl[0].p.y)));
   if(s>=16||spread*s<8){ showList(cl); } else { zoomAt(2.2,cl.cx,cl.cy); }
 }
@@ -322,20 +323,55 @@ svg.addEventListener('click',e=>{ if(suppressClick){e.preventDefault(); e.stopPr
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&wrap.classList.contains('fsmode')) toggleFs(); });
 window.addEventListener('resize',()=>{fit(true);render();});
 
+// карточка на карте: у каждого объявления ссылка на источник и те же метки, что на карточке
+// каталога — ★ избранное (по кругу зелёная → синяя → золотая → снять), ✕ недоступно, корзина.
+// Кнопки несут те же data-атрибуты, что и на карточках, поэтому их обрабатывают обработчики
+// страницы (localStorage, перекраска списка и карты); карточка после этого перерисовывается.
+const TRASH='<svg width="13" height="14" viewBox="0 0 14 15" aria-hidden="true"><path d="M2 4.5h10M5.5 2.5h3M3.5 4.5l.6 8.5h5.8l.6-8.5M5.8 7v4M8.2 7v4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const LVLT={0:'В избранное (зелёная звезда)',1:'Зелёная (1 из 3). Нажмите — станет синей',2:'Синяя (2 из 3). Нажмите — станет золотой',3:'Золотая (3 из 3). Нажмите — уберёт из избранного'};
+let curCl=null;
+function money(v){ return '$'+Number(v).toLocaleString('en-US').replace(/,/g,' '); }
 function showList(cl){
+  curCl=cl;
   const r=svg.getBoundingClientRect(), wr=stage.getBoundingClientRect();
   const _fv=favSet();
-  pop.innerHTML='<b>'+cl.length+' объявлений — '+esc(cl[0].p.n)+'</b>'+cl.map(q=>{
-    const _l=favLvl(_fv,q.p.i);
-    return '<a href="'+esc(q.p.u||'#')+'" target="_blank" rel="noopener">'+
-      (_l?'<span style="color:'+favColor(_l)+'">'+'★'.repeat(_l)+'</span> ':'')+
-      '№'+q.p.r+' · $'+q.p.p.toLocaleString('en-US').replace(/,/g,' ')+' · '+esc(q.p.t)+' →</a>';
+  const head=cl.length===1?esc(cl[0].p.n):(cl.length+' объявлений — '+esc(cl[0].p.n));
+  pop.innerHTML='<div class="clrow"><b>'+head+'</b><button type="button" class="clx" aria-label="Закрыть">✕</button></div>'+cl.map(q=>{
+    const id=q.p.i, _l=favLvl(_fv,id);
+    const dead=!!(window.BHDEAD&&window.BHDEAD.has(id)), del=!!(window.BHDEL&&window.BHDEL.has(id));
+    return '<div class="cli'+(del?' isdel':'')+(dead?' isdead':'')+'">'+
+      '<a href="'+esc(q.p.u||'#')+'" target="_blank" rel="noopener" title="Открыть объявление в источнике">'+
+      '№'+q.p.r+' · '+money(q.p.p)+' · '+esc(q.p.t)+(q.p.g==='semi'?' ⚒':'')+' →</a>'+
+      '<button type="button" class="fav" data-fav="'+id+'"'+(_l?' data-lvl="'+_l+'"':'')+' aria-pressed="'+(_l?'true':'false')+'" title="'+LVLT[_l]+'">'+(_l?'★'.repeat(_l):'★')+'</button>'+
+      '<button type="button" class="unav" data-unav="'+id+'" aria-pressed="'+(dead?'true':'false')+'" title="'+(dead?'Снять пометку «недоступно»':'Пометить недоступным (объявление снято)')+'">✕</button>'+
+      '<button type="button" class="delb" data-del="'+id+'" aria-pressed="'+(del?'true':'false')+'" title="'+(del?'Вернуть в подборку':'Удалить из подборки (скроется из каталога и с карты)')+'">'+TRASH+'</button>'+
+      '<a class="cltocard" href="#row-'+id+'" title="К карточке в каталоге">↓</a>'+
+      '</div>';
   }).join('');
   pop.hidden=false;
   const px=cl.cx*r.width/W+(r.left-wr.left), py=cl.cy*r.height/H+(r.top-wr.top);
   pop.style.left=Math.max(6,Math.min(px-40, wr.width-pop.offsetWidth-8))+'px';
   pop.style.top=(py-pop.offsetHeight-16>8?py-pop.offsetHeight-16:py+22)+'px';
 }
+pop.addEventListener('click',e=>{
+  const t=e.target.closest?e.target.closest('button,a'):null;
+  if(!t) return;
+  if(t.classList.contains('clx')){ pop.hidden=true; curCl=null; return; }
+  if(t.classList.contains('cltocard')){
+    e.preventDefault();
+    const row=document.getElementById((t.getAttribute('href')||'').slice(1));
+    if(!row) return;
+    if(wrap.classList.contains('fsmode')) toggleFs();
+    pop.hidden=true; curCl=null;
+    row.scrollIntoView({behavior:'smooth', block:'center'});
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+    return;
+  }
+  if(t.hasAttribute('data-fav')||t.hasAttribute('data-unav')||t.hasAttribute('data-del')){
+    // метку ставит страница (обработчики на document), после неё перерисовываем карточку
+    setTimeout(()=>{ if(curCl&&!pop.hidden) showList(curCl); },0);
+  }
+});
 // hover-превью (только мышь): фото берём из уже отрисованных карточек страницы
 const thumbCache=new Map();
 function thumbFor(p){
@@ -344,6 +380,7 @@ function thumbFor(p){
   const src=el?el.src:null; thumbCache.set(p.i,src); return src;
 }
 function showHover(cl){
+  if(!pop.hidden) return;   // открыта карточка с действиями — превью не нужно
   let inner='';
   if(cl.length===1){
     const p=cl[0].p, src=thumbFor(p);

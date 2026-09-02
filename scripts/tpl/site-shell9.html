@@ -109,7 +109,7 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
   font-size:19px; font-weight:600; cursor:pointer; line-height:1; box-shadow:0 1px 4px rgba(0,0,0,.10);}
 .clbar button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 .clpop{position:absolute; z-index:5; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
-  box-shadow:0 6px 24px rgba(0,0,0,.18); max-width:min(330px,88vw); font-size:13px; display:flex; flex-direction:column; gap:6px;}
+  box-shadow:0 6px 24px rgba(0,0,0,.18); max-width:min(440px,calc(100% - 12px)); box-sizing:border-box; font-size:13px; display:flex; flex-direction:column; gap:6px;}
 .clpop a{color:var(--accent); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; display:block;}
 .clhover{position:absolute; z-index:6; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:6px; box-shadow:0 6px 24px rgba(0,0,0,.18);}
 .clhover .hcap{font-size:12px; color:var(--muted); margin-top:5px; max-width:210px; line-height:1.45;}
@@ -524,6 +524,23 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
 .ix.ixs{background:var(--accent-soft);} .ix.ixs b{color:var(--accent);}
 .ix.ixs i{color:var(--accent); opacity:.85;}
 .row[data-ready="semi"] .ph{box-shadow:inset 0 0 0 2px var(--amber-soft);}
+/* шапка отдельного списка «получистовая» — идёт после готового, за места с ним не конкурирует */
+.semihead{grid-column:1/-1; margin:26px 0 2px; padding:10px 14px; border-left:4px solid var(--amber); background:var(--amber-soft); border-radius:8px;}
+.semihead.alone{margin-top:0;}
+.semihead h3{margin:0; font-family:Literata,Georgia,serif; font-weight:600; font-size:20px; color:var(--ink);}
+.semihead h3 i{font-style:normal; color:var(--amber);}
+.semihead p{margin:4px 0 0; color:var(--muted); font-size:13.5px; max-width:80ch; line-height:1.45;}
+/* карточка на карте: ссылка + звезда, «недоступно» и корзина — те же метки, что на карточке каталога */
+.clpop .clrow{display:flex; gap:8px; align-items:center; justify-content:space-between;}
+.clpop .clx{border:0; background:none; color:var(--muted); cursor:pointer; font-size:14px; padding:2px 4px; line-height:1;}
+.clpop .clx:hover{color:var(--ink);}
+.clpop .cli{display:flex; align-items:center; gap:5px; min-width:0;}
+.clpop .cli a{flex:1 1 auto; min-width:0;}
+.clpop .cli.isdel a,.clpop .cli.isdead a{color:var(--muted); text-decoration:line-through;}
+.clpop .cli .fav,.clpop .cli .unav,.clpop .cli .delb{padding:4px 6px; font-size:13px; line-height:1; flex:none;}
+.clpop .cli .fav[data-lvl="2"],.clpop .cli .fav[data-lvl="3"]{font-size:10px; letter-spacing:-1px; padding:5px 5px;}
+.clpop .cli .cltocard{flex:none; font-size:13px; color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:4px 6px; line-height:1;}
+.clpop .cli .cltocard:hover{color:var(--accent); border-color:var(--accent);}
 
 /* ── Шапка: чипы отбора и абзацы про наборы схлопнуты в один блок (bh:intro) */
 .intro{background:var(--card); border:1px solid var(--line); border-radius:12px; margin:0 0 20px; max-width:78ch;}
@@ -899,7 +916,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   <span class="fltg" role="group" aria-label="Готовность жилья">
     <span class="fltl">Готовность</span>
     <label title="Жильё, готовое к заезду: отделка сделана, доводить нечего"><input type="checkbox" data-f="ready" value="done" checked> готовое <i data-cnt="ready:done"></i></label>
-    <label title="Часть уже пригодна для жизни — этаж, половина дома, флигель или комнаты с ремонтом. Заезжаете сразу, остальное достраиваете когда есть время и деньги"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
+    <label title="Жильё, которое нужно доводить: часть уже жилая (этаж, половина дома, флигель, комнаты под ремонт) либо коробка под чистовую с заведёнными сетями. Идёт отдельным списком после готового — за места в топ-50 с готовым не конкурирует, но отобрано по тем же правилам"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
   </span>
   <span class="fltg" role="group" aria-label="Область">
     <span class="fltl">Область</span>
@@ -944,7 +961,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
 {{MAP}}
 
 <h2 class="tailh" id="catalog">Каталог — {{N}} объявлений</h2>
-<p class="tailnote">Формат каталога — <b>топ-50 на область</b>: дома и квартиры отдельно, в каждом источнике; номер на карточке — место лота внутри своей области и своего набора. Порядок по умолчанию — индекс цена/качество; с 2 сентября <b>близость к городу весит в нём вдвое больше</b> любой другой категории (цены за метр, площади, участка), а лоты дальше <b>10 км от города</b> в каталог не попадают вовсе. Спрос показывает <b>глаз</b> у «просм/день»: он открывается от 30 просмотров в день, и чем больше зрачок, тем горячее лот; низкий спрос при большом сроке — вероятен торг. Плашка <b>«до города»</b> залита по расстоянию: в городе — нейтральная, к 10 км желтеет. Плашка <b>«рынок»</b> — два кольца по объявлениям OLX вокруг дома: левое, <b>продать</b> — как быстро уходит предложение в радиусе 10 км; правое, <b>сдать</b> — есть ли аренда в самом населённом пункте. Красное кольцо — рынка нет, зелёное — живой, пунктир — данных мало. Плашка даты — <b>настоящая дата размещения</b>, а не дата поднятия, которую показывает OLX. У набора <b>«получистовая»</b> вместо спроса и рынка две свои плашки: <b>«что готово»</b> — какая часть уже пригодна для жизни, и <b>«к рынку зоны»</b> — насколько цена за м² ниже медианы готового жилья на таком же удалении. Бейдж <b>«двойник»</b> означает, что тот же объект найден и в другом источнике — клик ведёт на вторую карточку. Сейчас <span id="tcount2"></span>.</p>
+<p class="tailnote">Формат каталога — <b>топ-50 на область</b>: дома и квартиры отдельно, в каждом источнике; номер на карточке — место лота внутри своей области и своего набора. Порядок по умолчанию — индекс цена/качество; с 2 сентября <b>близость к городу весит в нём вдвое больше</b> любой другой категории (цены за метр, площади, участка), а лоты дальше <b>10 км от города</b> в каталог не попадают вовсе. Спрос показывает <b>глаз</b> у «просм/день»: он открывается от 30 просмотров в день, и чем больше зрачок, тем горячее лот; низкий спрос при большом сроке — вероятен торг. Плашка <b>«до города»</b> залита по расстоянию: в городе — нейтральная, к 10 км желтеет. Плашка <b>«рынок»</b> — два кольца по объявлениям OLX вокруг дома: левое, <b>продать</b> — как быстро уходит предложение в радиусе 10 км; правое, <b>сдать</b> — есть ли аренда в самом населённом пункте. Красное кольцо — рынка нет, зелёное — живой, пунктир — данных мало. Плашка даты — <b>настоящая дата размещения</b>, а не дата поднятия, которую показывает OLX. <b>«Получистовая»</b> идёт отдельным списком после готового и за места в топ-50 с ним не конкурирует, хотя отобрана по тем же правилам: топ-50 на область по домам и квартирам в каждом источнике, до 10 км от города, близость к городу с двойным весом. Вместо спроса и рынка у неё две свои плашки: <b>«что готово»</b> — какая часть уже пригодна для жизни (или что это коробка под чистовую с заведёнными сетями), и <b>«к рынку области»</b> — насколько цена за м² ниже медианы готового жилья того же типа в той же области. Бейдж <b>«двойник»</b> означает, что тот же объект найден и в другом источнике — клик ведёт на вторую карточку. Сейчас <span id="tcount2"></span>.</p>
 <div class="rows" id="rows">
 {{ROWS}}
 </div>
@@ -983,7 +1000,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
 
 <button class="totop" id="totop" hidden aria-label="Вернуться наверх" title="Вернуться наверх">↑<span>вверх</span></button>
 
-<footer>Каталог: топ-50 на область по домам и по квартирам в каждом из четырёх источников (OLX, ЛУН, Телеграм, Фейсбук) плюс набор «получистовая». Девять областей: Волынь, Ровенщина, Львовщина, Тернопольщина, Прикарпатье, Буковина, Хмельниччина, Житомирщина, Винничина; Закарпатье исключено по решению покупателя. Бюджет $29 000–41 000 (получистовая — ниже), дома от 65 м², квартиры от 50 м² и двух комнат, только до 10 км от ближайшего города; недострои, коробки и аварийные исключены, дома OLX проверены по фотографиям. Данные собраны {{DATE}}; снятые с площадок объявления удаляются автоматической проверкой раз в сутки, лоты из excluded.json не возвращаются. ЛУН — витрина объявлений риелторов и других сайтов (rieltor.ua, olx.ua, dom.ria.com), ссылка ведёт на страницу объявления на lun.ua. Посты Телеграма и карточки Facebook — не витрины с модерацией: цену, адрес и наличие объекта проверяйте звонком. Кольца рынка считаются по активным объявлениям OLX вокруг лота. Цены, наличие и площади меняются ежедневно — проверяйте на странице объявления. Фото — из объявлений. Мини-карты, границы и слой промышленных зон (landuse=industrial и quarry) — © участники OpenStreetMap.</footer>
+<footer>Каталог: топ-50 на область по домам и по квартирам в каждом из четырёх источников (OLX, ЛУН, Телеграм, Фейсбук) плюс отдельный набор «получистовая», собранный по тем же правилам и показанный отдельным списком после готового. Девять областей: Волынь, Ровенщина, Львовщина, Тернопольщина, Прикарпатье, Буковина, Хмельниччина, Житомирщина, Винничина; Закарпатье исключено по решению покупателя. Бюджет $29 000–41 000 (в получистовой остались и перенесённые с прежней страницы лоты дешевле), дома от 65 м², квартиры от 50 м² и двух комнат, только до 10 км от ближайшего города; из готового недострои, коробки и аварийные исключены, дома OLX проверены по фотографиям; в получистовую попадает то, что нужно доводить, но с заведёнными сетями. Данные собраны {{DATE}}; снятые с площадок объявления удаляются автоматической проверкой раз в сутки, лоты из excluded.json не возвращаются. ЛУН — витрина объявлений риелторов и других сайтов (rieltor.ua, olx.ua, dom.ria.com), ссылка ведёт на страницу объявления на lun.ua. Посты Телеграма и карточки Facebook — не витрины с модерацией: цену, адрес и наличие объекта проверяйте звонком. Кольца рынка считаются по активным объявлениям OLX вокруг лота. Цены, наличие и площади меняются ежедневно — проверяйте на странице объявления. Фото — из объявлений. Мини-карты, границы и слой промышленных зон (landuse=industrial и quarry) — © участники OpenStreetMap.</footer>
 </main>
 <script>
 (function(){
@@ -1032,6 +1049,23 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   window.BHDEL={has:isDel, show:showDel};
   var wrap=document.getElementById('rows');
   var items=Array.prototype.slice.call(wrap.children);
+  // шапка отдельного списка «получистовая»: стоит перед первой получистовой карточкой,
+  // видна только когда в списке есть хоть одна показанная карточка
+  var semihead=document.createElement('div');
+  semihead.className='semihead'; semihead.id='semihead';
+  semihead.innerHTML='<h3>⚒ Получистовая — <i id="semin">0</i></h3><p>Отдельный список: эти лоты не конкурируют с готовым жильём за места в топ-50, но отобраны по тем же правилам — топ-50 на область по домам и квартирам в каждом источнике, до 10 км от города, близость к городу с двойным весом. Сортировка действует внутри списка. Вместо спроса и рынка — плашки «что готово» и «к рынку области».</p>';
+  (function(){
+    var first=null;
+    for(var si=0;si<items.length;si++){ if(items[si].dataset.ready==='semi'){ first=items[si]; break; } }
+    if(first) wrap.insertBefore(semihead, first); else { semihead.hidden=true; wrap.appendChild(semihead); }
+  })();
+  function syncSemiHead(){
+    var n=0, nd=0;
+    for(var si=0;si<items.length;si++){ if(items[si].hidden) continue; if(items[si].dataset.ready==='semi') n++; else nd++; }
+    semihead.hidden=(n===0);
+    var sn=document.getElementById('semin'); if(sn) sn.textContent=n;
+    semihead.classList.toggle('alone', nd===0);
+  }
   // кнопка «✕ недоступно» на каждой карточке — рядом со звездой избранного
   for(var bi=0;bi<items.length;bi++){
     var tt=items[bi].querySelector('.t');
@@ -1282,13 +1316,18 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     } else {
       var cmp=SORT[sel.value]||SORT.q;
       var arr=items.slice().sort(only?byStars(cmp):cmp);
-      var frag=document.createDocumentFragment();
+      // получистовая — отдельным списком после готового, со своей шапкой:
+      // за места с готовым не конкурирует, сортировка действует внутри каждого списка
+      var frag=document.createDocumentFragment(), tail=[];
       for(var i=0;i<arr.length;i++){
         if(paintRow(arr[i])) shown++;
-        frag.appendChild(arr[i]);
+        if(arr[i].dataset.ready==='semi') tail.push(arr[i]); else frag.appendChild(arr[i]);
       }
+      frag.appendChild(semihead);
+      for(var ti=0;ti<tail.length;ti++) frag.appendChild(tail[ti]);
       wrap.appendChild(frag);
     }
+    syncSemiHead();
     var orph=orphans();
     var txt=only?(shown+' в избранном'+(orph.length?(' + '+orph.length+' вне каталога'):'')):(shown+' объявлений');
     if(!only&&shown<items.length) txt=shown+' объявлений · '+(items.length-shown)+' скрыто фильтрами';

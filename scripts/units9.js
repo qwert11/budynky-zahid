@@ -4,8 +4,9 @@
 //   • дальше 10 км от города — не рассматриваем вообще (кроме закреплённых
 //     лотов с разбором «нам подходит» — их метки нельзя терять);
 //   • близость к городу в индексе цена/качество весит 2:1 к каждой другой категории.
-// Набор «получистовая» перенесён из живой страницы как есть (его сборка утрачена),
-// но отфильтрован по тем же правилам ≤10 км / excluded / dead.
+// Набор «получистовая» — отдельный список по тем же правилам (топ-50 на область в каждом
+// источнике по домам и квартирам, ≤10 км): кандидаты — то, что готовый отбор отбросил по
+// состоянию, плюс перенесённые карточки прежней страницы (live-semi.json).
 const fs = require('fs');
 const path = require('path');
 const L = require('./lib9');
@@ -211,29 +212,7 @@ const tgAll = [...loadExt('tme-candidates.json', 'tg', 'tg-geocode.json', EXT), 
   .map(finish).filter(gate);
 const fbAll = loadExt('fb-candidates.json', 'fb', null, EXT).map(finish).filter(gate);
 
-/* ════════ 5. получистовая: перенос из живой страницы ════════ */
-const semiLive = rd(D + 'live-semi.json');
-const semi = [];
-for (const s of semiLive) {
-  const a = s.attrs;
-  if (DEAD.has(s.id)) { drop.dead++; continue; }
-  if (EXCLUDED.has(s.id)) { drop.excluded++; continue; }
-  const km = a.km === '' || a.km == null ? null : +a.km;
-  if (km == null || km > KM_MAX) { drop.far++; continue; }
-  const obl = L.oblastOf(s.lat, s.lon, shapes);
-  if (obl === 'zak') { drop.zak++; continue; }
-  semi.push({
-    id: s.id, src: a.src, kind: a.kind, ready: 'semi', semiClass: a.semi || null,
-    price: +a.price, quality: +a.q, km, obl, lat: s.lat, lon: s.lon, loc: s.loc,
-    area: a.area ? +a.area : null, land: a.land ? +a.land : null, ppm: a.ppm ? +a.ppm : null,
-    days: a.days ? +a.days : null, created: a.created || null, disc: a.disc ? +a.disc : null,
-    html: s.html, title: (s.html.match(/rel="noopener">([^<]+)<\/a>/) || [])[1] || '', link: (s.html.match(/href="([^"]+)"/) || [])[1] || '',
-  });
-}
-semi.sort((a, b) => b.quality - a.quality);
-semi.forEach((u, i) => { u.rankIn = i + 1; u.setKey = 'semi'; });
-
-/* ════════ 6. топ-50 на область в каждом наборе источник×тип ════════ */
+/* ════════ 5. топ-50 на область в каждом наборе источник×тип (готовое) ════════ */
 function dedupe(arr) {
   const seen = new Set(), out = [];
   for (const u of arr.sort((a, b) => b.quality - a.quality)) {
@@ -243,6 +222,24 @@ function dedupe(arr) {
   }
   return out;
 }
+// раскладка по областям и обрезка до TOP; setKey — подпись набора, prefix — 'semi:' для получистовой
+function pickTop(sets, out, stats, prefix) {
+  for (const [key, arr] of Object.entries(sets)) {
+    const byObl = {};
+    for (const u of arr) {
+      const o = u.obl || 'unk';
+      (byObl[o] = byObl[o] || []).push(u);
+    }
+    const parts = [];
+    for (const [o, list] of Object.entries(byObl)) {
+      if (o === 'unk' || o === 'zak') continue;
+      list.sort((a, b) => b.quality - a.quality);
+      list.slice(0, TOP).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key; out.push(u); });
+      parts.push(o + ':' + Math.min(list.length, TOP));
+    }
+    stats.push(((prefix || '') + key).padEnd(15) + ' ' + parts.sort().join(' '));
+  }
+}
 const sets = {
   'olx|house': dedupe(housesOlx), 'olx|flat': dedupe(flatsOlx),
   'lun|house': dedupe(lunAll.filter(u => u.kind === 'house')), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat')),
@@ -251,20 +248,138 @@ const sets = {
 };
 const units = [];
 const setStats = [];
-for (const [key, arr] of Object.entries(sets)) {
-  const byObl = {};
-  for (const u of arr) {
-    const o = u.obl || 'unk';
-    (byObl[o] = byObl[o] || []).push(u);
+pickTop(sets, units, setStats, '');
+const readyIds = new Set(units.map(u => u.id));
+
+/* ════════ 6. получистовая — отдельный набор по тем же правилам (просьба покупателя
+   02.09.2026: не конкурирует с готовым за места, но строится по аналогии — топ-50 на
+   область по домам и квартирам в каждом источнике, ≤10 км, близость к городу ×2).
+   Кандидаты: то, что готовый отбор отбросил по состоянию (текст «недобудова / під
+   чистову / потребує ремонту», параметр «Ремонт», фотопроверка «не жилой дом»),
+   плюс перенесённые с прежней страницы карточки (у них цены и ниже $29 тыс.). ════════ */
+const semiDrop = { noclass: 0, ready: 0, budget: 0, small: 0, badtype: 0, share: 0, gate: 0, vetOkReady: 0 };
+const semiCand = [];
+const seenSemi = new Set();
+const liveById = {};
+const semiLive = rd(D + 'live-semi.json');
+for (const s of semiLive) liveById[s.id] = s;
+// доля объекта — не берём; но «частина будинку придатна, інша — потребує» — это наш класс part
+const shareSemi = u => L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 100)) && !L.SEMI_TXT.part.test(u.desc || '');
+function pushSemi(u, cls) {
+  if (seenSemi.has(u.id)) return;
+  u.ready = 'semi'; u.semi = cls;
+  u.quality = u.kind === 'house' ? L.semiHouseQuality9(u) : L.semiFlatQuality9(u);
+  seenSemi.add(u.id); semiCand.push(u);
+}
+// 6a. дома и квартиры OLX из свежего сбора
+for (const u of housesPool) {
+  if (readyIds.has(u.id)) { semiDrop.ready++; continue; }
+  if (u.price == null || u.price < 29000 || u.price > 41000) { semiDrop.budget++; continue; }
+  if ((u.area || 0) < 65) { semiDrop.small++; continue; }
+  if (['dacha', 'garden_house'].includes(u.propType || '')) { semiDrop.badtype++; continue; }
+  if (shareSemi(u)) { semiDrop.share++; continue; }
+  if (vet[u.id] === 'ok') { semiDrop.vetOkReady++; continue; }          // на фото жилой дом — это кандидат в готовое
+  let cls = liveById[u.id] ? (liveById[u.id].attrs.semi || null) : null;  // класс с прежней страницы надёжнее регэкспа
+  if (!cls) cls = L.semiClass(u);
+  if (cls === 'repair' && vet[u.id] === 'no') cls = L.SEMI_TXT.util.test((u.title || '') + ' ' + (u.desc || '')) ? 'shell' : null;
+  if (!cls) { semiDrop.noclass++; continue; }
+  if (u.km == null) finish(u);
+  if (!gate(u)) { semiDrop.gate++; continue; }
+  pushSemi(u, cls);
+}
+for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
+  if (readyIds.has(x.id)) { semiDrop.ready++; continue; }
+  const p = x.params || {};
+  const u = {
+    id: x.id, sku: x.sku, src: 'olx', kind: 'flat', title: x.title, link: x.link,
+    price: usdOf(x), cur: 'USD',
+    area: num(p['total_area:key']), rooms: ROOMS[p['number_of_rooms_string:key']] || num(p.number_of_rooms_string) || null,
+    floor: num(p['floor:key'] || p.floor), floors: num(p['total_floors:key'] || p.total_floors),
+    repair: p.repair || null, market: p.apartments_object_type || null, houseType: p.property_type_appartments_sale || null,
+    walls: p.house_type || null, heating: p.heating || null, bathroom: p.bathroom || null, comm: p.communications || null,
+    noCommission: /без комісії/i.test(p.commission || ''),
+    loc: x.loc, cityId: x.cityId, region: x.region, obl: L.REGION2SLUG[x.region] || null,
+    lat: x.lat, lon: x.lon, created: x.created, days: daysSince(x.created),
+    photos: x.photos || [], photoUrl: (x.photos || [])[0] || null, desc: x.desc, business: x.business,
+  };
+  if (u.price == null || u.price < 29000 || u.price > 41000) { semiDrop.budget++; continue; }
+  if ((u.area || 0) < 50 || (u.rooms || 0) < 2) { semiDrop.small++; continue; }
+  if (shareSemi(u)) { semiDrop.share++; continue; }
+  const cls = (liveById[u.id] && liveById[u.id].attrs.semi) || L.semiClass(u);
+  if (!cls) { semiDrop.noclass++; continue; }
+  finish(u);
+  if (!gate(u)) { semiDrop.gate++; continue; }
+  pushSemi(u, cls);
+}
+// 6b. ЛУН: лоты с флагом unfinished из нормализатора
+for (const x of lunClean) {
+  if (!x.unfinished || !x.price || x.price < 29000 || x.price > 41000) continue;
+  if (readyIds.has(x.id)) continue;
+  const u = shapeLun(x);
+  const d = lunDet[u.id] || (ex(D + 'lun9-details.json') ? (rd(D + 'lun9-details.json')[u.id] || null) : null);
+  if (d && !d.error) {
+    if (num(d.area)) u.area = num(d.area);
+    if (num(d.rooms)) u.rooms = num(d.rooms);
+    if (num(d.land)) u.land = num(d.land);
+    if (num(d.floor)) u.floor = num(d.floor);
+    if (num(d.floors)) u.floors = num(d.floors);
+    if ((d.photos || []).length) { u.photos = d.photos; u.photoUrl = d.photos[0]; }
+    if (d.desc) u.desc = ((u.desc || '') + ' ' + d.desc).slice(0, 1200);
+    if (d.gone) continue;
   }
-  const parts = [];
-  for (const [o, list] of Object.entries(byObl)) {
-    if (o === 'unk' || o === 'zak') continue;
-    list.sort((a, b) => b.quality - a.quality);
-    list.slice(0, TOP).forEach((u, i) => { u.rankIn = i + 1; u.setKey = key; units.push(u); });
-    parts.push(o + ':' + Math.min(list.length, TOP));
-  }
-  setStats.push(key.padEnd(10) + ' ' + parts.sort().join(' '));
+  if (u.kind === 'house' && (u.area || 0) < 65) { semiDrop.small++; continue; }
+  if (u.kind === 'flat' && ((u.area || 0) < 50 || ((u.rooms || 0) < 2 && u.rooms != null))) { semiDrop.small++; continue; }
+  if (shareSemi(u)) { semiDrop.share++; continue; }
+  const cls = L.semiClass(u) || (u.kind === 'flat' || L.SEMI_TXT.util.test(u.desc || '') ? 'shell' : null);
+  if (!cls) { semiDrop.noclass++; continue; }
+  finish(u);
+  if (!gate(u) || u.obl === 'zak') { semiDrop.gate++; continue; }
+  pushSemi(u, cls);
+}
+// 6c. перенесённые карточки прежней страницы, которых нет в свежем сборе (в основном дешевле $29 тыс.)
+let liveKept = 0;
+for (const s of semiLive) {
+  if (seenSemi.has(s.id) || readyIds.has(s.id)) continue;
+  const a = s.attrs;
+  if (DEAD.has(s.id)) { drop.dead++; continue; }
+  if (EXCLUDED.has(s.id)) { drop.excluded++; continue; }
+  const km = a.km === '' || a.km == null ? null : +a.km;
+  if (km == null || km > KM_MAX) { drop.far++; continue; }
+  const obl = L.oblastOf(s.lat, s.lon, shapes);
+  if (obl === 'zak') { drop.zak++; continue; }
+  const h = s.html;
+  const img = (h.match(/<img src="(https:[^"]+)"/) || [])[1] || null;
+  const u = {
+    id: s.id, src: a.src || 'olx', kind: a.kind || 'house',
+    title: (h.match(/rel="noopener">([^<]+)<\/a>/) || [])[1] || '', link: (h.match(/href="([^"]+)"/) || [])[1] || '',
+    price: +a.price, km, obl, lat: s.lat, lon: s.lon, loc: s.loc,
+    city: ((h.match(/<i>до ([^<]+)<\/i>/) || [])[1] || '').trim() || null,
+    area: a.area ? +a.area : null, land: a.land ? +a.land : null, ppm: a.ppm ? +a.ppm : null,
+    days: a.days ? +a.days : null, created: a.created ? a.created + 'T12:00:00+03:00' : null,
+    photos: img ? [img] : [], photoUrl: img, noCommission: false, fromLive: true,
+  };
+  if (!u.city) { const n = L.nearestCity(u.lat, u.lon); u.city = n.city; }
+  pushSemi(u, a.semi || 'unfin');
+  liveKept++;
+}
+// 6d. топ-50 на область в каждом наборе источник×тип — как у готового
+const semiSets = {};
+for (const u of dedupe(semiCand)) {
+  const k = u.src + '|' + u.kind;
+  (semiSets[k] = semiSets[k] || []).push(u);
+}
+const semi = [];
+pickTop(semiSets, semi, setStats, 'semi:');
+// «к рынку области»: насколько цена за м² ниже медианы готового жилья того же типа в той же области
+const median = arr => { if (!arr.length) return null; const s = arr.slice().sort((a, b) => a - b); return s.length % 2 ? s[s.length >> 1] : Math.round((s[s.length / 2 - 1] + s[s.length / 2]) / 2); };
+const medPpm = {};
+for (const u of units) if (u.ppm) (medPpm[u.obl + '|' + u.kind] = medPpm[u.obl + '|' + u.kind] || []).push(u.ppm);
+for (const k of Object.keys(medPpm)) medPpm[k] = median(medPpm[k]);
+const medAll = { house: median(units.filter(u => u.kind === 'house' && u.ppm).map(u => u.ppm)), flat: median(units.filter(u => u.kind === 'flat' && u.ppm).map(u => u.ppm)) };
+for (const u of semi) {
+  const med = medPpm[u.obl + '|' + u.kind] || medAll[u.kind];
+  u.medPpm = med || null;
+  u.disc = med && u.ppm ? Math.round((1 - u.ppm / med) * 100) : null;
 }
 
 /* ════════ 7. один объект в разных источниках ════════ */
@@ -302,7 +417,9 @@ setStats.forEach(s => console.log(s));
 const oblCnt = {};
 units.forEach(u => oblCnt[u.obl] = (oblCnt[u.obl] || 0) + 1);
 console.log('готовых лотов:', units.length, 'по областям:', JSON.stringify(oblCnt));
-console.log('получистовых оставлено:', semi.length, 'из', semiLive.length);
+console.log('получистовая: отбор', JSON.stringify(semiDrop), '| кандидатов', semiCand.length, '| в топах', semi.length, '| с прежней страницы', liveKept);
+const semiCls = {}; semi.forEach(u => semiCls[u.semi] = (semiCls[u.semi] || 0) + 1);
+console.log('получистовая по классам:', JSON.stringify(semiCls));
 console.log('домов OLX ждёт фотопроверки:', housesCand.length, 'из них по областям:',
   JSON.stringify(housesCand.reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {})));
 console.log('лотов с дублем в другом источнике:', dupN);

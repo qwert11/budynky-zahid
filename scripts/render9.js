@@ -3,6 +3,7 @@
 // и ../index.html (GitHub Pages, внешние URL картинок).
 const fs = require('fs');
 const path = require('path');
+const { SEMI } = require('./lib9');
 const D = path.join(__dirname, 'data') + path.sep;
 const D2 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/2ba88487-cdb9-423e-b5e9-69abf018ad10/scratchpad/';
 const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/5e19b764-3f94-4fb8-8c59-b1d354783282/scratchpad/';
@@ -193,11 +194,26 @@ function idx(u) {
   if (fb) parts.push(fb);
   const cb = chkBadge(u);
   if (cb) parts.push(cb);
-  parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри своего набора: близость к городу с двойным весом, цена за м², площадь, ${u.kind === 'flat' ? 'комнаты, этаж, ремонт' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
+  const isSemi = u.ready === 'semi';
+  if (isSemi) parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри набора «получистовая»: близость к городу с двойным весом, цена за м², что уже готово к жизни, площадь, ${u.kind === 'flat' ? 'комнаты и этаж' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
+  else parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри своего набора: близость к городу с двойным весом, цена за м², площадь, ${u.kind === 'flat' ? 'комнаты, этаж, ремонт' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
   parts.push(`<span class="ix ixp" title="Цена в объявлении"><b>$${fmt(u.price)}</b><i>цена</i></span>`);
-  if (u.vpd != null) parts.push(`<span class="ix ixv" title="Просмотров в день: ${fmt(u.views)} просмотров за ${u.days} дн. на OLX"><span class="vtx"><b>${u.vpd}</b><i>просм/день</i></span>${eye(u.vpd)}</span>`);
-  const mb = marketBadge(u);
-  if (mb) parts.push(mb);
+  if (isSemi) {
+    // у получистовой вместо спроса и рынка — «что готово» и «к рынку области»
+    const sc = SEMI[u.semi] || SEMI.unfin;
+    parts.push(`<span class="ix ixw" title="${esc(sc.title)}"><b>${esc(sc.short)}</b><i>что готово</i></span>`);
+    if (u.disc != null && u.medPpm) {
+      const sign = u.disc > 0 ? '−' : (u.disc < 0 ? '+' : '');
+      const t = u.disc > 0
+        ? `Цена за м² ниже медианы по области среди жилья того же типа в готовом состоянии ($${fmt(u.medPpm)}/м²) — скидка за то, что часть работы придётся доделать самому`
+        : `Цена за м² не ниже медианы готового жилья того же типа по области ($${fmt(u.medPpm)}/м²) — скидки за недоделки нет, есть повод торговаться`;
+      parts.push(`<span class="ix ixs" title="${esc(t)}"><b>${sign}${Math.abs(u.disc)}%</b><i>к рынку области</i></span>`);
+    }
+  } else {
+    if (u.vpd != null) parts.push(`<span class="ix ixv" title="Просмотров в день: ${fmt(u.views)} просмотров за ${u.days} дн. на OLX"><span class="vtx"><b>${u.vpd}</b><i>просм/день</i></span>${eye(u.vpd)}</span>`);
+    const mb = marketBadge(u);
+    if (mb) parts.push(mb);
+  }
   if (u.km != null) parts.push(`<span class="ix ixt"${kmTint(u.km)} title="Расстояние по прямой до ближайшего города"><b>${u.km} км</b><i>до ${esc(u.city)}</i></span>`);
   if (u.ppm) parts.push(`<span class="ix" title="Цена за квадратный метр"><b>$${fmt(u.ppm)}</b><i>за м²</i></span>`);
   if (u.kind === 'flat' && u.floor) parts.push(`<span class="ix" title="Этаж и этажность дома"><b>${u.floor}${u.floors ? '/' + u.floors : ''}</b><i>этаж</i></span>`);
@@ -237,12 +253,14 @@ function rowFor(u, mode) {
     tg: 'Пост в публичном канале Telegram' + (u.chan ? ' @' + u.chan : '') + (u.locExact ? '' : ' · село в посте не указано, точка стоит на городе'),
     fb: 'Объявление в Facebook Marketplace'
   };
-  const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${dupBadges(u)}`;
+  const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc((SEMI[u.semi] || SEMI.unfin).title)}">${(SEMI[u.semi] || SEMI.unfin).badge}</span>` : '';
+  const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${semiB}${dupBadges(u)}`;
   const m = mkt(u.id);
   const d = [
     `data-id="${u.id}"`, `data-rank="${u.rankIn}"`, `data-q="${u.quality}"`, `data-price="${u.price}"`,
     `data-src="${u.src}"`, `data-kind="${u.kind}"`,
     u.obl ? `data-obl="${u.obl}"` : '',
+    u.ready === 'semi' ? `data-ready="semi" data-semi="${u.semi}"` + (u.disc != null ? ` data-disc="${u.disc}"` : '') : '',
     family[u.id] && family[u.id].fit ? `data-fit="${family[u.id].fit}"` : '',
     u.ppm ? `data-ppm="${u.ppm}"` : '', u.area ? `data-area="${u.area}"` : '', u.land ? `data-land="${u.land}"` : '',
     u.rooms ? `data-rooms="${u.rooms}"` : '',
@@ -255,26 +273,9 @@ function rowFor(u, mode) {
   return `<div class="row" id="row-${u.id}" ${d}><a class="ph" href="${esc(u.link)}" target="_blank" rel="noopener">${img ? `<img src="${img}" alt="" loading="lazy">` : '<span class="nophoto"></span>'}</a><div class="b"><div class="t"><span class="tx"><span class="rnk">${u.rankIn}</span><a href="${esc(u.link)}" target="_blank" rel="noopener">${esc(u.title)}</a>${badges}</span>${favBtn(u.id)}</div><div class="m">${meta}</div>${idx(u)}${fitBody(u)}${chkBody(u)}</div></div>`;
 }
 
-// получистовая: карточка переносится как есть, меняются только rank, data-obl и двойники
-function semiRow(u, mode) {
-  let h = u.html;
-  h = h.replace(/data-rank="\d+"/, `data-rank="${u.rankIn}"`);
-  h = h.replace(/<span class="rnk">\d+<\/span>/, `<span class="rnk">${u.rankIn}</span>`);
-  if (u.obl && !/data-obl=/.test(h)) h = h.replace(' data-id="', ` data-obl="${u.obl}" data-id="`);
-  const db = dupBadges(u);
-  if (db) h = h.replace('</span><button class="fav"', db + '</span><button class="fav"');
-  if (mode === 'data') {
-    const t = thumbs9[u.id] || thumbs2Old[u.id] || thumbsOld[u.id];
-    if (t) h = h.replace(/<img src="[^"]*"/, `<img src="${t}"`);
-    else h = h.replace(/<img src="https:[^"]*"[^>]*>/, '<span class="nophoto"></span>');
-  }
-  return h;
-}
-
 function rowsFor(mode) {
-  const done = units.map(u => rowFor(u, mode));
-  const semiRows = semi.map(u => semiRow(u, mode));
-  return [...done, ...semiRows].join('\n');
+  // получистовая идёт после готового: на странице это отдельный список со своей шапкой
+  return [...units, ...semi].map(u => rowFor(u, mode)).join('\n');
 }
 
 /* ── точки карты ── */
@@ -288,7 +289,7 @@ for (const u of [...units, ...semi]) {
     s: u.src, k: u.kind, a: u.area || null,
   };
   if (u.obl) p.o = u.obl;
-  if (u.setKey === 'semi') p.g = 'semi';
+  if (u.ready === 'semi') p.g = 'semi';
   pts.push(p);
 }
 
