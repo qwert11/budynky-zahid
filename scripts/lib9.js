@@ -99,6 +99,22 @@ function flatQuality9(u) {
   return scale(0.143 * (ppm + area + rooms + floor + repair) + 0.286 * near + bonus);
 }
 
+// Бюджет каталога и полосы фильтра «Цена» (03.09.2026: было $29–41 тыс. одним куском).
+// Полосы не пересекаются: нижняя граница включительно, верхняя исключительно,
+// у последней — включительно. Лот попадает ровно в одну полосу.
+const BUDGET_LO = 30000, BUDGET_HI = 45000;
+const PRICE_BANDS = [
+  { key: 'p30', lo: 30000, hi: 35000, label: '$30–35 тыс.' },
+  { key: 'p35', lo: 35000, hi: 40000, label: '$35–40 тыс.' },
+  { key: 'p40', lo: 40000, hi: BUDGET_HI, label: '$40–45 тыс.' },
+];
+const inBudget = p => p != null && p >= BUDGET_LO && p <= BUDGET_HI;
+const bandOf = p => {
+  if (p == null) return null;
+  for (const b of PRICE_BANDS) if (p >= b.lo && (p < b.hi || b.hi === BUDGET_HI && p <= b.hi)) return b.key;
+  return null;
+};
+
 // текстовые фильтры из прежнего каталога
 const UNFIN = /недобудован|незаверш|під чистов|коробк|без даху|стадії будівництва|на етапі буд|фундамент|будівельний вагончик|потребує капітального/i;
 const SHARE = /частк[аиуіо]\s*(частина\s*)?(квартири|будинку|житлового|нерухомост|у\s+квартир|у\s+будинк)|част(ину|ина|ини)\s+(будинку|квартири|житлового|приватного)|(1\/2|1\/3|1\/4|½)\s*(частин|частк|будинку|квартири)|пів\s?будинку|півбудинк|половин[ауи]\s+(будинку|квартири)|продаж\s+частки/i;
@@ -211,5 +227,5 @@ function semiFlatQuality9(u) {
   return scale((ppm + area + (rooms + floor) / 2 + ready) / 6 + near / 3 + bonus);
 }
 
-module.exports = { CITIES9, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
+module.exports = { CITIES9, BUDGET_LO, BUDGET_HI, PRICE_BANDS, inBudget, bandOf, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
   SEMI, SEMI_TXT, semiClass, semiHouseQuality9, semiFlatQuality9 };

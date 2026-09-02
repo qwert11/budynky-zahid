@@ -10,7 +10,7 @@ const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-
 const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 const ex = f => fs.existsSync(f);
 
-const DATE = '2 сентября 2026';
+const DATE = '3 сентября 2026';
 const { units, semi } = rd(D + 'units9.json');
 const market = ex(D + 'market9.json') ? rd(D + 'market9.json') : { byId: {} };
 const marketOld = ex(D5 + 'market-all.json') ? rd(D5 + 'market-all.json') : { byId: {} };

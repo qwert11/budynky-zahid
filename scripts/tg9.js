@@ -5,11 +5,12 @@
 // каналами (известный дефект каталога). → data/tg9-candidates.json
 const fs = require('fs');
 const path = require('path');
+const L = require('./lib9');
 const D = path.join(__dirname, 'data') + path.sep;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
 const PAGES = 8, SINCE = '2026-04-01';
-const UAHRATE = 43.5, EURUSD = 1.17, LO = 29000, HI = 41000;
+const UAHRATE = 43.5, EURUSD = 1.17, LO = L.BUDGET_LO, HI = L.BUDGET_HI;
 
 const CH = {
   domua_khmelnytskyi: ['Хмельницький', 'Хмельниччина'], vlasniki_khmelnytskyi: ['Хмельницький', 'Хмельниччина'],

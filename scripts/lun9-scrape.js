@@ -7,9 +7,10 @@ const fs = require('fs');
 const path = require('path');
 const { connect } = require('C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/5e19b764-3f94-4fb8-8c59-b1d354783282/scratchpad/cdp.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const L = require('./lib9');
 const D = path.join(__dirname, 'data') + path.sep;
 const RAW = D + 'lun9-raw.json', CLEAN = D + 'lun9-clean.json', DET = D + 'lun9-details.json';
-const PRICE = 'price_min=29000&price_max=41000&currency=USD';
+const PRICE = `price_min=${L.BUDGET_LO}&price_max=${L.BUDGET_HI}&currency=USD`;
 const CITIES = [['khmelnytskyi', 'Хмельницький'], ['zhytomyr', 'Житомир'], ['vinnytsia', 'Вінниця']];
 const KINDS = [['houses', 'house'], ['flats', 'flat']];
 
@@ -129,7 +130,7 @@ const DETAIL = String.raw`(() => {
 
   /* 3. страницы объявлений — фото и точные параметры */
   const cache = fs.existsSync(DET) ? JSON.parse(fs.readFileSync(DET, 'utf8')) : {};
-  const targets = clean.filter(x => !x.unfinished && x.price >= 29000 && x.price <= 41000 &&
+  const targets = clean.filter(x => !x.unfinished && L.inBudget(x.price) &&
     (x.kind === 'house' ? (x.area || 0) >= 55 : (x.area || 0) >= 45));
   const todo = targets.filter(x => !cache[x.id]);
   console.log('страниц объявлений к загрузке:', todo.length, 'из', targets.length);

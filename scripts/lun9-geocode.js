@@ -2,6 +2,7 @@
 // Ключ — "<нас.пункт>|<город-группа>". → data/lun9-geocode.json
 const fs = require('fs');
 const path = require('path');
+const L = require('./lib9');
 const D = path.join(__dirname, 'data') + path.sep;
 const OUT = D + 'lun9-geocode.json';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -13,7 +14,7 @@ const CITY = { 'Хмельницький': [49.4229, 26.9871], 'Житомир':
 (async () => {
   const want = new Map();
   for (const x of clean) {
-    if (!x.price || x.price < 29000 || x.price > 41000) continue;
+    if (!L.inBudget(x.price)) continue;
     const loc = x.loc || x.cityGroup;
     const k = loc + '|' + x.cityGroup;
     if (!want.has(k)) want.set(k, { loc, group: x.cityGroup });

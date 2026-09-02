@@ -1,1 +1,4 @@
 scripts/best-houses9.html
+
+# Дампы Playwright MCP (создаются в корне cwd автоматически)
+.playwright-mcp/

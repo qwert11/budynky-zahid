@@ -76,7 +76,7 @@ function gate(u) {
 }
 
 /* ════════ 1. дома OLX (свежий сбор по 9 областям) ════════ */
-const housesPool = Object.values(rd(SP9 + 'olx9-houses.json').items).map(x => {
+const housesPool = Object.values(rd(D + 'olx9-houses.json').items).map(x => {
   const p = x.params || {};
   return {
     id: x.id, sku: x.sku, src: 'olx', kind: 'house', title: x.title, link: x.link,
@@ -94,7 +94,7 @@ const housesPool = Object.values(rd(SP9 + 'olx9-houses.json').items).map(x => {
 const housesCand = [];
 const housesOlx = [];
 for (const u of housesPool) {
-  if (u.price == null || u.price < 29000 || u.price > 41000) { drop.budget++; continue; }
+  if (!L.inBudget(u.price)) { drop.budget++; continue; }
   if ((u.area || 0) < 65) { drop.small++; continue; }
   if (['dacha', 'garden_house'].includes(u.propType || '')) { drop.badtype++; continue; }
   if (L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 260))) { drop.share++; continue; }
@@ -110,7 +110,7 @@ for (const u of housesPool) {
 /* ════════ 2. квартиры OLX (свежий сбор) ════════ */
 const ROOMS = { odnokomnatnye: 1, dvuhkomnatnye: 2, trehkomnatnye: 3, tryohkomnatnye: 3, chetyryohkomnatnye: 4, pyatikomnatnye: 5, shestikomnatnye: 6 };
 const flatsOlx = [];
-for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
+for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
   const p = x.params || {};
   const u = {
     id: x.id, sku: x.sku, src: 'olx', kind: 'flat', title: x.title, link: x.link,
@@ -124,7 +124,7 @@ for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
     lat: x.lat, lon: x.lon, created: x.created, days: daysSince(x.created),
     photos: x.photos || [], photoUrl: (x.photos || [])[0] || null, desc: x.desc, business: x.business,
   };
-  if (u.price == null || u.price < 29000 || u.price > 41000) { drop.budget++; continue; }
+  if (!L.inBudget(u.price)) { drop.budget++; continue; }
   if ((u.area || 0) < 50 || (u.rooms || 0) < 2) { drop.small++; continue; }
   if (L.BAD_REPAIR.test(u.repair || '') || /новобудова/i.test(u.market || '')) { drop.unfin++; continue; }
   if (L.BAD_TEXT.test((u.title || '') + ' ' + (u.desc || ''))) { drop.unfin++; continue; }
@@ -158,7 +158,7 @@ function shapeLun(x) {
 }
 const lunClean = [...(ex(D5 + 'lun-clean.json') ? rd(D5 + 'lun-clean.json') : []), ...(ex(D + 'lun9-clean.json') ? rd(D + 'lun9-clean.json') : [])];
 for (const x of lunClean) {
-  if (x.unfinished || !x.price || x.price < 29000 || x.price > 41000) continue;
+  if (x.unfinished || !L.inBudget(x.price)) continue;
   const u = shapeLun(x);
   const d = lunDet[u.id] || (ex(D + 'lun9-details.json') ? (rd(D + 'lun9-details.json')[u.id] || null) : null);
   if (d && !d.error) {
@@ -210,7 +210,7 @@ function loadExt(file, src, geoFile, dir) {
       photoUrl: (r.photoList || [])[0] || null, photos: r.photoList || [],
       noCommission: false, desc: r.text || '', locExact: !!r.locExact, chan: r.ch || null,
     };
-  }).filter(u => u.price >= 29000 && u.price <= 41000);
+  }).filter(u => L.inBudget(u.price));
 }
 const tgAll = [...loadExt('tme-candidates.json', 'tg', 'tg-geocode.json', EXT), ...loadExt('tg9-candidates.json', 'tg', 'tg9-geocode.json', D)]
   .map(finish).filter(gate);
@@ -260,7 +260,7 @@ const readyIds = new Set(units.map(u => u.id));
    область по домам и квартирам в каждом источнике, ≤10 км, близость к городу ×2).
    Кандидаты: то, что готовый отбор отбросил по состоянию (текст «недобудова / під
    чистову / потребує ремонту», параметр «Ремонт», фотопроверка «не жилой дом»),
-   плюс перенесённые с прежней страницы карточки (у них цены и ниже $29 тыс.). ════════ */
+   плюс перенесённые с прежней страницы карточки. ════════ */
 const semiDrop = { noclass: 0, ready: 0, budget: 0, small: 0, badtype: 0, share: 0, gate: 0, vetOkReady: 0 };
 const semiCand = [];
 const seenSemi = new Set();
@@ -278,7 +278,7 @@ function pushSemi(u, cls) {
 // 6a. дома и квартиры OLX из свежего сбора
 for (const u of housesPool) {
   if (readyIds.has(u.id)) { semiDrop.ready++; continue; }
-  if (u.price == null || u.price < 29000 || u.price > 41000) { semiDrop.budget++; continue; }
+  if (!L.inBudget(u.price)) { semiDrop.budget++; continue; }
   if ((u.area || 0) < 65) { semiDrop.small++; continue; }
   if (['dacha', 'garden_house'].includes(u.propType || '')) { semiDrop.badtype++; continue; }
   if (shareSemi(u)) { semiDrop.share++; continue; }
@@ -291,7 +291,7 @@ for (const u of housesPool) {
   if (!gate(u)) { semiDrop.gate++; continue; }
   pushSemi(u, cls);
 }
-for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
+for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
   if (readyIds.has(x.id)) { semiDrop.ready++; continue; }
   const p = x.params || {};
   const u = {
@@ -306,7 +306,7 @@ for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
     lat: x.lat, lon: x.lon, created: x.created, days: daysSince(x.created),
     photos: x.photos || [], photoUrl: (x.photos || [])[0] || null, desc: x.desc, business: x.business,
   };
-  if (u.price == null || u.price < 29000 || u.price > 41000) { semiDrop.budget++; continue; }
+  if (!L.inBudget(u.price)) { semiDrop.budget++; continue; }
   if ((u.area || 0) < 50 || (u.rooms || 0) < 2) { semiDrop.small++; continue; }
   if (shareSemi(u)) { semiDrop.share++; continue; }
   const cls = (liveById[u.id] && liveById[u.id].attrs.semi) || L.semiClass(u);
@@ -317,7 +317,7 @@ for (const x of Object.values(rd(SP9 + 'olx9-flats.json').items)) {
 }
 // 6b. ЛУН: лоты с флагом unfinished из нормализатора
 for (const x of lunClean) {
-  if (!x.unfinished || !x.price || x.price < 29000 || x.price > 41000) continue;
+  if (!x.unfinished || !L.inBudget(x.price)) continue;
   if (readyIds.has(x.id)) continue;
   const u = shapeLun(x);
   const d = lunDet[u.id] || (ex(D + 'lun9-details.json') ? (rd(D + 'lun9-details.json')[u.id] || null) : null);
@@ -340,13 +340,15 @@ for (const x of lunClean) {
   if (!gate(u) || u.obl === 'zak') { semiDrop.gate++; continue; }
   pushSemi(u, cls);
 }
-// 6c. перенесённые карточки прежней страницы, которых нет в свежем сборе (в основном дешевле $29 тыс.)
+// 6c. перенесённые карточки прежней страницы, которых нет в свежем сборе
+// (с 03.09.2026 к ним применяется тот же бюджет: нижняя граница поднята до $30 тыс.)
 let liveKept = 0;
 for (const s of semiLive) {
   if (seenSemi.has(s.id) || readyIds.has(s.id)) continue;
   const a = s.attrs;
   if (DEAD.has(s.id)) { drop.dead++; continue; }
   if (EXCLUDED.has(s.id)) { drop.excluded++; continue; }
+  if (!L.inBudget(+a.price)) { semiDrop.budget++; continue; }
   const km = a.km === '' || a.km == null ? null : +a.km;
   if (km == null || km > KM_MAX) { drop.far++; continue; }
   const obl = L.oblastOf(s.lat, s.lon, shapes);
