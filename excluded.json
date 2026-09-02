@@ -1,0 +1,763 @@
+{
+ "updated": "2026-09-02",
+ "rule": "Лоты, снятые покупателем корзиной. В каталог не возвращать никогда: при каждой пересборке наборы фильтруются по этому списку ДО отбора топа, освободившиеся места добираются следующими по индексу. Список только растёт.",
+ "count": 82,
+ "by_source": {
+  "olx": 48,
+  "lun": 13,
+  "tg": 19,
+  "fb": 2
+ },
+ "by_kind": {
+  "house": 16,
+  "flat": 66
+ },
+ "kept_back": [
+  {
+   "i": "ID10kbCL",
+   "why": "был помечен и корзиной, и звездой; по разбору «нам подходит» это 67 из 100 — третий результат в подборке и единственная квартира, где комнат хватает на всех. Оставлен в каталоге до подтверждения."
+  }
+ ],
+ "excluded": [
+  "FB1567904098433062",
+  "FB1713737329646492",
+  "ID104cpB",
+  "ID106qA9",
+  "ID108rJ8",
+  "ID109NCW",
+  "ID10ADCU",
+  "ID10BS6a",
+  "ID10Brp8",
+  "ID10FTjD",
+  "ID10GdD9",
+  "ID10GsCK",
+  "ID10I5vl",
+  "ID10KFld",
+  "ID10P6tL",
+  "ID10PxTf",
+  "ID10RzP1",
+  "ID10Sg7h",
+  "ID10Soh5",
+  "ID10Z2tV",
+  "ID10kERd",
+  "ID10ss1J",
+  "ID10xrsV",
+  "ID10y5JX",
+  "ID110DAK",
+  "ID110FhA",
+  "ID110MXV",
+  "ID110S0A",
+  "ID110Y0p",
+  "ID111Xui",
+  "ID1128fK",
+  "ID112x1v",
+  "ID113dDx",
+  "ID113gML",
+  "ID113qj1",
+  "IDJ55FF",
+  "IDKJXLV",
+  "IDR86Rm",
+  "IDU2KSu",
+  "IDVKjqY",
+  "IDVyQhq",
+  "IDWHRov",
+  "IDWUtsR",
+  "IDYaXeg",
+  "IDZEwkL",
+  "IDZHS7K",
+  "IDZN05g",
+  "IDZWby1",
+  "IDZXf3R",
+  "IDZn8p6",
+  "LUN2131481327",
+  "LUN3825791562",
+  "LUN4116932650",
+  "LUN4309220482",
+  "LUN4504171257",
+  "LUN4634346675",
+  "LUN4703268246",
+  "LUN4707623213",
+  "LUN4709137692",
+  "LUN4712190800",
+  "LUN4716635228",
+  "LUN4717480852",
+  "LUN4717754482",
+  "TG1683",
+  "TG22464",
+  "TG22633",
+  "TG22641",
+  "TG22646",
+  "TG22682",
+  "TG22979",
+  "TG4734",
+  "TG4852",
+  "TG4880",
+  "TG4925",
+  "TG5072",
+  "TG5092",
+  "TG5120",
+  "TG5156",
+  "TG5183",
+  "TG5266",
+  "TG5372",
+  "TG5485"
+ ],
+ "records": [
+  {
+   "i": "FB1567904098433062",
+   "s": "fb",
+   "k": "flat",
+   "p": 39000,
+   "t": "Продаж квартири, м. Черляни",
+   "u": "https://www.facebook.com/marketplace/item/1567904098433062/"
+  },
+  {
+   "i": "FB1713737329646492",
+   "s": "fb",
+   "k": "house",
+   "p": 35000,
+   "t": "Продається будинок з ділянкою у Милятичах",
+   "u": "https://www.facebook.com/marketplace/item/1713737329646492/"
+  },
+  {
+   "i": "LUN2131481327",
+   "s": "lun",
+   "k": "flat",
+   "p": 31900,
+   "t": "Продається 3-4кімн квартира в особняку на 2 поверсі по вул Майкопська 5 Квартира в жилому стані, всі комунікації. Балкон",
+   "u": "https://lun.ua/realty/2131481327"
+  },
+  {
+   "i": "LUN3825791562",
+   "s": "lun",
+   "k": "flat",
+   "p": 35000,
+   "t": "Продаю Ексклюзивний варіант 2к квартиру На 2 поверсі (2/2) Площа 56.8м.кв Житлова 34.6м.кВ В центрі селища Лисець Є всі",
+   "u": "https://lun.ua/realty/3825791562"
+  },
+  {
+   "i": "LUN4116932650",
+   "s": "lun",
+   "k": "flat",
+   "p": 38000,
+   "t": "Продається. Розгляну будь які варіанти. Власник . Всі деталі по телефону.",
+   "u": "https://lun.ua/realty/4116932650"
+  },
+  {
+   "i": "LUN4309220482",
+   "s": "lun",
+   "k": "flat",
+   "p": 40200,
+   "t": "вулиця Генерала М. Тарнавського",
+   "u": "https://lun.ua/realty/4309220482"
+  },
+  {
+   "i": "LUN4504171257",
+   "s": "lun",
+   "k": "flat",
+   "p": 38700,
+   "t": "Трускавецька вулиця, Будинок 2",
+   "u": "https://lun.ua/realty/4504171257"
+  },
+  {
+   "i": "LUN4634346675",
+   "s": "lun",
+   "k": "flat",
+   "p": 38800,
+   "t": "Продається квартира без ремонту площею 77м²(житлова)+12м²(крита тераса). Обєкт знаходиться на третьому поверсі новозбудо",
+   "u": "https://lun.ua/realty/4634346675"
+  },
+  {
+   "i": "LUN4703268246",
+   "s": "lun",
+   "k": "flat",
+   "p": 29900,
+   "t": "Чернівецький національний університет ім. Федьковича",
+   "u": "https://lun.ua/realty/4703268246"
+  },
+  {
+   "i": "LUN4707623213",
+   "s": "lun",
+   "k": "flat",
+   "p": 35000,
+   "t": "вулиця Михайла Коцюбинського, 3",
+   "u": "https://lun.ua/realty/4707623213"
+  },
+  {
+   "i": "LUN4709137692",
+   "s": "lun",
+   "k": "flat",
+   "p": 36600,
+   "t": "Продається простора 2-кімнатна квартира в сучасному житловому комплексі «Ювілейний» по вул. Декабристів. Загальна площа:",
+   "u": "https://lun.ua/realty/4709137692"
+  },
+  {
+   "i": "LUN4712190800",
+   "s": "lun",
+   "k": "flat",
+   "p": 37200,
+   "t": "Двохкімнатна квартира за найвигіднішою ціною, тихий,затишний житловий комплекс , розташований біля річки! • Цегляний буд",
+   "u": "https://lun.ua/realty/4712190800"
+  },
+  {
+   "i": "LUN4716635228",
+   "s": "lun",
+   "k": "flat",
+   "p": 35000,
+   "t": "вулиця Глибока Долина, Будинок",
+   "u": "https://lun.ua/realty/4716635228"
+  },
+  {
+   "i": "LUN4717480852",
+   "s": "lun",
+   "k": "flat",
+   "p": 39700,
+   "t": "вулиця Гетьмана Мазепи, 144",
+   "u": "https://lun.ua/realty/4717480852"
+  },
+  {
+   "i": "LUN4717754482",
+   "s": "lun",
+   "k": "flat",
+   "p": 37700,
+   "t": "Трускавецька вулиця, Будинок 2",
+   "u": "https://lun.ua/realty/4717754482"
+  },
+  {
+   "i": "ID104cpB",
+   "s": "olx",
+   "k": "flat",
+   "p": 35500,
+   "t": "Продаж 2 кім квартири 51,5м2 вул. Коваліва м. Борислав",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-km-kvartiri-51-5m2-vul-kovalva-m-borislav-ID104cpB.html"
+  },
+  {
+   "i": "ID106qA9",
+   "s": "olx",
+   "k": "house",
+   "p": 35000,
+   "t": "Будинок / Без ремонту / Ринок, Жирівка / Львівська область",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/budinok-bez-remontu-rinok-zhirvka-lvvska-oblast-ID106qA9.html"
+  },
+  {
+   "i": "ID108rJ8",
+   "s": "olx",
+   "k": "flat",
+   "p": 29000,
+   "t": "Продається квартира в Боянах (центр)",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-kvartira-v-boyanah-tsentr-ID108rJ8.html"
+  },
+  {
+   "i": "ID109NCW",
+   "s": "olx",
+   "k": "flat",
+   "p": 36000,
+   "t": "Квартира 3 кімнатна",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-3-kmnatna-ID109NCW.html"
+  },
+  {
+   "i": "ID10ADCU",
+   "s": "olx",
+   "k": "flat",
+   "p": 30000,
+   "t": "Продаж 2/3 квартири в Рівному",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-3-kvartiri-v-rvnomu-ID10ADCU.html"
+  },
+  {
+   "i": "ID10Brp8",
+   "s": "olx",
+   "k": "house",
+   "p": 33000,
+   "t": "Продаж 4-х кімнатного будинку в центрі. с. Великий Кучурів!",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-4-h-kmnatnogo-budinku-v-tsentr-s-velikiy-kuchurv-ID10Brp8.html"
+  },
+  {
+   "i": "ID10BS6a",
+   "s": "olx",
+   "k": "flat",
+   "p": 37000,
+   "t": "Продаж 3-кімнатної квартири с.Грушвиця",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-kmnatno-kvartiri-s-grushvitsya-ID10BS6a.html"
+  },
+  {
+   "i": "ID10FTjD",
+   "s": "olx",
+   "k": "flat",
+   "p": 36000,
+   "t": "Продаж 2-кім квартири м.Миколаїв (Львівська обл.)",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-km-kvartiri-m-mikolav-lvvska-obl-ID10FTjD.html"
+  },
+  {
+   "i": "ID10GdD9",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Квартира в місті Косів.",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-v-mst-kosv-ID10GdD9.html"
+  },
+  {
+   "i": "ID10GsCK",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "«Простора 3-кімнатна квартира 78 м² + гараж + город + господарські приміщення | 18 км від Дубна»",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prostora-3-kmnatna-kvartira-78-m-garazh-gorod-gospodarsk-primschennya-18-km-vd-dubna-ID10GsCK.html"
+  },
+  {
+   "i": "ID10I5vl",
+   "s": "olx",
+   "k": "flat",
+   "p": 36500,
+   "t": "Продаж 3 кімнатної квартири у центрі міста Стрия",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-kmnatno-kvartiri-u-tsentr-msta-striya-ID10I5vl.html"
+  },
+  {
+   "i": "ID10kERd",
+   "s": "olx",
+   "k": "house",
+   "p": 36000,
+   "t": "Продаж будинку поруч з містом",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-budinku-poruch-z-mstom-ID10kERd.html"
+  },
+  {
+   "i": "ID10KFld",
+   "s": "olx",
+   "k": "flat",
+   "p": 39000,
+   "t": "Продаж 3-кім.кв. в центрі",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-km-kv-v-tsentr-ID10KFld.html"
+  },
+  {
+   "i": "ID10P6tL",
+   "s": "olx",
+   "k": "flat",
+   "p": 38900,
+   "t": "Продаж затишної 3-кімнатної квартири в самому центрі м. Стебник!",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-zatishno-3-kmnatno-kvartiri-v-samomu-tsentr-m-stebnik-ID10P6tL.html"
+  },
+  {
+   "i": "ID10PxTf",
+   "s": "olx",
+   "k": "flat",
+   "p": 37000,
+   "t": "Продаж 2кім. квартири вул.Джорджа Вашингтона",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2km-kvartiri-vul-dzhordzha-vashingtona-ID10PxTf.html"
+  },
+  {
+   "i": "ID10RzP1",
+   "s": "olx",
+   "k": "flat",
+   "p": 29000,
+   "t": "Продаж 2 кімнатна квартира чешка Борислав",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-kmnatna-kvartira-cheshka-borislav-ID10RzP1.html"
+  },
+  {
+   "i": "ID10Sg7h",
+   "s": "olx",
+   "k": "flat",
+   "p": 29000,
+   "t": "Продам квартиру!!!",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-kvartiru-ID10Sg7h.html"
+  },
+  {
+   "i": "ID10Soh5",
+   "s": "olx",
+   "k": "house",
+   "p": 31000,
+   "t": "Продаж / Будинок / Шкільна , Грабів",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-budinok-shklna-grabv-ID10Soh5.html"
+  },
+  {
+   "i": "ID10ss1J",
+   "s": "olx",
+   "k": "house",
+   "p": 37500,
+   "t": "Продаж цегляного будинку|р-н Вигнанки|м.Дубно",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-tseglyanogo-budinku-r-n-vignanki-m-dubno-ID10ss1J.html"
+  },
+  {
+   "i": "ID10xrsV",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "*3-кімнатна квартира в центрі Здолбунова-2, автономне опалення",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/3-kmnatna-kvartira-v-tsentr-zdolbunova-2-avtonomne-opalennya-ID10xrsV.html"
+  },
+  {
+   "i": "ID10y5JX",
+   "s": "olx",
+   "k": "house",
+   "p": 30000,
+   "t": "Продам будинок с.Жовтанці",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-budinok-s-zhovtants-ID10y5JX.html"
+  },
+  {
+   "i": "ID10Z2tV",
+   "s": "olx",
+   "k": "flat",
+   "p": 39000,
+   "t": "Квартира 2- х кімнатна",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-2-h-kmnatna-ID10Z2tV.html"
+  },
+  {
+   "i": "ID110DAK",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Трикімнатна квартира",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/trikmnatna-kvartira-ID110DAK.html"
+  },
+  {
+   "i": "ID110FhA",
+   "s": "olx",
+   "k": "flat",
+   "p": 37000,
+   "t": "Продаж 3 кімнатна квартира|р-н Сирзаводу|м.Дубно",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-kmnatna-kvartira-r-n-sirzavodu-m-dubno-ID110FhA.html"
+  },
+  {
+   "i": "ID110MXV",
+   "s": "olx",
+   "k": "house",
+   "p": 30000,
+   "t": "Продається будинок  в спокійній тихій локаціі.Постанови .Сертифікат.и.",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-budinok-v-spokyny-tihy-lokats-postanovi-sertifkat-i-ID110MXV.html"
+  },
+  {
+   "i": "ID110S0A",
+   "s": "olx",
+   "k": "flat",
+   "p": 34500,
+   "t": "3кімнатна у Брошнів-Осаді у цегляному будинку",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/3kmnatna-u-broshnv-osad-u-tseglyanomu-budinku-ID110S0A.html"
+  },
+  {
+   "i": "ID110Y0p",
+   "s": "olx",
+   "k": "flat",
+   "p": 33000,
+   "t": "Терміново Продам 2 кімнатну квартиру у м. Новий Калинів. 5 поверх 5ти поверхівки. З індивідуальним газовим опаленням.",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/termnovo-prodam-2-kmnatnu-kvartiru-u-m-noviy-kalinv-5-poverh-5ti-poverhvki-z-ndivdualnim-gazovim-opalennyam-ID110Y0p.html"
+  },
+  {
+   "i": "ID111Xui",
+   "s": "olx",
+   "k": "flat",
+   "p": 34500,
+   "t": "Продаж 3 кімнатної квартири м.Бурштин",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-kmnatno-kvartiri-m-burshtin-ID111Xui.html"
+  },
+  {
+   "i": "ID1128fK",
+   "s": "olx",
+   "k": "house",
+   "p": 40000,
+   "t": "Терміновий продаж! Будинок + літня кухня + ділянка",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/termnoviy-prodazh-budinok-ltnya-kuhnya-dlyanka-ID1128fK.html"
+  },
+  {
+   "i": "ID112x1v",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "Трикімнатна квартира",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/trikmnatna-kvartira-ID112x1v.html"
+  },
+  {
+   "i": "ID113dDx",
+   "s": "olx",
+   "k": "house",
+   "p": 36000,
+   "t": "Будинок с. Мальчиці",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/budinok-s-malchits-ID113dDx.html"
+  },
+  {
+   "i": "ID113gML",
+   "s": "olx",
+   "k": "flat",
+   "p": 41000,
+   "t": "Продам 3 кімнатну квартиру по Коновальця",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-3-kmnatnu-kvartiru-po-konovaltsya-ID113gML.html"
+  },
+  {
+   "i": "ID113qj1",
+   "s": "olx",
+   "k": "house",
+   "p": 38000,
+   "t": "Будинок в Великому Ходачкові",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/budinok-v-velikomu-hodachkov-ID113qj1.html"
+  },
+  {
+   "i": "IDJ55FF",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "Продам квартиру на землі",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-kvartiru-na-zeml-IDJ55FF.html"
+  },
+  {
+   "i": "IDKJXLV",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Продам 3-х.комнатную квартиру в г.Дрогобич, ул. Самборкая,108/1,",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-3-h-komnatnuyu-kvartiru-v-g-drogobich-ul-samborkaya-108-1-IDKJXLV.html"
+  },
+  {
+   "i": "IDR86Rm",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "Продаж квартири в місті Новоселиця дзвінки лише на вібер",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-kvartiri-v-mst-novoselitsya-dzvnki-lishe-na-vber-IDR86Rm.html"
+  },
+  {
+   "i": "IDU2KSu",
+   "s": "olx",
+   "k": "flat",
+   "p": 33000,
+   "t": "Продається квартира",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-kvartira-IDU2KSu.html"
+  },
+  {
+   "i": "IDVKjqY",
+   "s": "olx",
+   "k": "flat",
+   "p": 31900,
+   "t": "Продам 3кімн квартиру, центр",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-3kmn-kvartiru-tsentr-IDVKjqY.html"
+  },
+  {
+   "i": "IDVyQhq",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "3 кімнатна квартира Липівка",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/3-kmnatna-kvartira-lipvka-IDVyQhq.html"
+  },
+  {
+   "i": "IDWHRov",
+   "s": "olx",
+   "k": "house",
+   "p": 35000,
+   "t": "Продам будинок по вул Героїв майдану",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-budinok-po-vul-gerov-maydanu-IDWHRov.html"
+  },
+  {
+   "i": "IDWUtsR",
+   "s": "olx",
+   "k": "flat",
+   "p": 32999,
+   "t": "Квартира з краєвидом в парку, 108 кв.м, 3 кімнати",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-z-kravidom-v-parku-108-kv-m-3-kmnati-IDWUtsR.html"
+  },
+  {
+   "i": "IDYaXeg",
+   "s": "olx",
+   "k": "house",
+   "p": 39500,
+   "t": "Продається Будинок",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-budinok-IDYaXeg.html"
+  },
+  {
+   "i": "IDZEwkL",
+   "s": "olx",
+   "k": "flat",
+   "p": 30000,
+   "t": "Житло центр Товстого АБО ЗДАЧА ПІД СКЛАД",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/zhitlo-tsentr-tovstogo-abo-zdacha-pd-sklad-IDZEwkL.html"
+  },
+  {
+   "i": "IDZHS7K",
+   "s": "olx",
+   "k": "house",
+   "p": 34999,
+   "t": "Продам будинок на 40 сот.землі!Ціну знижено!",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-budinok-na-40-sot-zeml-tsnu-znizheno-IDZHS7K.html"
+  },
+  {
+   "i": "IDZN05g",
+   "s": "olx",
+   "k": "house",
+   "p": 30000,
+   "t": "Будинок Івано-Франківська громада",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/budinok-vano-frankvska-gromada-IDZN05g.html"
+  },
+  {
+   "i": "IDZn8p6",
+   "s": "olx",
+   "k": "flat",
+   "p": 30000,
+   "t": "Продається затишна  квартира в Гримайлові",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-zatishna-kvartira-v-grimaylov-IDZn8p6.html"
+  },
+  {
+   "i": "IDZWby1",
+   "s": "olx",
+   "k": "house",
+   "p": 40000,
+   "t": "Продаж будинку Кемпінг",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-budinku-kempng-IDZWby1.html"
+  },
+  {
+   "i": "IDZXf3R",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Квартира в с. Хутір-Будилів",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-v-s-hutr-budilv-IDZXf3R.html"
+  },
+  {
+   "i": "TG1683",
+   "s": "tg",
+   "k": "flat",
+   "p": 37000,
+   "t": "ПРОДАЖ",
+   "u": "https://t.me/neruhomist_dubno/1683"
+  },
+  {
+   "i": "TG22464",
+   "s": "tg",
+   "k": "flat",
+   "p": 35000,
+   "t": "Квартира в новобудові. Власник!!!",
+   "u": "https://t.me/domua_ternopil/22464"
+  },
+  {
+   "i": "TG22633",
+   "s": "tg",
+   "k": "flat",
+   "p": 40616,
+   "t": "Продається квартира в новобудові",
+   "u": "https://t.me/domua_ternopil/22633"
+  },
+  {
+   "i": "TG22641",
+   "s": "tg",
+   "k": "flat",
+   "p": 30726,
+   "t": "Нова квартира, новобудова( єоселя, євідновлення)",
+   "u": "https://t.me/domua_ternopil/22641"
+  },
+  {
+   "i": "TG22646",
+   "s": "tg",
+   "k": "flat",
+   "p": 34628,
+   "t": "продам квартиру в новобудові",
+   "u": "https://t.me/domua_ternopil/22646"
+  },
+  {
+   "i": "TG22682",
+   "s": "tg",
+   "k": "flat",
+   "p": 29900,
+   "t": "2 кімнати в гуртожитку з ремонтом  ,меблі, балкон,кондиціонер",
+   "u": "https://t.me/domua_rivne/22682"
+  },
+  {
+   "i": "TG22979",
+   "s": "tg",
+   "k": "flat",
+   "p": 40000,
+   "t": "Терміновий продаж 3-кімнатна квартира в м. Рівне, район Північний",
+   "u": "https://t.me/domua_rivne/22979"
+  },
+  {
+   "i": "TG4734",
+   "s": "tg",
+   "k": "flat",
+   "p": 41000,
+   "t": "Квартира 2 кімнатна, роздільна.",
+   "u": "https://t.me/domua_kovel/4734"
+  },
+  {
+   "i": "TG4852",
+   "s": "tg",
+   "k": "flat",
+   "p": 34950,
+   "t": "Продам 2-кімнатну квартиру в зручному районі з усім",
+   "u": "https://t.me/domua_kalush/4852"
+  },
+  {
+   "i": "TG4880",
+   "s": "tg",
+   "k": "flat",
+   "p": 35000,
+   "t": "2-кім квартира. Стрий",
+   "u": "https://t.me/domua_stryi/4880"
+  },
+  {
+   "i": "TG4925",
+   "s": "tg",
+   "k": "flat",
+   "p": 40000,
+   "t": "2-х кімнатна каартира мансардного типу в центрі міста ВІД ВЛАСНИКА",
+   "u": "https://t.me/domua_kalush/4925"
+  },
+  {
+   "i": "TG5072",
+   "s": "tg",
+   "k": "flat",
+   "p": 33961,
+   "t": "Квартира двох кімнатна",
+   "u": "https://t.me/domua_kalush/5072"
+  },
+  {
+   "i": "TG5092",
+   "s": "tg",
+   "k": "flat",
+   "p": 29809,
+   "t": "Продам квартиру!!!",
+   "u": "https://t.me/domua_kalush/5092"
+  },
+  {
+   "i": "TG5120",
+   "s": "tg",
+   "k": "flat",
+   "p": 35058,
+   "t": "Продам 2-х км. квартиру! (Від власника)",
+   "u": "https://t.me/domua_stryi/5120"
+  },
+  {
+   "i": "TG5156",
+   "s": "tg",
+   "k": "flat",
+   "p": 37005,
+   "t": "Продається квартира",
+   "u": "https://t.me/domua_stryi/5156"
+  },
+  {
+   "i": "TG5183",
+   "s": "tg",
+   "k": "flat",
+   "p": 39000,
+   "t": "Чудова 1 к квартира у старому фонді з двома земельними ділянками ,в центрі міста в  районі",
+   "u": "https://t.me/domua_kolomyia/5183"
+  },
+  {
+   "i": "TG5266",
+   "s": "tg",
+   "k": "flat",
+   "p": 33861,
+   "t": "Квартира з краєвидом в парку, 108 кв.м, 3 кімнати",
+   "u": "https://t.me/domua_kolomyia/5266"
+  },
+  {
+   "i": "TG5372",
+   "s": "tg",
+   "k": "flat",
+   "p": 30000,
+   "t": "Затишна та тепла одно-кімнатна квартира",
+   "u": "https://t.me/domua_drohobych/5372"
+  },
+  {
+   "i": "TG5485",
+   "s": "tg",
+   "k": "flat",
+   "p": 32486,
+   "t": "Продається 1-на квартира в частині будинку одноповерховому .",
+   "u": "https://t.me/domua_drohobych/5485"
+  }
+ ]
+}
