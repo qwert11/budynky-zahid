@@ -255,12 +255,14 @@ function rowFor(u, mode) {
     fb: 'Объявление в Facebook Marketplace'
   };
   const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc((SEMI[u.semi] || SEMI.unfin).title)}">${(SEMI[u.semi] || SEMI.unfin).badge}</span>` : '';
-  const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${semiB}${dupBadges(u)}`;
+  const newB = u.isNew ? `<span class="newb" title="Новостройка: у объявления OLX стоит «Новобудова» либо новостройка названа в тексте. Такие лоты идут первыми и не вытесняются вторичкой из топ-50. Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';
+  const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${newB}${semiB}${dupBadges(u)}`;
   const m = mkt(u.id);
   const d = [
     `data-id="${u.id}"`, `data-rank="${u.rankIn}"`, `data-q="${u.quality}"`, `data-price="${u.price}"`,
     `data-src="${u.src}"`, `data-kind="${u.kind}"`,
     u.obl ? `data-obl="${u.obl}"` : '',
+    u.isNew ? 'data-new="1"' : '',
     u.ready === 'semi' ? `data-ready="semi" data-semi="${u.semi}"` + (u.disc != null ? ` data-disc="${u.disc}"` : '') : '',
     family[u.id] && family[u.id].fit ? `data-fit="${family[u.id].fit}"` : '',
     u.ppm ? `data-ppm="${u.ppm}"` : '', u.area ? `data-area="${u.area}"` : '', u.land ? `data-land="${u.land}"` : '',
@@ -290,6 +292,7 @@ for (const u of [...units, ...semi]) {
     s: u.src, k: u.kind, a: u.area || null,
   };
   if (u.obl) p.o = u.obl;
+  if (u.isNew) p.nb = 1;
   if (u.ready === 'semi') p.g = 'semi';
   // откуда взята точка: h — адрес с номером дома, s — улица, p — село названо в тексте
   if (u.geoSrc === 'house') p.w = 'h';

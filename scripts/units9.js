@@ -16,6 +16,15 @@ const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-
 const D2 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/2ba88487-cdb9-423e-b5e9-69abf018ad10/scratchpad/';
 const EXT = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/7f7d4dba-ff73-4030-a5e2-5fb02c6c4786/scratchpad/';
 const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
+// Латиница внутри украинских слов ломает UNFIN/BAD_TEXT/SHARE: «будiвельний вагончик»
+// с латинской i проходил как готовое жильё. Чистим заголовок и описание на входе,
+// один раз для всех источников (см. deLatin в lib9.js).
+const deL = o => {
+  if (o && typeof o === 'object') for (const k of ['title', 'desc', 'text'])
+    if (typeof o[k] === 'string') o[k] = L.deLatin(o[k]);
+  return o;
+};
+const rdLots = f => { const j = rd(f); if (Array.isArray(j)) j.forEach(deL); else if (j.items) Object.values(j.items).forEach(deL); return j; };
 const ex = f => fs.existsSync(f);
 
 const TOP = 50, KM_MAX = 10;
@@ -51,6 +60,19 @@ function coordsFor(u) {
   if (lp) return { lat: lp.lat, lon: lp.lon, src: 'live' };
   return null;
 }
+// Новостройка в приоритете (просьба покупателя 03.09.2026): у OLX есть параметр
+// «Новобудова», у ЛУНа и Телеграма — только текст, поэтому там смотрим заголовок с описанием.
+// «ЖК» в шаблон не берём: он ловит «обмін на квартиру в ЖК» у обычной вторички.
+const NEWBUILD = /новобудов|новобуд\.|нова забудова|щойно зданий будинок/i;
+function markNew(u) {
+  const txt = (u.title || '') + ' ' + String(u.desc || '').slice(0, 300);
+  if (u.isNew == null) u.isNew = NEWBUILD.test(txt);
+  // стройка — не новостройка: лот «на етапі взведення покрівлі» приоритета не получает,
+  // иначе он встаёт первым в списке впереди готового жилья
+  if (u.isNew && (L.UNFIN.test(txt) || L.BAD_TEXT.test(txt))) u.isNew = false;
+  return u;
+}
+
 function finish(u) {
   // координаты → км до города → область → индекс
   const c = coordsFor(u);
@@ -62,6 +84,7 @@ function finish(u) {
   }
   u.ppm = u.ppm || (u.price && u.area ? Math.round(u.price / u.area) : null);
   u.quality = u.kind === 'house' ? L.houseQuality9(u) : L.flatQuality9(u);
+  markNew(u);
   return u;
 }
 // базовые ворота для всех источников
@@ -76,7 +99,7 @@ function gate(u) {
 }
 
 /* ════════ 1. дома OLX (свежий сбор по 9 областям) ════════ */
-const housesPool = Object.values(rd(D + 'olx9-houses.json').items).map(x => {
+const housesPool = Object.values(rdLots(D + 'olx9-houses.json').items).map(x => {
   const p = x.params || {};
   return {
     id: x.id, sku: x.sku, src: 'olx', kind: 'house', title: x.title, link: x.link,
@@ -110,7 +133,7 @@ for (const u of housesPool) {
 /* ════════ 2. квартиры OLX (свежий сбор) ════════ */
 const ROOMS = { odnokomnatnye: 1, dvuhkomnatnye: 2, trehkomnatnye: 3, tryohkomnatnye: 3, chetyryohkomnatnye: 4, pyatikomnatnye: 5, shestikomnatnye: 6 };
 const flatsOlx = [];
-for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
+for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
   const p = x.params || {};
   const u = {
     id: x.id, sku: x.sku, src: 'olx', kind: 'flat', title: x.title, link: x.link,
@@ -118,6 +141,7 @@ for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
     area: num(p['total_area:key']), rooms: ROOMS[p['number_of_rooms_string:key']] || num(p.number_of_rooms_string) || null,
     floor: num(p['floor:key'] || p.floor), floors: num(p['total_floors:key'] || p.total_floors),
     repair: p.repair || null, market: p.apartments_object_type || null, houseType: p.property_type_appartments_sale || null,
+    isNew: /новобудова/i.test(p.apartments_object_type || ''),
     walls: p.house_type || null, heating: p.heating || null, bathroom: p.bathroom || null, comm: p.communications || null,
     noCommission: /без комісії/i.test(p.commission || ''),
     loc: x.loc, cityId: x.cityId, region: x.region, obl: L.REGION2SLUG[x.region] || null,
@@ -126,7 +150,12 @@ for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
   };
   if (!L.inBudget(u.price)) { drop.budget++; continue; }
   if ((u.area || 0) < 50 || (u.rooms || 0) < 2) { drop.small++; continue; }
-  if (L.BAD_REPAIR.test(u.repair || '') || /новобудова/i.test(u.market || '')) { drop.unfin++; continue; }
+  // Новобудова больше не выбрасывается из «готового» (03.09.2026, просьба покупателя:
+  // новостройка в приоритете). Раньше метка «Новобудова» отсекала квартиру независимо
+  // от фактического состояния, и 143 лота проваливались мимо обоих наборов: в готовое
+  // не пускала метка, в получистовую — отсутствие текстового признака недостроя.
+  // Состояние решают те же правила, что и у всех: поле «Ремонт» и текст объявления.
+  if (L.BAD_REPAIR.test(u.repair || '')) { drop.unfin++; continue; }
   if (L.BAD_TEXT.test((u.title || '') + ' ' + (u.desc || ''))) { drop.unfin++; continue; }
   if (L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 260))) { drop.share++; continue; }
   finish(u);
@@ -156,7 +185,7 @@ function shapeLun(x) {
     noCommission: !!x.noCommission, desc: x.desc,
   };
 }
-const lunClean = [...(ex(D5 + 'lun-clean.json') ? rd(D5 + 'lun-clean.json') : []), ...(ex(D + 'lun9-clean.json') ? rd(D + 'lun9-clean.json') : [])];
+const lunClean = [...(ex(D5 + 'lun-clean.json') ? rdLots(D5 + 'lun-clean.json') : []), ...(ex(D + 'lun9-clean.json') ? rdLots(D + 'lun9-clean.json') : [])];
 for (const x of lunClean) {
   if (x.unfinished || !L.inBudget(x.price)) continue;
   const u = shapeLun(x);
@@ -197,7 +226,7 @@ const ZONE_REGION = {
 function loadExt(file, src, geoFile, dir) {
   if (!ex(dir + file)) return [];
   const geo = geoFile && ex(dir + geoFile) ? rd(dir + geoFile) : {};
-  return rd(dir + file).map(r => {
+  return rdLots(dir + file).map(r => {
     const g = r.lat != null ? { lat: r.lat, lon: r.lon } : (geo[r.loc + '|' + r.zone] || null);
     const obl = OBL_ZONE[r.zone] || null;
     return {
@@ -237,7 +266,9 @@ function pickTop(sets, out, stats, prefix) {
     const parts = [];
     for (const [o, list] of Object.entries(byObl)) {
       if (o === 'unk' || o === 'zak') continue;
-      list.sort((a, b) => b.quality - a.quality);
+      // новостройки идут первыми и внутри себя по индексу — они не должны вылетать
+      // из топ-50 под давлением вторички (просьба покупателя 03.09.2026)
+      list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || b.quality - a.quality);
       list.slice(0, TOP).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key; out.push(u); });
       parts.push(o + ':' + Math.min(list.length, TOP));
     }
@@ -265,11 +296,17 @@ const semiDrop = { noclass: 0, ready: 0, budget: 0, small: 0, badtype: 0, share:
 const semiCand = [];
 const seenSemi = new Set();
 const liveById = {};
-const semiLive = rd(D + 'live-semi.json');
+const semiLive = rdLots(D + 'live-semi.json');
 for (const s of semiLive) liveById[s.id] = s;
 // доля объекта — не берём; но «частина будинку придатна, інша — потребує» — это наш класс part
 const shareSemi = u => L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 100)) && !L.SEMI_TXT.part.test(u.desc || '');
+// «Получистовая» — это жильё, в которое можно заселиться и доводить ремонт
+// (правило покупателя 03.09.2026). Коробка под чистовую жильём не является:
+// у класса shell в его же описании сказано «заехать сразу нельзя», поэтому
+// такие лоты в набор не берём вовсе.
+const SEMI_SKIP = new Set(['shell']);
 function pushSemi(u, cls) {
+  if (SEMI_SKIP.has(cls)) { semiDrop.notlivable = (semiDrop.notlivable || 0) + 1; return; }
   if (seenSemi.has(u.id)) return;
   u.ready = 'semi'; u.semi = cls;
   u.quality = u.kind === 'house' ? L.semiHouseQuality9(u) : L.semiFlatQuality9(u);
@@ -291,7 +328,7 @@ for (const u of housesPool) {
   if (!gate(u)) { semiDrop.gate++; continue; }
   pushSemi(u, cls);
 }
-for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
+for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
   if (readyIds.has(x.id)) { semiDrop.ready++; continue; }
   const p = x.params || {};
   const u = {
@@ -300,6 +337,7 @@ for (const x of Object.values(rd(D + 'olx9-flats.json').items)) {
     area: num(p['total_area:key']), rooms: ROOMS[p['number_of_rooms_string:key']] || num(p.number_of_rooms_string) || null,
     floor: num(p['floor:key'] || p.floor), floors: num(p['total_floors:key'] || p.total_floors),
     repair: p.repair || null, market: p.apartments_object_type || null, houseType: p.property_type_appartments_sale || null,
+    isNew: /новобудова/i.test(p.apartments_object_type || ''),
     walls: p.house_type || null, heating: p.heating || null, bathroom: p.bathroom || null, comm: p.communications || null,
     noCommission: /без комісії/i.test(p.commission || ''),
     loc: x.loc, cityId: x.cityId, region: x.region, obl: L.REGION2SLUG[x.region] || null,
