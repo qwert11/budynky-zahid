@@ -45,7 +45,8 @@ const daysSince = iso => iso ? Math.max(1, Math.round((NOW - Date.parse(iso)) / 
 const usdOf = u => u.cur === 'USD' ? u.price : (u.curConv === 'USD' ? u.priceConv : null);
 const num = v => { const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isNaN(n) ? null : n; };
 
-const drop = { dead: 0, excluded: 0, share: 0, unfin: 0, far: 0, nogeo: 0, badtype: 0, budget: 0, small: 0, unvetted: 0, zak: 0 };
+const drop = { dead: 0, excluded: 0, share: 0, unfin: 0, far: 0, nogeo: 0, badtype: 0, budget: 0, small: 0, unvetted: 0, zak: 0,
+  nbShell: 0, nbNoPhoto: 0, nbWait: 0 };
 let pinnedKept = 0;
 
 function coordsFor(u) {
@@ -275,11 +276,36 @@ function pickTop(sets, out, stats, prefix) {
     stats.push(((prefix || '') + key).padEnd(15) + ' ' + parts.sort().join(' '));
   }
 }
+/* ════════ 4b. новострой — только с живыми фото готового жилья ════════
+   Правило покупателя 03.09.2026: «новострой чистовая — мы его игнорим, а новострой
+   в приоритете — это самое лучшее». Раз новострой встаёт первым в каталоге, метка
+   должна означать готовое жильё, а не коробку.
+
+   Текстом это не отличить: у типовой новостройки «под чистову» поле «Ремонт» пустое,
+   слов «без ремонту» в описании нет, а бывает и наоборот — «квартира вже на ключах».
+   Единственный источник правды — фотографии, поэтому каждая новостройка проходит
+   ту же фотопроверку, что и дома OLX, и попадает в готовое только с вердиктом ok.
+
+   Вердикт ok — на фото жилой интерьер: пол, обои или краска, двери, кухня, мебель.
+   Вердикт no — бетон, стяжка и штукатурка; только планировка; только рендер
+   застройщика; только фасад или двор. Фото нет вовсе — тоже no: проверить нечем. */
+const nbCand = [];        // ждут фотопроверки
+const nbHold = new Set(); // id, не допущенных в каталог: и отклонённые, и ждущие
+function nbPass(u) {
+  if (!u.isNew) return true;
+  if (PINNED.has(u.id)) return true;                       // разобранное избранное держим всегда
+  const verdict = vet[u.id] || (legacyVetted.has(u.id) ? 'ok' : null);
+  if (verdict === 'ok') return true;
+  nbHold.add(u.id);
+  if (verdict === 'no') { drop.nbShell++; return false; }  // на фото чистовая, план или рендер
+  if (!(u.photos || []).length) { drop.nbNoPhoto++; return false; }
+  nbCand.push(u); drop.nbWait++; return false;
+}
 const sets = {
-  'olx|house': dedupe(housesOlx), 'olx|flat': dedupe(flatsOlx),
-  'lun|house': dedupe(lunAll.filter(u => u.kind === 'house')), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat')),
-  'tg|house': dedupe(tgAll.filter(u => u.kind === 'house')), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat')),
-  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house')), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat')),
+  'olx|house': dedupe(housesOlx.filter(nbPass)), 'olx|flat': dedupe(flatsOlx.filter(nbPass)),
+  'lun|house': dedupe(lunAll.filter(u => u.kind === 'house').filter(nbPass)), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'tg|house': dedupe(tgAll.filter(u => u.kind === 'house').filter(nbPass)), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass)),
 };
 const units = [];
 const setStats = [];
@@ -307,6 +333,13 @@ const shareSemi = u => L.SHARE.test((u.title || '') + ' ' + String(u.desc || '')
 const SEMI_SKIP = new Set(['shell']);
 function pushSemi(u, cls) {
   if (SEMI_SKIP.has(cls)) { semiDrop.notlivable = (semiDrop.notlivable || 0) + 1; return; }
+  // новострой без фотопроверки не должен просочиться сюда через второй проход:
+  // бейдж «НОВОСТРОЙ» и приоритет действуют в обоих списках
+  if (nbHold.has(u.id)) { semiDrop.nbHold = (semiDrop.nbHold || 0) + 1; return; }
+  // Бейдж «НОВОСТРОЙ» значит «проверенное готовое жильё, идёт первым». В получистовой
+  // лот по определению недоделан, поэтому признак снимается: иначе первым в каталоге
+  // встаёт новострой под чистову — ровно то, что покупатель просил игнорировать.
+  u.isNew = false;
   if (seenSemi.has(u.id)) return;
   u.ready = 'semi'; u.semi = cls;
   u.quality = u.kind === 'house' ? L.semiHouseQuality9(u) : L.semiFlatQuality9(u);
@@ -454,6 +487,12 @@ fs.writeFileSync(D + 'vet-need.json', JSON.stringify(housesCand.map(u => ({
   id: u.id, obl: u.obl, quality: u.quality, km: u.km, city: u.city, price: u.price, area: u.area, land: u.land,
   photos: u.photos.slice(0, 4), title: u.title, link: u.link,
 }))));
+// новостройки без вердикта: фотопроверка «живые фото готового жилья или чистовая»
+fs.writeFileSync(D + 'nb-need.json', JSON.stringify(nbCand.map(u => ({
+  id: u.id, obl: u.obl, src: u.src, kind: u.kind, quality: u.quality, km: u.km, city: u.city,
+  price: u.price, area: u.area, rooms: u.rooms, floor: u.floor, floors: u.floors,
+  photos: (u.photos || []).slice(0, 4), title: u.title, link: u.link,
+})), null, 1));
 
 console.log('отброшено:', JSON.stringify(drop));
 console.log('закреплённых (разбор семьи) оставлено:', pinnedKept);
@@ -466,4 +505,7 @@ const semiCls = {}; semi.forEach(u => semiCls[u.semi] = (semiCls[u.semi] || 0) +
 console.log('получистовая по классам:', JSON.stringify(semiCls));
 console.log('домов OLX ждёт фотопроверки:', housesCand.length, 'из них по областям:',
   JSON.stringify(housesCand.reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {})));
+console.log('новострой: в каталоге', units.filter(u => u.isNew).length,
+  '| отклонено по фото (чистовая/план/рендер)', drop.nbShell,
+  '| без фото', drop.nbNoPhoto, '| ждёт фотопроверки', drop.nbWait);
 console.log('лотов с дублем в другом источнике:', dupN);

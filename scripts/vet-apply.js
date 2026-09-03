@@ -1,6 +1,8 @@
 // Применяет вердикты фото-проверки: node vet-apply.js '{"ID123":"ok","ID456":"no"}'
 // или node vet-apply.js grid-00 ok,no,ok,... (12 вердиктов в порядке ячеек сетки,
 // слева направо, сверху вниз; допустимы ok / no / ? )
+// Сетки новостроек (nb-00 …) — оттуда же, но в них строка = один лот, 8 вердиктов
+// сверху вниз; манифест лежит в data/vet/nb/.
 const fs = require('fs');
 const path = require('path');
 const D = path.join(__dirname, 'data') + path.sep;
@@ -12,7 +14,8 @@ if (!a) { console.error('нет аргумента'); process.exit(2); }
 if (a.startsWith('{')) {
   Object.assign(vet, JSON.parse(a));
 } else {
-  const manifest = JSON.parse(fs.readFileSync(D + 'vet/manifest.json', 'utf8'));
+  const mf = a.startsWith('nb-') ? 'vet/nb/manifest.json' : 'vet/manifest.json';
+  const manifest = JSON.parse(fs.readFileSync(D + mf, 'utf8'));
   const m = manifest.find(x => x.grid.startsWith(a));
   if (!m) { console.error('сетка не найдена:', a); process.exit(2); }
   const verdicts = process.argv[3].split(',').map(s => s.trim());
