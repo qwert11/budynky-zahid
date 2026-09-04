@@ -1119,7 +1119,15 @@ try{ showStr=localStorage.getItem('bh:str')!=='0'; }catch(e){}
 // пять ступеней по числу ночей, когда угроза шла именно на это место:
 // 1–4 · 5–14 · 15–29 · 30–99 · 100+. Чем выше — крупнее и ярче ракета.
 const STRC=['','#B9705B','#C4553A','#D63B21','#E82612','#FF1405'];
-const STRH=[0,10,13,17,21,26];
+// Размер ракеты. Просьба покупателя 04.09.2026: «увеличь раза в 4, а то мелко» —
+// на большом мониторе слой из 10–26 px терялся среди маркеров. Ступени разведены
+// сильнее прежнего: «1 ночь» не должна выглядеть как «100 ночей».
+// Это размер для карты НА ВЕСЬ ЭКРАН. Во встроенную карту (вдвое меньше по обеим
+// сторонам) он не влезает: ракета Житомира занимала четверть её высоты и накрывала
+// пол-области. Поэтому высота умножается на strScale() — долю от полноэкранного
+// размера, но не меньше 0.3, иначе на телефоне слой снова исчезает.
+const STRH=[0,28,42,60,82,110];
+const strScale=()=>Math.max(0.3,Math.min(1,Math.min(W/1900,H/940)));
 const STRO=[0,0.65,0.76,0.86,0.94,1];
 // Ракета носом вверх: высота h, центр в (cx,cy). Только абсолютные координаты —
 // у относительных команд накапливается ошибка и хвост уезжает от корпуса.
@@ -1218,6 +1226,11 @@ function render(){
   const boxes=[];        // занятые подписями места: сначала города, потом области
   const drawnCities=new Set();   // подписанные города: у их ракет своя подпись не нужна
   let cityHTML='';       // подписи городов рисуются последними — поверх маркеров, иначе кластер их закрывает
+  // Ракеты «куда летело» собираются отдельно и уходят ПОД маркеры: после увеличения
+  // вчетверо крупная ракета накрывала число объявлений в кластере, а это главная
+  // цифра карты. Порядок слоёв снизу вверх: населённость и промзоны → ракеты →
+  // маркеры каталога → подписи городов. Так видно и красную зону, и объявления.
+  let rkHTML='';
   // Города: население стоит у названия, а размер и жирность подписи растут вместе
   // с ним — просьба покупателя 03.09.2026. 25 тыс. — базовая ступень (это порог,
   // ниже которого город в каталоге вообще не считается опорным), дальше четыре шага.
@@ -1235,7 +1248,7 @@ function render(){
     // Ракета «куда летело» стоит слева от подписи города, а не у его точки: у точки
     // она садилась поверх маркеров каталога и закрывала число объявлений в кластере.
     // Подписи же уже расставлены с разбором наложений и рисуются поверх всего.
-    const sr=showStr?STRM[label]:null, srh=sr?STRH[sr[3]]*(W<430?0.86:1):0;
+    const sr=showStr?STRM[label]:null, srh=sr?STRH[sr[3]]*strScale():0;
     const srw=sr?srh*0.34+4:0;
     // Население — второй строкой под названием. В одну строку подпись выходила вдвое
     // шире, и «Хмельницкий 274 тыс.» затирал Тернополь в 150 пикселях от него.
@@ -1261,7 +1274,7 @@ function render(){
     if(sr){
       // ракета по центру блока подписи, слева от текста
       const rcy=(ty0+yNum)/2, rcx=x0-srw/2-0.5, lv=sr[3];
-      cityHTML+='<path d="'+rocketPath(rcx,rcy,srh)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.4:1.1)+'" stroke-opacity="0.8" stroke-linejoin="round"/>';
+      rkHTML+='<path d="'+rocketPath(rcx,rcy,srh)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.8:1.3)+'" stroke-opacity="0.8" stroke-linejoin="round"/>';
     }
     // Гало по цвету фона: подпись читается и поверх кластера, и поверх пятна населённости.
     out+='<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+st.r+'" fill="var(--muted)" fill-opacity="'+st.o+'"/>';
@@ -1294,9 +1307,11 @@ function render(){
   }
   // ── слой «куда летело за войну» для мест БЕЗ подписи города: сёл и городков
   // меньше 25 тыс. (Бурштын с ТЭС, Добротвор), а также тех, чья подпись не влезла.
-  // У подписанных городов ракета уже нарисована слева от названия, в cityHTML.
+  // У подписанных городов ракета уже нарисована слева от названия, в rkHTML.
   // Объявлений в таких местах может не быть вовсе — ракета всё равно нужна: покупатель
   // просил видеть угрозу и там, где лоты появятся позже.
+  // Ракета уходит в rkHTML (под маркеры), а красная подпись — в strHTML (поверх всего):
+  // название должно читаться, иначе непонятно, о каком месте речь.
   let strHTML="";
   if(showStr){
     const sboxes=[];
@@ -1307,16 +1322,18 @@ function render(){
       // мелкие уровни на общем виде не рисуем: карта превращается в кашу
       const minLv=W<430?(s<2?3:s<3.5?2:1):(s<1.5?2:1);
       if(lv<minLv) continue;
-      const h=STRH[lv]*(W<430?0.86:1);
+      const h=STRH[lv]*strScale();
       // Такое место надо подписать: ракета без названия — красное пятно поверх
       // кластера, по которому ничего не понять. Не влезла подпись — не рисуем и ракету.
       const f=lv>=4?11:10, twn=t[0].length*f*0.55, lx0=X-twn/2, ly=Y+h/2+f+1;
       if(boxes.concat(sboxes).some(b=>lx0<b.x1+2&&lx0+twn>b.x0-2&&ly-f<b.y1+2&&ly+2>b.y0-2)) continue;
       sboxes.push({x0:lx0,x1:lx0+twn,y0:Y-h/2,y1:ly+2});
-      strHTML+='<path d="'+rocketPath(X,Y,h)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.4:1.1)+'" stroke-opacity="0.75" stroke-linejoin="round"/>'+
-        '<text x="'+X.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+f+'" font-weight="600" fill="'+STRC[lv]+'" text-anchor="middle" paint-order="stroke" stroke="var(--bg)" stroke-width="3" stroke-linejoin="round" stroke-opacity="0.9">'+t[0]+'</text>';
+      rkHTML+='<path d="'+rocketPath(X,Y,h)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.8:1.3)+'" stroke-opacity="0.75" stroke-linejoin="round"/>';
+      strHTML+='<text x="'+X.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+f+'" font-weight="600" fill="'+STRC[lv]+'" text-anchor="middle" paint-order="stroke" stroke="var(--bg)" stroke-width="3" stroke-linejoin="round" stroke-opacity="0.9">'+t[0]+'</text>';
     }
   }
+  // ракеты в отдельной группе — раньше маркеров, поэтому кластеры лежат поверх них
+  out+='<g clip-path="url(#clclip)" pointer-events="none">'+rkHTML+'</g>';
   const rSingle=TOUCH?10:8;
   clusters.forEach((cl,i)=>{
     const X=cl.reduce((a,q)=>a+q.X,0)/cl.length, Y=cl.reduce((a,q)=>a+q.Y,0)/cl.length;
@@ -2578,7 +2595,7 @@ render();
   // прямо из браузера страницу OLX не проверить — CORS) + ручные пометки ✕ на карточке.
   // DEAD0 — снимок на дату сборки, работает и без dead.json (например, в копии-артефакте)
   var DKEY='bh:dead', DHKEY='bh:hidedead';
-  var DEAD0={"checked":"2026-09-02","dead":["ID10Z2tV","ID10ZeZW","ID110DAK","IDSaYBP","IDWHRov","IDZ6YRG","IDZFQSi","IDZuY7s","LUN3214354875","LUN3964501030","LUN4575552324","LUN4707277363","LUN4713067202","LUN4713172020","LUN4713758784"]};
+  var DEAD0={"checked":"2026-09-04","dead":["ID10CibJ","ID10CnKV","ID10MTdt","ID10MyDC","ID10dNEw","ID10mFgE","ID10qDxx","ID10yGyA","ID10yVBt","ID10zQdl","ID116oo1","ID11b4Ex","IDIc79W","IDN10md","IDV9Bfd","IDVwi2u","IDW1v4x","IDYDYgR","IDYLj2m","IDYQWV4","IDYVZAI","IDYucFn","IDZ0yQl","IDZNhfp","IDZO6AY","LUN2543264165","LUN394158913","LUN4211953327","LUN4683436043","LUN4705285371","LUN4705858497","LUN4707962973","LUN4710204057","LUN4712630110","LUN4713534151","LUN4714226542","LUN4716437838"]};
   var deadSrv=new Map(), deadUser=new Map(), hideDead=false;
   function seedDead(j){ deadSrv=new Map(); for(var si=0;si<j.dead.length;si++) deadSrv.set(j.dead[si], j.checked||''); }
   seedDead(DEAD0);
