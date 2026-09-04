@@ -210,10 +210,27 @@ for (const [n, e] of Object.entries(EXTRA)) CITY_INFO[n] = { lat: e.lat, lon: e.
 
 const segsOf = t => t.split(/\n+/).flatMap(s => s.split(/ {2,}/)).map(s => s.trim()).filter(Boolean);
 
+// Сколько целей в сообщении. Канал почти всегда начинает строку с числа:
+// «4 мопеда северней Житомира», «около 30 пролетают змейкой», «2 крылатые ракеты».
+// Из диапазона («группа (3-5 шт.)») берём НИЖНЮЮ границу: пусть цифра будет
+// заниженной, а не выдуманной. Сообщение о цели без числа считаем за одну.
+function countOf(seg) {
+  const m = seg.match(/^(?:около|порядка|приблизно|примерно|до|более|больше|більше)?\s*(\d{1,3})(?:\s*[-–]\s*\d{1,3})?(?!\d)/i);
+  if (m) {
+    const v = +m[1];
+    if (v >= 1 && v <= 300) return v;   // «200 мопедов» бывает, «2026» — это год
+  }
+  const g = seg.match(/\(\s*(\d{1,3})\s*[-–]\s*\d{1,3}\s*шт/);
+  if (g) return +g[1];
+  if (/\bпар[аы]\b/i.test(seg)) return 2;
+  if (/\bтройк[аи]\b/i.test(seg)) return 3;
+  return 1;
+}
+
 (async () => {
   const src = JSON.parse(fs.readFileSync(SRC, 'utf8'));
   const cities = {}, oblasts = {};
-  const mk = () => ({ n: 0, hits: 0, at: 0, mis: 0, drn: 0, days: new Set(), atDays: new Set(), hitDays: new Set(), byYear: {}, ex: [], exAt: [] });
+  const mk = () => ({ n: 0, hits: 0, at: 0, mis: 0, drn: 0, objSum: 0, objMax: new Map(), days: new Set(), atDays: new Set(), hitDays: new Set(), byYear: {}, ex: [], exAt: [] });
   for (const k of Object.keys(CITY_RX)) cities[k] = mk();
   for (const k of Object.keys(OBL)) oblasts[k] = mk();
 
@@ -241,11 +258,22 @@ const segsOf = t => t.split(/\n+/).flatMap(s => s.split(/ {2,}/)).map(s => s.tri
       }
       segAir++; if (inherited) segInherited++;
       const hit = HIT.test(seg), at = AT.test(seg);
+      const cnt = countOf(seg);
       const bump = (store, key) => {
         const c = store[key];
         c.n++; if (hit) { c.hits++; c.hitDays.add(day); } if (at) { c.at++; c.atDays.add(day); }
         if (mis) c.mis++; if (drn) c.drn++;
         c.days.add(day);
+        // Цели: сколько их шло на это место. Два числа, потому что одну и ту же группу
+        // канал упоминает за ночь по нескольку раз (её ведут, пока она летит):
+        //  · objMax — по каждой ночи берём САМУЮ БОЛЬШУЮ сообщённую группу и суммируем
+        //    по ночам. Повторы не удваивают, зато две волны за ночь считаются как одна:
+        //    это оценка СНИЗУ, и именно она стоит у ракеты на карте;
+        //  · objSum — сумма всех сообщений: оценка СВЕРХУ, повторы её раздувают.
+        if (at) {
+          c.objSum += cnt;
+          c.objMax.set(day, Math.max(c.objMax.get(day) || 0, cnt));
+        }
         c.byYear[year] = (c.byYear[year] || 0) + 1;
         if (hit && c.ex.length < 8) c.ex.push({ d: day, id: p.id, t: seg.slice(0, 200) });
         else if (at && c.exAt.length < 8) c.exAt.push({ d: day, id: p.id, t: seg.slice(0, 200) });
@@ -259,6 +287,7 @@ const segsOf = t => t.split(/\n+/).flatMap(s => s.split(/ {2,}/)).map(s => s.tri
   const pack = (store, info) => Object.entries(store).map(([name, c]) => ({
     name, ...(info ? info(name) : {}),
     n: c.n, nights: c.days.size, at: c.at, atNights: c.atDays.size, hits: c.hits, hitNights: c.hitDays.size,
+    obj: [...c.objMax.values()].reduce((a, b) => a + b, 0), objSum: c.objSum,
     mis: c.mis, drn: c.drn, years: c.byYear,
     ex: c.ex.concat(c.exAt).slice(0, 8),
   })).filter(x => x.n > 0).sort((a, b) => b.nights - a.nights || b.n - a.n);
@@ -278,10 +307,11 @@ const segsOf = t => t.split(/\n+/).flatMap(s => s.split(/ {2,}/)).map(s => s.tri
   }));
 
   console.log(`сегментов ${segTotal}, с воздушной угрозой ${segAir} (из них по контексту сводки ${segInherited})`);
-  const line = x => `${String(x.nights).padStart(5)} ${String(x.n).padStart(6)} ${String(x.at).padStart(5)} ${String(x.hits).padStart(5)}`;
-  console.log('\nобласти          ночей эпизод  «на»  взрыв');
+  const line = x => `${String(x.obj).padStart(6)} ${String(x.objSum).padStart(6)} ${String(x.atNights).padStart(5)} ${String(x.nights).padStart(6)} ${String(x.n).padStart(6)} ${String(x.hits).padStart(5)}`;
+  const head = 'целей↓ целей↑ ночьНА ночей эпизод взрыв';
+  console.log('\nобласти           ' + head);
   for (const o of ol) console.log(`  ${(o.ru || o.name).padEnd(18)}${line(o)}`);
-  console.log('\nгорода — топ-40  ночей эпизод  «на»  взрыв');
+  console.log('\nгорода — топ-40    ' + head);
   for (const c of cl.slice(0, 40)) console.log(`  ${c.name.padEnd(18)}${line(c)}`);
   console.log(`\nмест с упоминаниями ${cl.length} из ${Object.keys(CITY_RX).length} →`, OUT);
 })();
