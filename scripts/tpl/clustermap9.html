@@ -29,6 +29,7 @@
     <span><i class="lgstar" style="color:#3FA46C">★</i><i class="lgstar" style="color:#4C82D8">★</i><i class="lgstar">★</i>избранное: 1 зелёная → 2 синяя → 3 золотая</span>
     <span><i class="lgh"></i>населённость</span>
     <span><label class="lgindl" title="Промышленные зоны и карьеры из OpenStreetMap: чем краснее и крупнее пятно, тем больше промышленных площадей — видно, где город работает, а не просто существует"><input type="checkbox" id="lgind" checked><i class="lgi"></i>промышленность (OSM)</label></span>
+    <span><label class="lgstrl" title="Куда летели ракеты и дроны за всю войну — по хронике канала «Николаевский Ванёк» (17.04.2022 → сегодня, 40 тыс. постов). Размер и яркость ракеты — по числу ночей, когда угроза шла именно на это место: 1–4 · 5–14 · 15–29 · 30–99 · 100 и больше. Где за всю войну не летело ни разу, ракеты нет вовсе. Полная таблица по городам и областям — под картой"><input type="checkbox" id="lgstr" checked><svg class="lgrk" width="8" height="8" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1L10.4 6L10.4 12.5L14.4 15L10.1 15L8 13.9L5.9 15L1.6 15L5.6 12.5L5.6 6Z" fill="#C4553A"/></svg><svg class="lgrk" width="11" height="11" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1L10.4 6L10.4 12.5L14.4 15L10.1 15L8 13.9L5.9 15L1.6 15L5.6 12.5L5.6 6Z" fill="#D63B21"/></svg><svg class="lgrk" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1L10.4 6L10.4 12.5L14.4 15L10.1 15L8 13.9L5.9 15L1.6 15L5.6 12.5L5.6 6Z" fill="#FF1405"/></svg>куда летело (ракеты и дроны)</label></span>
     <span title="На карте подписаны города от 25 тыс. населения — это порог, ниже которого город не считается опорным при отборе. Население стоит у названия, а размер и жирность подписи растут вместе с ним: 25–49 тыс. — базовая, 50–99, 100–249 и от 250 тыс. — крупнее и жирнее. Города меньше 25 тыс. проявляются при увеличении карты"><i class="lgb"></i>города от 25 тыс. · размер = население</span>
     <span><i class="lgo"></i>границы областей</span>
   </div>
@@ -45,6 +46,11 @@ const HEAT=[[49.8397,24.0297,717],[48.2915,25.9403,265],[50.6199,26.2516,243],[4
 [50.2547,28.6587,261],[49.8919,28.6003,74],[50.95,28.65,63],[50.5833,27.6333,56],[50.7683,29.2372,25],[50.3186,29.0586,25],[51.3244,28.8081,15],[50.4972,29.2333,14],[50.4548,28.6667,11],[50.3,27.6667,11],[51.2258,27.6533,10],
 [49.2331,28.4682,370],[49.0372,28.1122,34],[48.4442,27.785,30],[49.5589,27.9578,27],[48.8094,29.3906,25],[49.7169,28.8336,22],[48.6833,29.2333,22],[49.4536,28.5231,18],[48.6744,28.8497,15],[49.0778,27.6822,14],[48.3717,29.5314,12],[48.9711,28.8364,11],[49.1036,29.2114,11],[49.0833,28.35,12]];
 // промышленные зоны OSM: [lat, lon, км²] — агрегированные ячейки ~4×4 км
+// «Куда летело» — хроника канала «Николаевский Ванёк» за всю войну:
+// [русское имя, широта, долгота, уровень 1..5, «на»-ночей, ночей, эпизодов, взрывов/ПВО, доля ракет %]
+const STR={{STRIKES}};
+const STRM={};   // имя места → строка слоя: подпись города берёт ракету отсюда
+for(const t of STR) STRM[t[0]]=t;
 const IND={{INDUSTRY}};
 const CITYSHAPES={{CITYSHAPES}};
 const OBLASTS={{OBLASTS}};
@@ -86,6 +92,28 @@ for(const [la,lo,k2] of IND){
 }
 let showInd=true;
 try{ showInd=localStorage.getItem('bh:ind')!=='0'; }catch(e){}
+// слой «куда летело» — включён по умолчанию: для выбора жилья это первое, что смотрят
+let showStr=true;
+try{ showStr=localStorage.getItem('bh:str')!=='0'; }catch(e){}
+// пять ступеней по числу ночей, когда угроза шла именно на это место:
+// 1–4 · 5–14 · 15–29 · 30–99 · 100+. Чем выше — крупнее и ярче ракета.
+const STRC=['','#B9705B','#C4553A','#D63B21','#E82612','#FF1405'];
+const STRH=[0,10,13,17,21,26];
+const STRO=[0,0.65,0.76,0.86,0.94,1];
+// Ракета носом вверх: высота h, центр в (cx,cy). Только абсолютные координаты —
+// у относительных команд накапливается ошибка и хвост уезжает от корпуса.
+// Корпус узкий (0.17 от высоты): при широком силуэт на 10 пикселях читается грибом.
+function rocketPath(cx,cy,h){
+  const f=n=>n.toFixed(1);
+  const w=h*0.17, t=cy-h/2, b=cy+h/2;
+  const nose=t+h*0.36, body=b-h*0.18, fin=w*2.7;
+  return 'M'+f(cx)+' '+f(t)
+    +'L'+f(cx+w)+' '+f(nose)+'L'+f(cx+w)+' '+f(body)   // скос носа и правый борт
+    +'L'+f(cx+fin)+' '+f(b)+'L'+f(cx+w*0.9)+' '+f(b)   // правое крыло
+    +'L'+f(cx)+' '+f(b-h*0.08)                         // выемка хвоста
+    +'L'+f(cx-w*0.9)+' '+f(b)+'L'+f(cx-fin)+' '+f(b)   // левое крыло
+    +'L'+f(cx-w)+' '+f(body)+'L'+f(cx-w)+' '+f(nose)+'Z';
+}
 
 function project(){
   b=Math.min((W-10)/CW,(H-10)/CH);
@@ -167,6 +195,7 @@ function render(){
   clusters=[...map.values(),...delShown];
   let out='<g clip-path="url(#clclip)" pointer-events="none"><g transform="translate('+tx+' '+ty+') scale('+s+') translate('+A+' '+B+') scale('+k+')">'+oblHTML+heatHTML+(showInd?indHTML:'')+'</g></g>';
   const boxes=[];        // занятые подписями места: сначала города, потом области
+  const drawnCities=new Set();   // подписанные города: у их ракет своя подпись не нужна
   let cityHTML='';       // подписи городов рисуются последними — поверх маркеров, иначе кластер их закрывает
   // Города: население стоит у названия, а размер и жирность подписи растут вместе
   // с ним — просьба покупателя 03.09.2026. 25 тыс. — базовая ступень (это порог,
@@ -182,21 +211,37 @@ function render(){
     if(X<-40||Y<-40||X>W+40||Y>H+40) continue;
     const st=STEP[cityStep(c[3])], fs=cityBase+st.f, fn=fs-2.5;
     const label=c[0], num=c[3]+' тыс.';
+    // Ракета «куда летело» стоит слева от подписи города, а не у его точки: у точки
+    // она садилась поверх маркеров каталога и закрывала число объявлений в кластере.
+    // Подписи же уже расставлены с разбором наложений и рисуются поверх всего.
+    const sr=showStr?STRM[label]:null, srh=sr?STRH[sr[3]]*(W<430?0.86:1):0;
+    const srw=sr?srh*0.34+4:0;
     // Население — второй строкой под названием. В одну строку подпись выходила вдвое
     // шире, и «Хмельницкий 274 тыс.» затирал Тернополь в 150 пикселях от него.
     const tw=Math.max(label.length*fs*0.56, num.length*fn*0.55);
-    // подпись не должна уезжать за край карты
+    // подпись не должна уезжать за край карты (ракета слева — часть ширины)
     var anch='middle', lx=X;
-    if(X-tw/2<4){ anch='start'; lx=4; }
+    if(X-tw/2-srw<4){ anch='start'; lx=4+srw; }
     else if(X+tw/2>W-4){ anch='end'; lx=W-4; }
     const x0=anch==='start'?lx:anch==='end'?lx-tw:lx-tw/2;
     const yNum=Y-9, yLbl=yNum-fn-1, ty0=yLbl-fs;
     // Крупные города идут первыми, поэтому при наложении отбрасывается меньший:
     // иначе на общем виде подписи областных центров затирались районными.
+    // Ширина ракеты в проверку НЕ входит: иначе она отбирала подписи у пяти городов
+    // (Чортков, Золочев и другие пропадали с общего вида). В занятое место она,
+    // наоборот, входит — чтобы следующие подписи держали от неё дистанцию.
+    // Тесно стоящие ракеты слегка налезают на край соседней подписи, но у них гало
+    // по цвету фона, и читаются обе.
     let hit=false;
     for(const b of boxes){ if(x0<b.x1+3&&x0+tw>b.x0-3&&ty0<b.y1+2&&yNum+3>b.y0-2){ hit=true; break; } }
     if(hit) continue;
-    boxes.push({x0,x1:x0+tw,y0:ty0,y1:yNum+3});
+    boxes.push({x0:x0-srw,x1:x0+tw,y0:ty0,y1:yNum+3});
+    drawnCities.add(c[0]);
+    if(sr){
+      // ракета по центру блока подписи, слева от текста
+      const rcy=(ty0+yNum)/2, rcx=x0-srw/2-0.5, lv=sr[3];
+      cityHTML+='<path d="'+rocketPath(rcx,rcy,srh)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.4:1.1)+'" stroke-opacity="0.8" stroke-linejoin="round"/>';
+    }
     // Гало по цвету фона: подпись читается и поверх кластера, и поверх пятна населённости.
     out+='<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="'+st.r+'" fill="var(--muted)" fill-opacity="'+st.o+'"/>';
     const halo='paint-order="stroke" stroke="var(--bg)" stroke-width="3.2" stroke-linejoin="round" stroke-opacity="0.92"';
@@ -226,6 +271,31 @@ function render(){
          'letter-spacing="1.2" text-anchor="'+anch+'" pointer-events="none">'+o.name.toUpperCase()+'</text>';
     boxes.push({x0:ox0,x1:ox0+tw,y0:oy-oblFont,y1:oy+3});
   }
+  // ── слой «куда летело за войну» для мест БЕЗ подписи города: сёл и городков
+  // меньше 25 тыс. (Бурштын с ТЭС, Добротвор), а также тех, чья подпись не влезла.
+  // У подписанных городов ракета уже нарисована слева от названия, в cityHTML.
+  // Объявлений в таких местах может не быть вовсе — ракета всё равно нужна: покупатель
+  // просил видеть угрозу и там, где лоты появятся позже.
+  let strHTML="";
+  if(showStr){
+    const sboxes=[];
+    for(const t of STR){
+      if(drawnCities.has(t[0])) continue;
+      const X=wx(t[2])*s+tx, Y=wy(t[1])*s+ty, lv=t[3];
+      if(X<-30||Y<-30||X>W+30||Y>H+30) continue;
+      // мелкие уровни на общем виде не рисуем: карта превращается в кашу
+      const minLv=W<430?(s<2?3:s<3.5?2:1):(s<1.5?2:1);
+      if(lv<minLv) continue;
+      const h=STRH[lv]*(W<430?0.86:1);
+      // Такое место надо подписать: ракета без названия — красное пятно поверх
+      // кластера, по которому ничего не понять. Не влезла подпись — не рисуем и ракету.
+      const f=lv>=4?11:10, twn=t[0].length*f*0.55, lx0=X-twn/2, ly=Y+h/2+f+1;
+      if(boxes.concat(sboxes).some(b=>lx0<b.x1+2&&lx0+twn>b.x0-2&&ly-f<b.y1+2&&ly+2>b.y0-2)) continue;
+      sboxes.push({x0:lx0,x1:lx0+twn,y0:Y-h/2,y1:ly+2});
+      strHTML+='<path d="'+rocketPath(X,Y,h)+'" fill="'+STRC[lv]+'" fill-opacity="'+STRO[lv]+'" stroke="var(--bg)" stroke-width="'+(lv>=4?1.4:1.1)+'" stroke-opacity="0.75" stroke-linejoin="round"/>'+
+        '<text x="'+X.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+f+'" font-weight="600" fill="'+STRC[lv]+'" text-anchor="middle" paint-order="stroke" stroke="var(--bg)" stroke-width="3" stroke-linejoin="round" stroke-opacity="0.9">'+t[0]+'</text>';
+    }
+  }
   const rSingle=TOUCH?10:8;
   clusters.forEach((cl,i)=>{
     const X=cl.reduce((a,q)=>a+q.X,0)/cl.length, Y=cl.reduce((a,q)=>a+q.Y,0)/cl.length;
@@ -254,7 +324,7 @@ function render(){
       if(s>=3.5||(fs&&s>=2)) out+='<text x="'+X.toFixed(1)+'" y="'+(Y+rSingle+13).toFixed(1)+'" font-size="11" fill="var(--muted)" text-anchor="middle" pointer-events="none">'+esc(p.n)+'</text>';
     }
   });
-  g.innerHTML=out+'<g clip-path="url(#clclip)" pointer-events="none">'+cityHTML+'</g>';
+  g.innerHTML=out+'<g clip-path="url(#clclip)" pointer-events="none">'+cityHTML+strHTML+'</g>';
 }
 window.BHMAP={render:render};
 
@@ -289,6 +359,15 @@ if(lgind){
   lgind.addEventListener('change',()=>{
     showInd=lgind.checked;
     try{ localStorage.setItem('bh:ind', showInd?'1':'0'); }catch(e){}
+    render();
+  });
+}
+const lgstr=document.getElementById('lgstr');
+if(lgstr){
+  lgstr.checked=showStr;
+  lgstr.addEventListener('change',()=>{
+    showStr=lgstr.checked;
+    try{ localStorage.setItem('bh:str', showStr?'1':'0'); }catch(e){}
     render();
   });
 }

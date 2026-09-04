@@ -25,6 +25,7 @@ const thumbUrlsOld = ex(D5 + 'thumb-urls.json') ? rd(D5 + 'thumb-urls.json') : {
 const shell = fs.readFileSync(path.join(__dirname, 'tpl', 'site-shell9.html'), 'utf8');
 const clusterTpl = fs.readFileSync(path.join(__dirname, 'tpl', 'clustermap9.html'), 'utf8');
 const industry = ex(D + 'industry.json') ? rd(D + 'industry.json') : { cells: [] };
+const strikes = ex(D + 'strikes.json') ? rd(D + 'strikes.json') : { cities: [], oblasts: [], from: '', to: '', posts: 0 };
 const addr9 = ex(D + 'addr9.json') ? rd(D + 'addr9.json') : {};
 const shapes = rd(D + 'oblast-shapes9.json');
 const dead0 = ex(path.join(__dirname, '..', 'dead.json')) ? rd(path.join(__dirname, '..', 'dead.json')) : { checked: '', dead: [] };
@@ -189,6 +190,45 @@ function dupBadges(u) {
   }).join('');
 }
 
+// ── «Куда летело»: воздушная угроза у ближайшего города лота, по хронике канала
+// «Николаевский Ванёк» за всю войну (scripts/strikes.js → data/strikes.json).
+// Ключ — украинское имя города из CITIES9, то же, что в u.city.
+const STRK = {};
+for (const c of strikes.cities) STRK[c.name] = c;
+// Пять ступеней по числу ночей, когда угроза шла ИМЕННО на это место
+// («курсом на», подлёт, «будет громко»), а не «где-то в области».
+// Те же границы и цвета — в tpl/clustermap9.html (STRC/STRH): менять в двух местах.
+const STR_LVL = a => a >= 100 ? 5 : a >= 30 ? 4 : a >= 15 ? 3 : a >= 5 ? 2 : 1;
+const STR_COLOR = ['', '#B9705B', '#C4553A', '#D63B21', '#E82612', '#FF1405'];
+const STR_WORD = ['', 'единичные случаи', 'изредка', 'регулярно', 'часто', 'постоянно'];
+// Тот же силуэт, что на карте, приведённый к viewBox 16×16 (h=14, центр 8,8).
+const ROCKET_D = 'M8 1L10.4 6L10.4 12.5L14.4 15L10.1 15L8 13.9L5.9 15L1.6 15L5.6 12.5L5.6 6Z';
+const nightWord = n => n % 10 === 1 && n % 100 !== 11 ? 'ночь'
+  : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'ночи' : 'ночей');
+const nights = n => n + ' ' + nightWord(n);
+function strikeChip(u) {
+  const city = u.city;
+  if (!city) return '';
+  const c = STRK[city];
+  const per = strikes.from && strikes.to ? `${strikes.from.split('-').reverse().join('.')} — ${strikes.to.split('-').reverse().join('.')}` : '';
+  if (!c) {
+    const t = `За всю войну (${per}, ${fmt(strikes.posts)} постов хроники) канал «Николаевский Ванёк» ни разу не назвал ${city}: ни ракет, ни дронов курсом на этот город. ` +
+      'Это не гарантия безопасности — канал ведёт один человек и подробность у него неровная, а угроза для области существует и там, где город не называли. ' +
+      'Но по этой хронике сюда за четыре с половиной года не летело.';
+    return `<span class="ix ixr0" title="${esc(t)}"><b>—</b><i>не летело на ${esc(city)}</i></span>`;
+  }
+  const lv = STR_LVL(c.atNights);
+  const misPct = c.mis + c.drn ? Math.round(100 * c.mis / (c.mis + c.drn)) : 0;
+  const t = `${city}: за ${per} угроза шла на этот город в ${nights(c.atNights)} ` +
+    `(всего город упомянут в хронике в ${nights(c.nights)}, эпизодов ${c.n}` +
+    (c.hits ? `, со взрывом или работой ПВО — ${c.hits}` : '') + '). ' +
+    `Чем летело: ракеты ${misPct}%, дроны «шахеды» ${100 - misPct}%. ` +
+    `Уровень ${lv} из 5 — ${STR_WORD[lv]}. Считано по хронике одного канала: это не официальная статистика ударов.`;
+  return `<span class="ix ixr" style="--sc:${STR_COLOR[lv]}" title="${esc(t)}">` +
+    `<svg class="rkt" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="${ROCKET_D}" fill="${STR_COLOR[lv]}"/></svg>` +
+    `<span class="rtx"><b>${c.atNights}</b><i>${nightWord(c.atNights)} летело на ${esc(city)}</i></span></span>`;
+}
+
 function idx(u) {
   const parts = [];
   const fb = fitBadge(u);
@@ -216,6 +256,7 @@ function idx(u) {
     if (mb) parts.push(mb);
   }
   if (u.km != null) parts.push(`<span class="ix ixt"${kmTint(u.km)} title="Расстояние по прямой до ближайшего города"><b>${u.km} км</b><i>до ${esc(u.city)}</i></span>`);
+  { const sc = strikeChip(u); if (sc) parts.push(sc); }
   if (u.ppm) parts.push(`<span class="ix" title="Цена за квадратный метр"><b>$${fmt(u.ppm)}</b><i>за м²</i></span>`);
   if (u.kind === 'flat' && u.floor) parts.push(`<span class="ix" title="Этаж и этажность дома"><b>${u.floor}${u.floors ? '/' + u.floors : ''}</b><i>этаж</i></span>`);
   const ps = posted(u);
@@ -338,6 +379,16 @@ const CITY_RU = {
   'Чортків': 'Чортков', 'Сарни': 'Сарны', 'Новий Розділ': 'Новый Раздел', 'Трускавець': 'Трускавец',
   'Хмільник': 'Хмельник', 'Малин': 'Малин', 'Коростишів': 'Коростышев', 'Гайсин': 'Гайсин',
 };
+// Места из хроники воздушной угрозы, которых нет в CITY_RU: там только города
+// от 25 тыс., а ракеты рисуются и у Бурштына с его ТЭС, и у Добротвора.
+const STRIKE_RU = {
+  'Бурштин': 'Бурштын', 'Золочів': 'Золочев', 'Красилів': 'Красилов', 'Добротвір': 'Добротвор',
+  'Немирів': 'Немиров', 'Збараж': 'Зборов', 'Гнівань': 'Гнивань', 'Броди': 'Броды',
+  'Ізяслав': 'Изяслав', 'Тульчин': 'Тульчин', 'Яворів': 'Яворов', 'Новодністровськ': 'Новоднестровск',
+  'Ладижин': 'Ладыжин', 'Жовква': 'Жолква', 'Кременець': 'Кременец', 'Городок': 'Городок',
+  'Горохів': 'Горохов', 'Острог': 'Острог', 'Березне': 'Березно', 'Бережани': 'Бережаны',
+  'Теребовля': 'Теребовля', 'Козятин': 'Казатин', 'Погребище': 'Погребище', 'Калинівка': 'Калиновка',
+};
 // Крупные рисуются первыми: при наложении подписей выживает та, что важнее.
 const MAP_CITIES = CITIES9.filter(c => c[3] >= 25).sort((a, b) => b[3] - a[3]).map(c => {
   const ru = CITY_RU[c[0]];
@@ -345,9 +396,20 @@ const MAP_CITIES = CITIES9.filter(c => c[3] >= 25).sort((a, b) => b[3] - a[3]).m
   return [ru, c[1], c[2], c[3]];
 });
 
+// Слой карты «куда летело»: место, координаты, уровень 1..5, ночей «на», ночей всего,
+// эпизодов, взрывов/ПВО, доля ракет в процентах. Место, которого в хронике нет вообще,
+// в массив не попадает — на карте у него не будет ракеты (просьба покупателя).
+const STRIKES = strikes.cities.map(c => {
+  const ru = CITY_RU[c.name] || STRIKE_RU[c.name];
+  if (!ru) throw new Error('нет русского названия для места «' + c.name + '» — добавь в STRIKE_RU, иначе ракета молча исчезнет с карты');
+  const misPct = c.mis + c.drn ? Math.round(100 * c.mis / (c.mis + c.drn)) : 0;
+  return [ru, c.lat, c.lon, STR_LVL(c.atNights), c.atNights, c.nights, c.n, c.hits, misPct];
+}).sort((a, b) => b[3] - a[3] || b[4] - a[4]);
+
 const cluster = clusterTpl
   .replace('{{PTS}}', () => JSON.stringify(pts).replace(/<\//g, '<\\/'))
   .replace('{{INDUSTRY}}', () => JSON.stringify(IND))
+  .replace('{{STRIKES}}', () => JSON.stringify(STRIKES))
   .replace('{{CITYSHAPES}}', () => JSON.stringify(rd(D2 + 'city-shapes.json').filter(c => c.name !== 'Ужгород')))
   .replace('{{OBLASTS}}', () => JSON.stringify(shapes.map(o => ({ name: o.name, path: o.path, lx: o.lx, ly: o.ly }))))
   .replace('{{GEOACC}}', () => GEOACC)
@@ -361,9 +423,90 @@ const XLINK = {
   site: `<p class="xlink"><span>Та же подборка:</span><a href="${ARTIFACT}" target="_blank" rel="noopener">↗ открыть в артефакте</a><span>рабочая версия, в которой подборку правит Claude.</span></p>`,
 };
 
+// ── Таблица «куда летело» под картой: по областям и по городам. Нужна затем, что
+// на карте видно только размер ракеты, а решение принимается по цифрам; на телефоне
+// подсказки при наведении не работают вовсе.
+function strikeTable() {
+  if (!strikes.cities.length) return '';
+  const per = `${strikes.from.split('-').reverse().join('.')} — ${strikes.to.split('-').reverse().join('.')}`;
+  // «Красная зона» — уровни 4 и 5. Считаем из STRIKES, а не руками: иначе после
+  // пересборки текст разошёлся бы с таблицей и с картой.
+  const red = STRIKES.filter(t => t[3] >= 4).map(t => t[0]);
+  const lv3 = STRIKES.filter(t => t[3] === 3).map(t => t[0]);
+  const top = STRIKES.slice().sort((a, b) => b[7] - a[7])[0];
+  const hot = top ? `${top[0]} (${top[7]} сообщений о взрывах и работе ПВО)` : '';
+  // Сколько лотов каталога стоит у городов каждого уровня: цифра, которая
+  // переводит карту в решение — «сколько из 894 вообще стоит смотреть».
+  const byLvl = [0, 0, 0, 0, 0, 0];
+  for (const u of [...units, ...semi]) {
+    const c = u.city ? STRK[u.city] : null;
+    byLvl[c ? STR_LVL(c.atNights) : 0]++;
+  }
+  const lotWord = n => n % 10 === 1 && n % 100 !== 11 ? 'лот' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'лота' : 'лотов');
+  const obl = [...strikes.oblasts].sort((a, b) => b.nights - a.nights);
+  const oRows = obl.map(o => `<tr><td>${esc(o.ru || o.name)}</td><td class="n">${o.nights}</td><td class="n">${fmt(o.n)}</td><td class="n">${o.at}</td><td class="n">${o.hits}</td></tr>`).join('');
+  const cRows = STRIKES.map(t => {
+    const [ru, , , lv, at, ni, n, hits, misPct] = t;
+    return `<tr><td><svg class="rkt" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="${ROCKET_D}" fill="${STR_COLOR[lv]}"/></svg> ${esc(ru)}</td>` +
+      `<td class="n">${at}</td><td class="n">${ni}</td><td class="n">${n}</td><td class="n">${hits || ''}</td>` +
+      `<td class="n">${misPct}%</td><td class="lv" style="--sc:${STR_COLOR[lv]}">${STR_WORD[lv]}</td></tr>`;
+  }).join('');
+  const zero = CITIES9.filter(c => !STRK[c[0].replace(' (Хм)', '')]).map(c => c[0].replace(' (Хм)', ''));
+  return `<details class="strk" id="strikes">
+<summary><b>Куда летели ракеты и дроны за всю войну</b> <span>— хроника канала «Николаевский Ванёк», ${per}</span></summary>
+<div class="strkb">
+<p>На карте у каждого места стоит <b>ракета</b>: чем крупнее и ярче, тем чаще туда летело.
+Где за всю войну не летело ни разу — ракеты нет вовсе. Слой выключается в легенде карты.</p>
+<p class="strkred"><b>Красная зона — ${red.join(' · ')}.</b> Это места уровня 4–5: угроза шла
+на них от 30 разных ночей и больше. Хуже всех по подтверждённым ударам — ${hot}: там военный
+аэродром, и по нему работают прицельно. Уровень 3 («регулярно», 15–29 ночей) —
+${lv3.join(', ')}. В каталоге у городов красной зоны стоит
+<b>${byLvl[5] + byLvl[4]}</b> ${lotWord(byLvl[5] + byLvl[4])}, у городов уровня 3 —
+<b>${byLvl[3]}</b>, а у городов, которых в хронике нет ни разу, — <b>${byLvl[0]}</b>.</p>
+<p class="strkm"><b>Откуда цифры.</b> Разобрано <b>${fmt(strikes.posts)} постов</b> канала
+<a href="https://t.me/${strikes.channel}" target="_blank" rel="noopener">@${strikes.channel}</a>
+за ${per} — это вся история канала (он начал 17 апреля 2022, поэтому первые два месяца
+войны в счёт не входят). Единица счёта — не пост, а абзац: канал ведёт сводки списком
+(«общая по мопедам:» и дальше по одной группе целей в строке). «Мопед» у него — «шахед».</p>
+<ul class="strkl">
+<li><b>Ночей «на город»</b> — сколько разных суток угроза шла именно на это место:
+«курсом на», «подлетает», «будет громко». Это главная цифра: она отвечает на вопрос
+«летело ли сюда», а не «летело ли мимо». По ней и нарисован размер ракеты:
+1–4 · 5–14 · 15–29 · 30–99 · 100 и больше.</li>
+<li><b>Ночей всего</b> — сколько суток место вообще попадало в хронику, включая пролёты
+мимо и «дрон западнее города». Разница с первой цифрой и есть <b>транзит</b>: у Коростеня
+135 ночей упоминаний против 33 «на город» — над ним летают, а бьют в другое место.</li>
+<li><b>Эпизодов</b> — сколько абзацев назвали это место. Один дрон, пока летит, попадает
+в хронику несколько раз, поэтому это мера интенсивности, а не число целей.</li>
+<li><b>Взрывы/ПВО</b> — абзацы со взрывом, попаданием, сбитием, пожаром или работой ПВО.
+Самая узкая цифра и самая надёжная.</li>
+<li><b>Ракеты %</b> — какая доля упоминаний про ракеты, а не про дроны. Это разные вещи:
+дрон над городом обычно сбивают, ракета доходит.</li>
+</ul>
+<p class="strkw"><b>Чего эти цифры не значат.</b> Это хроника одного канала, а не официальная
+статистика ударов и не число разрушенных домов. Подробность у канала неровная: 2022 год
+описан скупо, с 2024 подробно. «Не летело» значит «канал не называл», а не «безопасно» —
+угроза для области есть и там, где город не упоминали ни разу. Проверять по своему
+населённому пункту всё равно нужно у местных.</p>
+<h3>По областям</h3>
+<div class="strkt"><table>
+<thead><tr><th>Область</th><th class="n">Ночей</th><th class="n">Эпизодов</th><th class="n">«На область»</th><th class="n">Взрывы/ПВО</th></tr></thead>
+<tbody>${oRows}</tbody></table></div>
+<h3>По городам — куда летело</h3>
+<div class="strkt"><table>
+<thead><tr><th>Место</th><th class="n">Ночей «на город»</th><th class="n">Ночей всего</th><th class="n">Эпизодов</th><th class="n">Взрывы/ПВО</th><th class="n">Ракеты</th><th>Насколько часто</th></tr></thead>
+<tbody>${cRows}</tbody></table></div>
+<h3>Города каталога, которых в хронике нет ни разу</h3>
+<p class="strkz">${zero.map(esc).join(' · ')}</p>
+<p class="strkw">Это ${zero.length} города из ${CITIES9.length} справочника. У них на карте ракеты нет.</p>
+</div>
+</details>`;
+}
+
 function build(mode) {
   return shell
     .replace('{{MAP}}', () => cluster)
+    .replace('{{STRIKETABLE}}', () => strikeTable())
     .replace('{{ROWS}}', () => rowsFor(mode))
     .replace('{{DEAD0}}', () => JSON.stringify(dead0))
     .replace('{{GEOLEDE}}', () => GEOLEDE)
