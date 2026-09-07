@@ -9,6 +9,7 @@
   --chip:#F0EFE8; --rank:#D8D5C6; --gold:#C9962B;
   --fav2:#2F5FA8; --fav2-soft:#E8EEF8;
   --dead:#A8442E; --dead-soft:#F6E3DC;
+  --riel:#7A4FB0; --riel-soft:#F0E9F8; --metr:#0E7C86; --metr-soft:#E1F3F3;
   --kfs:82%; --kfl:63%; --kfa:.85;
   --rgs:74%; --rgl:38%;
 }
@@ -19,6 +20,7 @@
     --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
     --fav2:#7EA6DE; --fav2-soft:#1E2836;
     --dead:#DB8F76; --dead-soft:#372218;
+    --riel:#C6A6EA; --riel-soft:#2C2438; --metr:#5FD1D6; --metr-soft:#173535;
     --kfs:62%; --kfl:44%; --kfa:.6;
     --rgs:58%; --rgl:56%;
   }
@@ -29,6 +31,7 @@
   --chip:#2A2F28; --rank:#3A4038; --gold:#D9A24A;
   --fav2:#7EA6DE; --fav2-soft:#1E2836;
   --dead:#DB8F76; --dead-soft:#372218;
+  --riel:#C6A6EA; --riel-soft:#2C2438; --metr:#5FD1D6; --metr-soft:#173535;
   --kfs:62%; --kfl:44%; --kfa:.6;
   --rgs:58%; --rgl:56%;
 }
@@ -179,6 +182,8 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .srcb-lun{background:var(--amber-soft); color:var(--amber);}
 .srcb-tg{background:var(--fav2-soft); color:var(--fav2);}
 .srcb-fb{background:var(--accent-soft); color:var(--accent);}
+.srcb-riel{background:var(--riel-soft); color:var(--riel);}
+.srcb-metr{background:var(--metr-soft); color:var(--metr);}
 .kindb{background:transparent; color:var(--muted); border:1px solid var(--line); font-weight:600;}
 .newb{font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   padding:2px 6px; border-radius:5px; white-space:nowrap; vertical-align:middle; margin-left:6px;
@@ -953,6 +958,8 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <label><input type="checkbox" data-f="src" value="lun" checked> ЛУН <i data-cnt="src:lun"></i></label>
     <label><input type="checkbox" data-f="src" value="tg" checked> Телеграм <i data-cnt="src:tg"></i></label>
     <label><input type="checkbox" data-f="src" value="fb" checked> Фейсбук <i data-cnt="src:fb"></i></label>
+    <label><input type="checkbox" data-f="src" value="riel" checked> Rieltor <i data-cnt="src:riel"></i></label>
+    <label><input type="checkbox" data-f="src" value="metr" checked> Метраж <i data-cnt="src:metr"></i></label>
   </span>
   <span class="fltg" role="group" aria-label="Тип жилья">
     <span class="fltl">Жильё</span>
@@ -1238,14 +1245,15 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     }
     return null;
   }
-  var flt={src:{olx:true,lun:true,tg:true,fb:true}, kind:{house:true,flat:true},
+  var flt={src:{olx:true,lun:true,tg:true,fb:true,riel:true,metr:true}, kind:{house:true,flat:true},
            ready:{done:true,semi:true}, obl:{vol:true,rov:true,lv:true,ter:true,if:true,chv:true,khm:true,zht:true,vin:true},
            price:{p30:true,p35:true,p40:true}, big65:false, onlynew:false};
   try{
     var fraw=JSON.parse(localStorage.getItem(FKEY)||'null');
     if(fraw){
       if(fraw.src) flt.src={olx:fraw.src.olx!==false, lun:fraw.src.lun!==false,
-        tg:fraw.src.tg!==false, fb:fraw.src.fb!==false};
+        tg:fraw.src.tg!==false, fb:fraw.src.fb!==false,
+        riel:fraw.src.riel!==false, metr:fraw.src.metr!==false};
       if(fraw.kind) flt.kind={house:fraw.kind.house!==false, flat:fraw.kind.flat!==false};
       if(fraw.ready) flt.ready={done:fraw.ready.done!==false, semi:fraw.ready.semi!==false};
       if(fraw.price) flt.price={p30:fraw.price.p30!==false, p35:fraw.price.p35!==false, p40:fraw.price.p40!==false};
@@ -1279,7 +1287,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     return true;
   }};
   function fltCounts(){
-    var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'kind:house':0,'kind:flat':0,
+    var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'src:riel':0,'src:metr':0,'kind:house':0,'kind:flat':0,
            'ready:done':0,'ready:semi':0,'big65':0,'onlynew':0,
            'price:p30':0,'price:p35':0,'price:p40':0,
            'obl:vol':0,'obl:rov':0,'obl:lv':0,'obl:ter':0,'obl:if':0,'obl:chv':0,'obl:khm':0,'obl:zht':0,'obl:vin':0};
@@ -1730,7 +1738,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     if(rw){
       var lbl=[];
       if(rw.dataset.kind) lbl.push(rw.dataset.kind==='flat'?'квартира':'дом');
-      if(rw.dataset.src) lbl.push({lun:'ЛУН',tg:'Телеграм',fb:'Фейсбук'}[rw.dataset.src]||'OLX');
+      if(rw.dataset.src) lbl.push({lun:'ЛУН',tg:'Телеграм',fb:'Фейсбук',riel:'Rieltor',metr:'Метраж'}[rw.dataset.src]||'OLX');
       if(lbl.length) tail.push(lbl.join(' '));
     }
     tail.push('`'+id+'`');

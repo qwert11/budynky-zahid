@@ -245,6 +245,12 @@ function loadExt(file, src, geoFile, dir) {
 const tgAll = [...loadExt('tme-candidates.json', 'tg', 'tg-geocode.json', EXT), ...loadExt('tg9-candidates.json', 'tg', 'tg9-geocode.json', D)]
   .map(finish).filter(gate);
 const fbAll = loadExt('fb-candidates.json', 'fb', null, EXT).map(finish).filter(gate);
+// Rieltor.ua отдаёт координаты прямо в карточке поиска; Metrazh координат не даёт —
+// сборщик (metrazh9.js) сам подставляет центр города поиска в r.lat/r.lon, поэтому
+// geoFile обоим не нужен. addr9.js на следующем прогоне уточнит точку у Metrazh по
+// улице из заголовка/описания — так же, как у OLX.
+const rielAll = loadExt('rieltor9-candidates.json', 'riel', null, D).map(finish).filter(gate);
+const metrAll = loadExt('metrazh9-candidates.json', 'metr', null, D).map(finish).filter(gate);
 
 /* ════════ 5. топ-50 на область в каждом наборе источник×тип (готовое) ════════ */
 function dedupe(arr) {
@@ -306,6 +312,8 @@ const sets = {
   'lun|house': dedupe(lunAll.filter(u => u.kind === 'house').filter(nbPass)), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat').filter(nbPass)),
   'tg|house': dedupe(tgAll.filter(u => u.kind === 'house').filter(nbPass)), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat').filter(nbPass)),
   'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'riel|house': dedupe(rielAll.filter(u => u.kind === 'house').filter(nbPass)), 'riel|flat': dedupe(rielAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'metr|house': dedupe(metrAll.filter(u => u.kind === 'house').filter(nbPass)), 'metr|flat': dedupe(metrAll.filter(u => u.kind === 'flat').filter(nbPass)),
 };
 const units = [];
 const setStats = [];

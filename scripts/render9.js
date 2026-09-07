@@ -179,7 +179,7 @@ function chkBody(u) {
 
 const byId = {};
 for (const u of [...units, ...semi]) byId[u.id] = u;
-const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК' };
+const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК', riel: 'RIELTOR', metr: 'МЕТРАЖ' };
 const KIND_LABEL = { house: 'дом', flat: 'квартира' };
 function dupBadges(u) {
   if (!u.dups || !u.dups.length) return '';
@@ -276,12 +276,13 @@ function idx(u) {
   if (u.ppm) parts.push(`<span class="ix" title="Цена за квадратный метр"><b>$${fmt(u.ppm)}</b><i>за м²</i></span>`);
   if (u.kind === 'flat' && u.floor) parts.push(`<span class="ix" title="Этаж и этажность дома"><b>${u.floor}${u.floors ? '/' + u.floors : ''}</b><i>этаж</i></span>`);
   const ps = posted(u);
-  const WHERE = { olx: 'на OLX', lun: 'на ЛУНе', tg: 'в канале', fb: 'на Фейсбуке' };
+  const WHERE = { olx: 'на OLX', lun: 'на ЛУНе', tg: 'в канале', fb: 'на Фейсбуке', riel: 'на Rieltor.ua', metr: 'на Метраже' };
   const WHERE_T = {
     olx: 'Размещено на OLX ' + (ps ? ps.date : '') + '. На странице объявления OLX показывает дату последнего поднятия',
     lun: 'Дата объявления на ЛУНе',
     tg: 'Дата поста в канале Телеграма — не дата размещения объекта: агрегаторы перевыкладывают один лот месяцами',
-    fb: 'Дата публикации в Facebook Marketplace'
+    fb: 'Дата публикации в Facebook Marketplace',
+    riel: 'Дата объявления на Rieltor.ua', metr: 'Дата объявления на Метраже',
   };
   if (ps) parts.push(`<span class="ix ixd" title="${WHERE_T[u.src] || ''}, продаётся ${ps.age}"><b>${ps.date}</b><i>${WHERE[u.src] || 'на OLX'} ${ps.age}</i></span>`);
   return `<div class="ixs">${parts.join('')}</div>`;
@@ -309,7 +310,9 @@ function rowFor(u, mode) {
     lun: 'Объявление найдено на lun.ua',
     olx: 'Объявление с OLX.ua',
     tg: 'Пост в публичном канале Telegram' + (u.chan ? ' @' + u.chan : '') + (u.locExact ? '' : ' · село в посте не указано, точка стоит на городе'),
-    fb: 'Объявление в Facebook Marketplace'
+    fb: 'Объявление в Facebook Marketplace',
+    riel: 'Объявление с Rieltor.ua · координаты из карточки продавца',
+    metr: 'Объявление с Metrazh.com.ua' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес дома'),
   };
   const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc((SEMI[u.semi] || SEMI.unfin).title)}">${(SEMI[u.semi] || SEMI.unfin).badge}</span>` : '';
   const newB = u.isNew ? `<span class="newb" title="Новостройка, проверенная по фотографиям: на снимках жилой интерьер, а не бетон под чистову. Такие лоты идут первыми и не вытесняются вторичкой из топ-50. Новострой без живых фото (стяжка и штукатурка, только планировка или рендер, только фасад) в каталог не берётся вовсе. Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';

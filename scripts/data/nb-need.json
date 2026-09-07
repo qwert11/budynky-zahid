@@ -1,1 +1,311 @@
-[]
+[
+ {
+  "id": "RIEL12875148",
+  "obl": "rov",
+  "src": "riel",
+  "kind": "house",
+  "quality": 60,
+  "km": 10,
+  "city": "Рівне",
+  "price": 45000,
+  "area": 81,
+  "rooms": 3,
+  "floor": null,
+  "floors": 1,
+  "photos": [
+   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/531/31/1/1869509981906531.jpg"
+  ],
+  "title": "масив Київський",
+  "link": "https://rieltor.ua/belaja-krinitsa/houses-sale/view/12875148/"
+ },
+ {
+  "id": "RIEL12857939",
+  "obl": "rov",
+  "src": "riel",
+  "kind": "house",
+  "quality": 78,
+  "km": 0,
+  "city": "Рівне",
+  "price": 45000,
+  "area": 81,
+  "rooms": 3,
+  "floor": null,
+  "floors": 1,
+  "photos": [
+   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/271/71/1/1865538369545271.jpg"
+  ],
+  "title": "Масив Київський",
+  "link": "https://rieltor.ua/rovno/houses-sale/view/12857939/"
+ },
+ {
+  "id": "RIEL12995777",
+  "obl": "khm",
+  "src": "riel",
+  "kind": "flat",
+  "quality": 83,
+  "km": 2,
+  "city": "Хмельницький",
+  "price": 44000,
+  "area": 53,
+  "rooms": 2,
+  "floor": 2,
+  "floors": 10,
+  "photos": [
+   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/308/8/8/1865711933096308.jpg"
+  ],
+  "title": "Хмельницький, Озерна вул., 4",
+  "link": "https://rieltor.ua/hmelnitskij/flats-sale/view/12995777/"
+ },
+ {
+  "id": "METR4543386",
+  "obl": "ter",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 90,
+  "km": 0,
+  "city": "Тернопіль",
+  "price": 42500,
+  "area": 62,
+  "rooms": 2,
+  "floor": 5,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "Продаж 2-к квартири в новобудові",
+  "link": "https://metrazh.com.ua/prodazh-2-k-kvartiri-v-novobudovi-4543386.html"
+ },
+ {
+  "id": "METR4543951",
+  "obl": "ter",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 90,
+  "km": 0,
+  "city": "Тернопіль",
+  "price": 43400,
+  "area": 62.42,
+  "rooms": 2,
+  "floor": 5,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "Продаж двокімнатної квартири",
+  "link": "https://metrazh.com.ua/prodazh-dvokimnatnoji-kvartiri-4543951.html"
+ },
+ {
+  "id": "METR5017567",
+  "obl": "if",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 88,
+  "km": 0,
+  "city": "Івано-Франківськ",
+  "price": 44500,
+  "area": 57.8,
+  "rooms": 2,
+  "floor": 8,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "2 кім квартира в новобудові в ЖК Опришівська Слобода",
+  "link": "https://metrazh.com.ua/2-kim-kvartira-v-novobudovi-v-zhk-oprishivska-sloboda-5017567.html"
+ },
+ {
+  "id": "METR4636935",
+  "obl": "if",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 89,
+  "km": 0,
+  "city": "Івано-Франківськ",
+  "price": 39160,
+  "area": 57,
+  "rooms": 2,
+  "floor": 6,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "2х км квартира в закритому комплексі,+розтермінування до 30 міс",
+  "link": "https://metrazh.com.ua/2kh-km-kvartira-v-zakritomu-kompleksi-rozterminuvanna-do-30-mis-4636935.html"
+ },
+ {
+  "id": "METR5110411",
+  "obl": "if",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 88,
+  "km": 0,
+  "city": "Івано-Франківськ",
+  "price": 42081,
+  "area": 56.5,
+  "rooms": 2,
+  "floor": 10,
+  "floors": 13,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "Квартира в центрі продаж двокімнатної від власника 2 кім збудована сирець Княгинин Галицька",
+  "link": "https://metrazh.com.ua/kvartira-v-centri-prodazh-dvokimnatnoji-vid-vlasnika-2-kim-zbudovana-sirec-knaginin-galicka-5110411.html"
+ },
+ {
+  "id": "METR4718212",
+  "obl": "chv",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 89,
+  "km": 1,
+  "city": "Чернівці",
+  "price": 36074,
+  "area": 74,
+  "rooms": 2,
+  "floor": 2,
+  "floors": 3,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "2кн Новобудова,на Прутській",
+  "link": "https://metrazh.com.ua/2kn-novobudova-na-prutskij-4718212.html"
+ },
+ {
+  "id": "METR5204175",
+  "obl": "chv",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 83,
+  "km": 1,
+  "city": "Чернівці",
+  "price": 31064,
+  "area": 67,
+  "rooms": 3,
+  "floor": 1,
+  "floors": 5,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "3 кімн квартира в зданій новобудові. Вільне планування",
+  "link": "https://metrazh.com.ua/3-kimn-kvartira-v-zdanij-novobudovi-vilne-planuvanna-5204175.html"
+ },
+ {
+  "id": "METR4953383",
+  "obl": "khm",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 81,
+  "km": 2,
+  "city": "Хмельницький",
+  "price": 42086,
+  "area": 50,
+  "rooms": 2,
+  "floor": 6,
+  "floors": 10,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "ЕЛЕКТРОНІКА.  ДВОкімнатна квартира в готовій новобудові!",
+  "link": "https://metrazh.com.ua/jelektronika-dvokimnatna-kvartira-v-gotovij-novobudovi-4953383.html"
+ },
+ {
+  "id": "METR4754489",
+  "obl": "khm",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 87,
+  "km": 2,
+  "city": "Хмельницький",
+  "price": 43000,
+  "area": 65.8,
+  "rooms": 2,
+  "floor": 3,
+  "floors": 10,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "Продаж 2к квартири! Озерна",
+  "link": "https://metrazh.com.ua/prodazh-2k-kvartiri-ozerna-4754489.html"
+ },
+ {
+  "id": "METR4709331",
+  "obl": "khm",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 83,
+  "km": 2,
+  "city": "Хмельницький",
+  "price": 34000,
+  "area": 50,
+  "rooms": 2,
+  "floor": 4,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "ВИСТАВКА. Компактна ДВОкімнатна квартира у новобудові в розтрочку!",
+  "link": "https://metrazh.com.ua/vistavka-kompaktna-dvokimnatna-kvartira-u-novobudovi-v-roztrochku-4709331.html"
+ },
+ {
+  "id": "METR4556857",
+  "obl": "zht",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 89,
+  "km": 1,
+  "city": "Житомир",
+  "price": 45000,
+  "area": 70,
+  "rooms": 2,
+  "floor": 7,
+  "floors": 9,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "2-кім ЖК Абрикос",
+  "link": "https://metrazh.com.ua/2-kim-zhk-abrikos-4556857.html"
+ },
+ {
+  "id": "METR4964549",
+  "obl": "vin",
+  "src": "metr",
+  "kind": "flat",
+  "quality": 81,
+  "km": 0,
+  "city": "Вінниця",
+  "price": 40000,
+  "area": 53,
+  "rooms": 2,
+  "floor": 4,
+  "floors": 4,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5272/5272930l3300b111.jpg",
+   "https://metrazh.com.ua/files/images/items/5272/5272931l5cfb4827.jpg",
+   "https://metrazh.com.ua/files/images/items/2912/2912365lebd96620.jpg"
+  ],
+  "title": "Одна з найдешевших 2-х кімнатних квартир  в новобудові. Площа 53 кв.м, в ЖК квартири розкуплені, акт",
+  "link": "https://metrazh.com.ua/odna-z-najdeshevshih-2-kh-kimnatnih-kvartir-v-novobudovi-ploshha-53-kvm-v-zhk-kvartiri-rozkupleni-akt-4964549.html"
+ }
+]
