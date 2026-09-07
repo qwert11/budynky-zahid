@@ -1,5 +1,24 @@
 [
  {
+  "id": "RIEL12856458",
+  "obl": "rov",
+  "src": "riel",
+  "kind": "house",
+  "quality": 78,
+  "km": 0,
+  "city": "Рівне",
+  "price": 45000,
+  "area": 81,
+  "rooms": 3,
+  "floor": null,
+  "floors": 1,
+  "photos": [
+   "https://market-images.lunstatic.net/lun-ua/480/360/images/offers/1869599625520830.jpg"
+  ],
+  "title": "масив Київський",
+  "link": "https://rieltor.ua/rovno/houses-sale/view/12856458/"
+ },
+ {
   "id": "RIEL12875148",
   "obl": "rov",
   "src": "riel",
@@ -13,7 +32,7 @@
   "floor": null,
   "floors": 1,
   "photos": [
-   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/531/31/1/1869509981906531.jpg"
+   "https://market-images.lunstatic.net/lun-ua/480/360/images/offers/1870319759128480.jpg"
   ],
   "title": "масив Київський",
   "link": "https://rieltor.ua/belaja-krinitsa/houses-sale/view/12875148/"
@@ -32,7 +51,7 @@
   "floor": null,
   "floors": 1,
   "photos": [
-   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/271/71/1/1865538369545271.jpg"
+   "https://market-images.lunstatic.net/lun-ua/480/360/images/offers/1869630975390455.jpg"
   ],
   "title": "Масив Київський",
   "link": "https://rieltor.ua/rovno/houses-sale/view/12857939/"
@@ -51,10 +70,29 @@
   "floor": 2,
   "floors": 10,
   "photos": [
-   "https://market-images.lunstatic.net/lun-ua/60/60/images/avatars/308/8/8/1865711933096308.jpg"
+   "https://market-images.lunstatic.net/lun-ua/480/360/images/offers/1870130065105326.jpg"
   ],
   "title": "Хмельницький, Озерна вул., 4",
   "link": "https://rieltor.ua/hmelnitskij/flats-sale/view/12995777/"
+ },
+ {
+  "id": "RIEL11100810",
+  "obl": "khm",
+  "src": "riel",
+  "kind": "flat",
+  "quality": 87,
+  "km": 2,
+  "city": "Хмельницький",
+  "price": 41500,
+  "area": 66,
+  "rooms": 2,
+  "floor": 3,
+  "floors": 10,
+  "photos": [
+   "https://rieltor-images.lunstatic.net/rieltor-ua-01/480/360/offers/574/74/4/1846038764198574.jpg"
+  ],
+  "title": "Старокостянтинівське шосе, 2/1Е",
+  "link": "https://rieltor.ua/hmelnitskij/flats-sale/view/11100810/"
  },
  {
   "id": "METR4543386",

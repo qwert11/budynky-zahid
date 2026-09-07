@@ -66,7 +66,9 @@ function parseCards(html) {
     // граница задаётся лукахедом, а не \b
     const landM = /(\d+(?:[.,]\d+)?)\s*сот(?![а-яіїєґА-ЯІЇЄҐ])/.exec(chunk);
     const descM = /catalog-card-description"[^>]*>\s*<span[^>]*>([\s\S]*?)<\/span>/.exec(chunk);
-    const photoM = /data-src="(https:\/\/market-images[^"]+\.jpg)"/.exec(chunk);
+    // "offer-photo-slider-slide-image" — фото самого объекта; на аватар риелтора
+    // (класс "…-avatar", папка /avatars/ в URL) не претендуем
+    const photoM = /class="offer-photo-slider-slide-image[^"]*"\s+src="([^"]+)"/.exec(chunk);
     out.push({
       id: 'RIEL' + s.id, price, lat: s.lat, lon: s.lon, link,
       address, region,
