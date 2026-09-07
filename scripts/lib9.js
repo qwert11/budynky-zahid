@@ -86,6 +86,22 @@ function houseQuality9(u) {
   const bonus = (u.noCommission ? 0.03 : 0) + (u.photos && u.photos.length >= 3 ? 0.02 : 0);
   return scale(0.2 * ppm + 0.2 * area + 0.2 * land + 0.4 * near + bonus);
 }
+// Тип дома квартиры (просьба покупателя 07.09.2026): чешка и недавний жилой фонд —
+// в приоритете, старая хрущёвка и панельки 80-90-х — нет. Источник — параметр OLX
+// «Тип будинку» (property_type_appartments_sale, попадает в u.houseType в units9.js).
+// У ОLX нет отдельной метки «брежнєвка» — ближайший бакет их же классификатора,
+// «Житловий фонд 80-90-і», накрывает позднесоветскую массовую застройку и захватывает
+// заодно первые постсоветские годы; остальные типы (сталінка, гостинка, довоєнні
+// будинки и т.д.) явно не называл покупатель — стоят нейтрально. У ЛУНа, Телеграма
+// и Фейсбука параметра нет вовсе — тоже нейтрально, вес не проседает и не растёт.
+const BUILD_TYPE_W = {
+  'Чешка': 0.9,
+  'Житловий фонд від 2021 р.': 0.95,
+  'Житловий фонд 2011-2020-і': 0.8,
+  'Хрущовка': 0.1,
+  'Житловий фонд 80-90-і': 0.25,
+};
+const buildTypeW = t => (t && Object.prototype.hasOwnProperty.call(BUILD_TYPE_W, t)) ? BUILD_TYPE_W[t] : 0.5;
 function flatQuality9(u) {
   const ppm = bell(u.ppm, 480, 700, 300, 1100);
   const area = bell(u.area, 58, 85, 45, 130);
@@ -94,9 +110,10 @@ function flatQuality9(u) {
   if (u.floor && u.floors) floor = (u.floor === 1 || u.floor === u.floors) ? 0.25 : 1;
   else if (u.floor) floor = u.floor === 1 ? 0.25 : 0.8;
   const repair = /євроремонт/i.test(u.repair || '') ? 1 : /житлов|косметич/i.test(u.repair || '') ? 0.75 : 0.45;
+  const btype = buildTypeW(u.houseType);
   const near = down(u.km, 0, 12);
   const bonus = (u.noCommission ? 0.02 : 0);
-  return scale(0.143 * (ppm + area + rooms + floor + repair) + 0.286 * near + bonus);
+  return scale(0.125 * (ppm + area + rooms + floor + repair + btype) + 0.25 * near + bonus);
 }
 
 // Бюджет каталога и полосы фильтра «Цена» (03.09.2026: было $29–41 тыс. одним куском).
@@ -244,5 +261,5 @@ function semiFlatQuality9(u) {
   return scale((ppm + area + (rooms + floor) / 2 + ready) / 6 + near / 3 + bonus);
 }
 
-module.exports = { CITIES9, deLatin, BUDGET_LO, BUDGET_HI, PRICE_BANDS, inBudget, bandOf, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
+module.exports = { CITIES9, deLatin, BUDGET_LO, BUDGET_HI, PRICE_BANDS, inBudget, bandOf, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, BUILD_TYPE_W, buildTypeW, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
   SEMI, SEMI_TXT, semiClass, semiHouseQuality9, semiFlatQuality9 };

@@ -1,21 +1,21 @@
 {
- "updated": "2026-09-02",
+ "updated": "2026-09-07",
  "rule": "Лоты, снятые покупателем корзиной. В каталог не возвращать никогда: при каждой пересборке наборы фильтруются по этому списку ДО отбора топа, освободившиеся места добираются следующими по индексу. Список только растёт.",
- "count": 82,
+ "count": 108,
  "by_source": {
-  "olx": 48,
-  "lun": 13,
-  "tg": 19,
+  "olx": 69,
+  "lun": 14,
+  "tg": 23,
   "fb": 2
  },
  "by_kind": {
-  "house": 16,
-  "flat": 66
+  "house": 20,
+  "flat": 88
  },
  "kept_back": [
   {
    "i": "ID10kbCL",
-   "why": "был помечен и корзиной, и звездой; по разбору «нам подходит» это 67 из 100 — третий результат в подборке и единственная квартира, где комнат хватает на всех. Оставлен в каталоге до подтверждения."
+   "why": "был помечен и корзиной, и звездой; по разбору «нам подходит» это 67 из 100 — третий результат в подборке и единственная квартира, где комнат хватает на всех. Оставлен в каталоге до подтверждения. Повторно снят корзиной 2026-09-01 (экспорт от 07.09.2026) — решение не пересмотрено, лот сознательно не добавлен в excluded."
   }
  ],
  "excluded": [
@@ -100,7 +100,33 @@
   "TG5183",
   "TG5266",
   "TG5372",
-  "TG5485"
+  "TG5485",
+  "ID10Dfns",
+  "ID10v3L0",
+  "ID10pTIU",
+  "ID10G7W8",
+  "IDYo2xB",
+  "ID10MyDC",
+  "ID114h7c",
+  "IDY0sfN",
+  "TG5396",
+  "ID113I0J",
+  "ID111efA",
+  "ID10ArBL",
+  "TG23111",
+  "TG5281",
+  "TG5258",
+  "ID10kFxh",
+  "IDOiCeT",
+  "LUN4511986014",
+  "ID10kGdf",
+  "IDWSVFy",
+  "IDSKMDA",
+  "IDSiXP7",
+  "ID116KYF",
+  "IDZMqG5",
+  "IDZzgEl",
+  "IDZzgvk"
  ],
  "records": [
   {
@@ -758,6 +784,214 @@
    "p": 32486,
    "t": "Продається 1-на квартира в частині будинку одноповерховому .",
    "u": "https://t.me/domua_drohobych/5485"
+  },
+  {
+   "i": "ID10Dfns",
+   "s": "olx",
+   "k": "house",
+   "p": 33000,
+   "t": "Будинок в центрі міста Сокаль",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/budinok-v-tsentr-msta-sokal-ID10Dfns.html"
+  },
+  {
+   "i": "ID10v3L0",
+   "s": "olx",
+   "k": "flat",
+   "p": 43900,
+   "t": "Продаж 2-х кімнатної квартири, біля школи №3, м. Борислав!",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-h-kmnatno-kvartiri-blya-shkoli-3-m-borislav-ID10v3L0.html"
+  },
+  {
+   "i": "ID10pTIU",
+   "s": "olx",
+   "k": "flat",
+   "p": 31000,
+   "t": "Продаж 2кім квартири 58.5м2 в. Ст Бандери м. Борислав",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2km-kvartiri-58-5m2-v-st-banderi-m-borislav-ID10pTIU.html"
+  },
+  {
+   "i": "ID10G7W8",
+   "s": "olx",
+   "k": "flat",
+   "p": 45000,
+   "t": "Продаж можливо по житловому сертифікату/ваучеру 2 кімнатна квартира Трускавець чешка",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-mozhlivo-po-zhitlovomu-sertifkatu-vaucheru-2-kmnatna-kvartira-truskavets-cheshka-ID10G7W8.html"
+  },
+  {
+   "i": "IDYo2xB",
+   "s": "olx",
+   "k": "flat",
+   "p": 40000,
+   "t": "Продам 2х.кімт. м. Дрогобич вул. Грушевського, буд. 170",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-2h-kmt-m-drogobich-vul-grushevskogo-bud-170-40-000-u-e-IDYo2xB.html"
+  },
+  {
+   "i": "ID10MyDC",
+   "s": "olx",
+   "k": "flat",
+   "p": 32000,
+   "t": "Продаж 2 кімнатної квартири",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-kmnatno-kvartiri-ID10MyDC.html"
+  },
+  {
+   "i": "ID114h7c",
+   "s": "olx",
+   "k": "flat",
+   "p": 32000,
+   "t": "Двохкімнатна квартира барачного типу",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/dvohkmnatna-kvartira-barachnogo-tipu-ID114h7c.html"
+  },
+  {
+   "i": "IDY0sfN",
+   "s": "olx",
+   "k": "flat",
+   "p": 45000,
+   "t": "Продаж 3-х кімнатної квартири в центрі м.Дрогобич",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-h-kmnatno-kvartiri-v-tsentr-m-drogobich-IDY0sfN.html"
+  },
+  {
+   "i": "TG5396",
+   "s": "tg",
+   "k": "flat",
+   "p": 33500,
+   "t": "Продається 2 кімнатна квартира у м. Дрогобич",
+   "u": "https://t.me/domua_drohobych/5396"
+  },
+  {
+   "i": "ID113I0J",
+   "s": "olx",
+   "k": "flat",
+   "p": 44000,
+   "t": "Продається 2-ох кім. квартира, центр міста",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-2-oh-km-kvartira-tsentr-msta-ID113I0J.html"
+  },
+  {
+   "i": "ID111efA",
+   "s": "olx",
+   "k": "flat",
+   "p": 42000,
+   "t": "Продаж 2-х кімнатної квартири в м. Яворів. Центр, площа Ринок.",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-h-kmnatno-kvartiri-v-m-yavorv-tsentr-ploscha-rinok-ID111efA.html"
+  },
+  {
+   "i": "ID10ArBL",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Квартира 3-ьох кімнатна, житловий стан",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-3-oh-kmnatna-zhitloviy-stan-ID10ArBL.html"
+  },
+  {
+   "i": "TG23111",
+   "s": "tg",
+   "k": "flat",
+   "p": 35000,
+   "t": "Продаж 2-ох кімнатної квартири в будинку готельного типу",
+   "u": "https://t.me/domua_lviv/23111"
+  },
+  {
+   "i": "TG5281",
+   "s": "tg",
+   "k": "flat",
+   "p": 41000,
+   "t": "Квартира у місті Дрогобич",
+   "u": "https://t.me/domua_drohobych/5281"
+  },
+  {
+   "i": "TG5258",
+   "s": "tg",
+   "k": "flat",
+   "p": 34000,
+   "t": "Квартира від Власника в Центрі міста 50,6м | Без комісії",
+   "u": "https://t.me/domua_drohobych/5258"
+  },
+  {
+   "i": "ID10kFxh",
+   "s": "olx",
+   "k": "house",
+   "p": 33900,
+   "t": "Продаж будинку у Дулібах",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-budinku-u-dulbah-ID10kFxh.html"
+  },
+  {
+   "i": "IDOiCeT",
+   "s": "olx",
+   "k": "house",
+   "p": 45000,
+   "t": "Продам будинок Борислав",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodam-budinok-borislav-IDOiCeT.html"
+  },
+  {
+   "i": "LUN4511986014",
+   "s": "lun",
+   "k": "house",
+   "p": 35000,
+   "t": "Двоповерховий будинок: 70 кв.м, 6 соток",
+   "u": "https://lun.ua/realty/4511986014"
+  },
+  {
+   "i": "ID10kGdf",
+   "s": "olx",
+   "k": "flat",
+   "p": 35000,
+   "t": "Продається цегляний будинок",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodatsya-tseglyaniy-budinok-ID10kGdf.html"
+  },
+  {
+   "i": "IDWSVFy",
+   "s": "olx",
+   "k": "flat",
+   "p": 45000,
+   "t": "Продаж 3-кім квартир в новобудові в Пустомитах",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-km-kvartir-v-novobudov-v-pustomitah-IDWSVFy.html"
+  },
+  {
+   "i": "IDSKMDA",
+   "s": "olx",
+   "k": "flat",
+   "p": 45000,
+   "t": "Продаж 3 кім.квартири в новобудові ЖК Тихий Львів, Пустомити",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-3-km-kvartiri-v-novobudov-zhk-tihiy-lvv-pustomiti-IDSKMDA.html"
+  },
+  {
+   "i": "IDSiXP7",
+   "s": "olx",
+   "k": "flat",
+   "p": 37000,
+   "t": "Продаж комфортної 2-кім квартири на околицях Львова в Пустомитах",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-komfortno-2-km-kvartiri-na-okolitsyah-lvova-v-pustomitah-IDSiXP7.html"
+  },
+  {
+   "i": "ID116KYF",
+   "s": "olx",
+   "k": "flat",
+   "p": 43000,
+   "t": "Квартира у Пустомитах. Пропонується 2 кім квартира площею 50 м²",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/kvartira-u-pustomitah-proponutsya-2-km-kvartira-ploscheyu-50-m-ID116KYF.html"
+  },
+  {
+   "i": "IDZMqG5",
+   "s": "olx",
+   "k": "flat",
+   "p": 41860,
+   "t": "Без комісії. Продаж | ЖК на Спортивній. Сокільники. Бічна Стрийська",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/bez-koms-prodazh-zhk-na-sportivny-soklniki-bchna-striyska-IDZMqG5.html"
+  },
+  {
+   "i": "IDZzgEl",
+   "s": "olx",
+   "k": "flat",
+   "p": 39200,
+   "t": "Продаж просторої 2-кім квартири в Черлянах Городок",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-prostoro-2-km-kvartiri-v-cherlyanah-gorodok-IDZzgEl.html"
+  },
+  {
+   "i": "IDZzgvk",
+   "s": "olx",
+   "k": "flat",
+   "p": 32500,
+   "t": "Продаж 2-кім квартири в Черлянах Городок",
+   "u": "https://www.olx.ua/d/uk/obyavlenie/prodazh-2-km-kvartiri-v-cherlyanah-gorodok-IDZzgvk.html"
   }
  ]
 }
