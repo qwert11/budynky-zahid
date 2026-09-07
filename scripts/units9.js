@@ -239,6 +239,7 @@ function loadExt(file, src, geoFile, dir) {
       created: r.date ? r.date + 'T12:00:00+03:00' : null, days: daysSince(r.date ? r.date + 'T12:00:00+03:00' : null),
       photoUrl: (r.photoList || [])[0] || null, photos: r.photoList || [],
       noCommission: false, desc: r.text || '', locExact: !!r.locExact, chan: r.ch || null,
+      developer: r.developer || null, term: r.term || null,
     };
   }).filter(u => L.inBudget(u.price));
 }
@@ -447,6 +448,12 @@ for (const s of semiLive) {
   pushSemi(u, a.semi || 'unfin');
   liveKept++;
 }
+// 6c2. LUN застройщик: чистова напрямую от доверенного застройщика (просьба покупателя
+// 07.09.2026 — «добавь ещё варианты, чистовые квартиры от проверенного застройщика»).
+// Бюджет и доверие к застройщику (год основания + сдано/в процессе домов на LUN) уже
+// отфильтрованы в scripts/lun-nb9.js — здесь только гео-ворота и топ-50, как у всех.
+const lunnbAll = loadExt('lun-nb9-candidates.json', 'lunnb', null, D).map(finish).filter(gate);
+for (const u of lunnbAll) pushSemi(u, 'devnew');
 // 6d. топ-50 на область в каждом наборе источник×тип — как у готового
 const semiSets = {};
 for (const u of dedupe(semiCand)) {

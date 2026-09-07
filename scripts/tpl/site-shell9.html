@@ -10,6 +10,7 @@
   --fav2:#2F5FA8; --fav2-soft:#E8EEF8;
   --dead:#A8442E; --dead-soft:#F6E3DC;
   --riel:#7A4FB0; --riel-soft:#F0E9F8; --metr:#0E7C86; --metr-soft:#E1F3F3;
+  --lunnb:#946200; --lunnb-soft:#F5EBD6;
   --kfs:82%; --kfl:63%; --kfa:.85;
   --rgs:74%; --rgl:38%;
 }
@@ -21,6 +22,7 @@
     --fav2:#7EA6DE; --fav2-soft:#1E2836;
     --dead:#DB8F76; --dead-soft:#372218;
     --riel:#C6A6EA; --riel-soft:#2C2438; --metr:#5FD1D6; --metr-soft:#173535;
+    --lunnb:#E8C476; --lunnb-soft:#3A3018;
     --kfs:62%; --kfl:44%; --kfa:.6;
     --rgs:58%; --rgl:56%;
   }
@@ -32,6 +34,7 @@
   --fav2:#7EA6DE; --fav2-soft:#1E2836;
   --dead:#DB8F76; --dead-soft:#372218;
   --riel:#C6A6EA; --riel-soft:#2C2438; --metr:#5FD1D6; --metr-soft:#173535;
+  --lunnb:#E8C476; --lunnb-soft:#3A3018;
   --kfs:62%; --kfl:44%; --kfa:.6;
   --rgs:58%; --rgl:56%;
 }
@@ -184,6 +187,7 @@ h1{font-family:Literata,Georgia,serif; font-weight:700; font-size:clamp(28px,5vw
 .srcb-fb{background:var(--accent-soft); color:var(--accent);}
 .srcb-riel{background:var(--riel-soft); color:var(--riel);}
 .srcb-metr{background:var(--metr-soft); color:var(--metr);}
+.srcb-lunnb{background:var(--lunnb-soft); color:var(--lunnb);}
 .kindb{background:transparent; color:var(--muted); border:1px solid var(--line); font-weight:600;}
 .newb{font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   padding:2px 6px; border-radius:5px; white-space:nowrap; vertical-align:middle; margin-left:6px;
@@ -960,6 +964,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <label><input type="checkbox" data-f="src" value="fb" checked> Фейсбук <i data-cnt="src:fb"></i></label>
     <label><input type="checkbox" data-f="src" value="riel" checked> Rieltor <i data-cnt="src:riel"></i></label>
     <label><input type="checkbox" data-f="src" value="metr" checked> Метраж <i data-cnt="src:metr"></i></label>
+    <label><input type="checkbox" data-f="src" value="lunnb" checked> Застройщик <i data-cnt="src:lunnb"></i></label>
   </span>
   <span class="fltg" role="group" aria-label="Тип жилья">
     <span class="fltl">Жильё</span>
@@ -975,7 +980,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   <span class="fltg" role="group" aria-label="Готовность жилья">
     <span class="fltl">Готовность</span>
     <label title="Жильё, готовое к заезду: отделка сделана, доводить нечего"><input type="checkbox" data-f="ready" value="done" checked> готовое <i data-cnt="ready:done"></i></label>
-    <label title="Жильё, в которое можно заселиться и доводить ремонт: часть уже жилая (этаж, половина дома, флигель) либо жилое состояние под ремонт. Коробки под чистовую сюда не входят — заехать в них нельзя. Идёт отдельным списком после готового, за места в топ-50 с ним не конкурирует"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
+    <label title="Жильё, в которое можно заселиться и доводить ремонт: часть уже жилая (этаж, половина дома, флигель) либо жилое состояние под ремонт. Обычные коробки под чистовую сюда не входят — заехать в них нельзя. Исключение — чистовая напрямую от проверенного застройщика (бейдж «Застройщик»): жить пока нельзя, но это первичная покупка с понятным юридическим статусом, а не вторичный недострой, и застройщик проверен по своему послужному списку. Идёт отдельным списком после готового, за места в топ-50 с ним не конкурирует"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
   </span>
   <span class="fltg" role="group" aria-label="Область">
     <span class="fltl">Область</span>
@@ -1245,7 +1250,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     }
     return null;
   }
-  var flt={src:{olx:true,lun:true,tg:true,fb:true,riel:true,metr:true}, kind:{house:true,flat:true},
+  var flt={src:{olx:true,lun:true,tg:true,fb:true,riel:true,metr:true,lunnb:true}, kind:{house:true,flat:true},
            ready:{done:true,semi:true}, obl:{vol:true,rov:true,lv:true,ter:true,if:true,chv:true,khm:true,zht:true,vin:true},
            price:{p30:true,p35:true,p40:true}, big65:false, onlynew:false};
   try{
@@ -1253,7 +1258,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     if(fraw){
       if(fraw.src) flt.src={olx:fraw.src.olx!==false, lun:fraw.src.lun!==false,
         tg:fraw.src.tg!==false, fb:fraw.src.fb!==false,
-        riel:fraw.src.riel!==false, metr:fraw.src.metr!==false};
+        riel:fraw.src.riel!==false, metr:fraw.src.metr!==false, lunnb:fraw.src.lunnb!==false};
       if(fraw.kind) flt.kind={house:fraw.kind.house!==false, flat:fraw.kind.flat!==false};
       if(fraw.ready) flt.ready={done:fraw.ready.done!==false, semi:fraw.ready.semi!==false};
       if(fraw.price) flt.price={p30:fraw.price.p30!==false, p35:fraw.price.p35!==false, p40:fraw.price.p40!==false};
@@ -1287,7 +1292,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     return true;
   }};
   function fltCounts(){
-    var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'src:riel':0,'src:metr':0,'kind:house':0,'kind:flat':0,
+    var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'src:riel':0,'src:metr':0,'src:lunnb':0,'kind:house':0,'kind:flat':0,
            'ready:done':0,'ready:semi':0,'big65':0,'onlynew':0,
            'price:p30':0,'price:p35':0,'price:p40':0,
            'obl:vol':0,'obl:rov':0,'obl:lv':0,'obl:ter':0,'obl:if':0,'obl:chv':0,'obl:khm':0,'obl:zht':0,'obl:vin':0};
@@ -1738,7 +1743,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     if(rw){
       var lbl=[];
       if(rw.dataset.kind) lbl.push(rw.dataset.kind==='flat'?'квартира':'дом');
-      if(rw.dataset.src) lbl.push({lun:'ЛУН',tg:'Телеграм',fb:'Фейсбук',riel:'Rieltor',metr:'Метраж'}[rw.dataset.src]||'OLX');
+      if(rw.dataset.src) lbl.push({lun:'ЛУН',tg:'Телеграм',fb:'Фейсбук',riel:'Rieltor',metr:'Метраж',lunnb:'Застройщик'}[rw.dataset.src]||'OLX');
       if(lbl.length) tail.push(lbl.join(' '));
     }
     tail.push('`'+id+'`');

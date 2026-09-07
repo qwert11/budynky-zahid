@@ -179,7 +179,7 @@ function chkBody(u) {
 
 const byId = {};
 for (const u of [...units, ...semi]) byId[u.id] = u;
-const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК', riel: 'RIELTOR', metr: 'МЕТРАЖ' };
+const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК', riel: 'RIELTOR', metr: 'МЕТРАЖ', lunnb: 'ЗАСТРОЙЩИК' };
 const KIND_LABEL = { house: 'дом', flat: 'квартира' };
 function dupBadges(u) {
   if (!u.dups || !u.dups.length) return '';
@@ -313,8 +313,13 @@ function rowFor(u, mode) {
     fb: 'Объявление в Facebook Marketplace',
     riel: 'Объявление с Rieltor.ua · координаты из карточки продавца',
     metr: 'Объявление с Metrazh.com.ua' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес дома'),
+    lunnb: 'Прайс напрямую от застройщика (LUN, раздел «Новобудови») — цена «от» на самый дешёвый юнит этого типа комнатности, не конкретная квартира' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес ЖК'),
   };
-  const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc((SEMI[u.semi] || SEMI.unfin).title)}">${(SEMI[u.semi] || SEMI.unfin).badge}</span>` : '';
+  const semiCls = SEMI[u.semi] || SEMI.unfin;
+  const semiTitle = u.semi === 'devnew' && u.developer
+    ? `Первичная продажа напрямую от застройщика «${u.developer}», чистова обробка (без ремонта) — жить пока нельзя. Проверен по своему послужному списку на LUN: не младше 5 лет на рынке и минимум 2 сданных дома.${u.term ? ' Термін введення ' + u.term + '.' : ''}`
+    : semiCls.title;
+  const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc(semiTitle)}">${semiCls.badge}</span>` : '';
   const newB = u.isNew ? `<span class="newb" title="Новостройка, проверенная по фотографиям: на снимках жилой интерьер, а не бетон под чистову. Такие лоты идут первыми и не вытесняются вторичкой из топ-50. Новострой без живых фото (стяжка и штукатурка, только планировка или рендер, только фасад) в каталог не берётся вовсе. Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';
   const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${newB}${semiB}${dupBadges(u)}`;
   const m = mkt(u.id);
