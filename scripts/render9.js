@@ -27,6 +27,7 @@ const clusterTpl = fs.readFileSync(path.join(__dirname, 'tpl', 'clustermap9.html
 const industry = ex(D + 'industry.json') ? rd(D + 'industry.json') : { cells: [] };
 const strikes = ex(D + 'strikes.json') ? rd(D + 'strikes.json') : { cities: [], oblasts: [], from: '', to: '', posts: 0 };
 const addr9 = ex(D + 'addr9.json') ? rd(D + 'addr9.json') : {};
+const renov9 = ex(D + 'renov.json') ? rd(D + 'renov.json') : {};
 const shapes = rd(D + 'oblast-shapes9.json');
 const dead0 = ex(path.join(__dirname, '..', 'dead.json')) ? rd(path.join(__dirname, '..', 'dead.json')) : { checked: '', dead: [] };
 
@@ -266,6 +267,18 @@ function idx(u) {
         ? `Цена за м² ниже медианы по области среди жилья того же типа в готовом состоянии ($${fmt(u.medPpm)}/м²) — скидка за то, что часть работы придётся доделать самому`
         : `Цена за м² не ниже медианы готового жилья того же типа по области ($${fmt(u.medPpm)}/м²) — скидки за недоделки нет, есть повод торговаться`;
       parts.push(`<span class="ix ixs" title="${esc(t)}"><b>${sign}${Math.abs(u.disc)}%</b><i>к рынку области</i></span>`);
+    }
+    // смета ремонта «чтобы жить» — просьба покупателя 08.09.2026: «проверь по картинкам,
+    // сколько будет стоить ремонт — лайт, норм, люкс». Оценка по фото и рынку Запада Украины
+    // 2026 (см. заголовок scripts/renov-compute.js), не точная смета для конкретного адреса.
+    const rv = renov9[u.id];
+    if (rv) {
+      const rt = 'Грубая оценка ремонта «чтобы жить», не смета — ориентир по фото объявления и рынку Запада '
+        + 'Украины 2026, под ключ (работа + материалы): лайт — минимально жилой на эконом-материалах, '
+        + 'норм — обычный евроремонт среднего уровня, люкс — дизайнерская отделка премиум-класса.'
+        + (rv.frac < 1 ? ` Под полную отделку — примерно ${Math.round(rv.frac * 100)}% площади, остальное уже жилое.` : '')
+        + ' Перед покупкой уточняйте у местных подрядчиков — цена зависит от планировки, поставщиков и сезона.';
+      parts.push(`<span class="ix ixr2" title="${esc(rt)}"><b>$${fmt(rv.light)} · $${fmt(rv.normal)} · $${fmt(rv.lux)}</b><i>ремонт: лайт · норм · люкс</i></span>`);
     }
   } else {
     if (u.vpd != null) parts.push(`<span class="ix ixv" title="Просмотров в день: ${fmt(u.views)} просмотров за ${u.days} дн. на OLX"><span class="vtx"><b>${u.vpd}</b><i>просм/день</i></span>${eye(u.vpd)}</span>`);
