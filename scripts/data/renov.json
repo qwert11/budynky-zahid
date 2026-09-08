@@ -41,6 +41,13 @@
   "lux": 25200,
   "note": null
  },
+ "ID10ZTde": {
+  "frac": 1,
+  "light": 3700,
+  "normal": 11650,
+  "lux": 21200,
+  "note": null
+ },
  "ID117OQt": {
   "frac": 1,
   "light": 5250,
@@ -160,6 +167,13 @@
   "lux": 25500,
   "note": null
  },
+ "ID10qDxx": {
+  "frac": 1,
+  "light": 3500,
+  "normal": 11050,
+  "lux": 20100,
+  "note": null
+ },
  "ID10ZHqW": {
   "frac": 1,
   "light": 5050,
@@ -214,6 +228,13 @@
   "light": 4500,
   "normal": 14100,
   "lux": 25600,
+  "note": null
+ },
+ "ID11apz2": {
+  "frac": 1,
+  "light": 3100,
+  "normal": 9750,
+  "lux": 17700,
   "note": null
  },
  "IDZ0yQl": {
@@ -279,6 +300,13 @@
   "lux": 14000,
   "note": null
  },
+ "ID10NakU": {
+  "frac": 1,
+  "light": 7000,
+  "normal": 22000,
+  "lux": 40000,
+  "note": null
+ },
  "ID115zyQ": {
   "frac": 1,
   "light": 4550,
@@ -321,6 +349,13 @@
   "lux": 43850,
   "note": null
  },
+ "IDYVZAI": {
+  "frac": 0.5,
+  "light": 5500,
+  "normal": 10100,
+  "lux": 18400,
+  "note": null
+ },
  "ID10E6Mn": {
   "frac": 1,
   "light": 5950,
@@ -356,6 +391,20 @@
   "lux": 10800,
   "note": null
  },
+ "IDWUh6i": {
+  "frac": 0.5,
+  "light": 3000,
+  "normal": 5500,
+  "lux": 10000,
+  "note": null
+ },
+ "IDYLj2m": {
+  "frac": 0.8,
+  "light": 2750,
+  "normal": 5000,
+  "lux": 9100,
+  "note": null
+ },
  "ID1169Ho": {
   "frac": 0.8,
   "light": 2400,
@@ -368,6 +417,13 @@
   "light": 5400,
   "normal": 9900,
   "lux": 18000,
+  "note": null
+ },
+ "IDXJEhN": {
+  "frac": 0.5,
+  "light": 2600,
+  "normal": 4750,
+  "lux": 8600,
   "note": null
  },
  "ID11aGu5": {
@@ -489,6 +545,20 @@
   "lux": 12950,
   "note": null
  },
+ "ID10X0oU": {
+  "frac": 1,
+  "light": 8500,
+  "normal": 15600,
+  "lux": 28400,
+  "note": null
+ },
+ "IDZKzYu": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
  "ID10KGx6": {
   "frac": 1,
   "light": 7800,
@@ -501,6 +571,20 @@
   "light": 9100,
   "normal": 16700,
   "lux": 30300,
+  "note": null
+ },
+ "ID115Tue": {
+  "frac": 1,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
+  "note": null
+ },
+ "ID10ixNV": {
+  "frac": 1,
+  "light": 9000,
+  "normal": 16500,
+  "lux": 30000,
   "note": null
  },
  "IDZUWDJ": {
@@ -517,11 +601,60 @@
   "lux": 30800,
   "note": null
  },
+ "IDZkbHw": {
+  "frac": 1,
+  "light": 7450,
+  "normal": 13650,
+  "lux": 24800,
+  "note": null
+ },
+ "IDXJ9qz": {
+  "frac": 1,
+  "light": 8150,
+  "normal": 14950,
+  "lux": 27200,
+  "note": null
+ },
+ "IDZ9hrD": {
+  "frac": 1,
+  "light": 7400,
+  "normal": 13550,
+  "lux": 24650,
+  "note": null
+ },
+ "IDXqCpt": {
+  "frac": 1,
+  "light": 7450,
+  "normal": 13650,
+  "lux": 24800,
+  "note": null
+ },
+ "IDYp3kK": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14100,
+  "lux": 25600,
+  "note": null
+ },
+ "IDZe6He": {
+  "frac": 1,
+  "light": 8400,
+  "normal": 15400,
+  "lux": 28000,
+  "note": null
+ },
  "ID10bNet": {
   "frac": 1,
   "light": 7450,
   "normal": 13650,
   "lux": 24800,
+  "note": null
+ },
+ "ID11b61h": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
   "note": null
  },
  "IDZWka0": {
@@ -545,6 +678,27 @@
   "lux": 24000,
   "note": null
  },
+ "ID115Whh": {
+  "frac": 1,
+  "light": 8500,
+  "normal": 15600,
+  "lux": 28400,
+  "note": null
+ },
+ "ID11ajdM": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDXatHi": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
  "ID10c6G5": {
   "frac": 1,
   "light": 7900,
@@ -552,11 +706,39 @@
   "lux": 26400,
   "note": null
  },
+ "IDZo92j": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
+ "ID115VaH": {
+  "frac": 1,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
+  "note": null
+ },
  "ID10bnr5": {
   "frac": 1,
   "light": 8050,
   "normal": 14750,
   "lux": 26800,
+  "note": null
+ },
+ "ID11aZ31": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14150,
+  "lux": 25700,
+  "note": null
+ },
+ "IDXj3pc": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14100,
+  "lux": 25600,
   "note": null
  },
  "ID10bXen": {
@@ -573,6 +755,13 @@
   "lux": 24000,
   "note": null
  },
+ "IDYndh1": {
+  "frac": 1,
+  "light": 6900,
+  "normal": 12650,
+  "lux": 23000,
+  "note": null
+ },
  "IDZUZAb": {
   "frac": 1,
   "light": 7050,
@@ -585,6 +774,13 @@
   "light": 7450,
   "normal": 13650,
   "lux": 24800,
+  "note": null
+ },
+ "ID10FIMc": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14150,
+  "lux": 25700,
   "note": null
  },
  "IDZWv6i": {
@@ -608,6 +804,13 @@
   "lux": 24000,
   "note": null
  },
+ "ID112AnB": {
+  "frac": 1,
+  "light": 9850,
+  "normal": 18050,
+  "lux": 32800,
+  "note": null
+ },
  "ID10bdUh": {
   "frac": 1,
   "light": 7450,
@@ -620,6 +823,13 @@
   "light": 7200,
   "normal": 13200,
   "lux": 24050,
+  "note": null
+ },
+ "IDLWMib": {
+  "frac": 1,
+  "light": 6850,
+  "normal": 12550,
+  "lux": 22800,
   "note": null
  },
  "ID10cvHK": {
@@ -664,6 +874,13 @@
   "lux": 27200,
   "note": null
  },
+ "IDY4q5c": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14100,
+  "lux": 25600,
+  "note": null
+ },
  "ID10cq3L": {
   "frac": 1,
   "light": 7450,
@@ -678,165 +895,11 @@
   "lux": 27200,
   "note": null
  },
- "ID10dmop": {
+ "IDXnt41": {
   "frac": 1,
-  "light": 7700,
-  "normal": 14100,
-  "lux": 25600,
-  "note": null
- },
- "ID10bDfa": {
-  "frac": 1,
-  "light": 7300,
-  "normal": 13400,
-  "lux": 24400,
-  "note": null
- },
- "ID10bapx": {
-  "frac": 1,
-  "light": 7450,
-  "normal": 13650,
-  "lux": 24800,
-  "note": null
- },
- "ID101hYX": {
-  "frac": 1,
-  "light": 7450,
-  "normal": 13650,
-  "lux": 24800,
-  "note": null
- },
- "ID10bzjg": {
-  "frac": 1,
-  "light": 6850,
-  "normal": 12550,
-  "lux": 22800,
-  "note": null
- },
- "IDXsl4s": {
-  "frac": 1,
-  "light": 6700,
-  "normal": 12300,
-  "lux": 22400,
-  "note": null
- },
- "ID10ceBN": {
-  "frac": 1,
-  "light": 6950,
-  "normal": 12750,
-  "lux": 23200,
-  "note": null
- },
- "IDZXeHU": {
-  "frac": 1,
-  "light": 6950,
-  "normal": 12750,
-  "lux": 23200,
-  "note": null
- },
- "ID10bdUa": {
-  "frac": 1,
-  "light": 6850,
-  "normal": 12550,
-  "lux": 22800,
-  "note": null
- },
- "ID10d40N": {
-  "frac": 1,
-  "light": 7450,
-  "normal": 13650,
-  "lux": 24800,
-  "note": null
- },
- "IDZV2gI": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10cAQ5": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "IDXHUxm": {
-  "frac": 1,
-  "light": 7550,
-  "normal": 13850,
-  "lux": 25200,
-  "note": null
- },
- "ID10aVIc": {
-  "frac": 1,
-  "light": 7100,
-  "normal": 13000,
-  "lux": 23600,
-  "note": null
- },
- "ID10cmnB": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "IDODCRF": {
-  "frac": 1,
-  "light": 7700,
-  "normal": 14100,
-  "lux": 25600,
-  "note": null
- },
- "ID10cvHN": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10aK0Y": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10dmr3": {
-  "frac": 1,
-  "light": 6850,
-  "normal": 12550,
-  "lux": 22800,
-  "note": null
- },
- "ID10b8fe": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10aLaB": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10buPc": {
-  "frac": 1,
-  "light": 6950,
-  "normal": 12700,
-  "lux": 23100,
-  "note": null
- },
- "IDZVOsS": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
   "note": null
  },
  "IDZHTnf": {
@@ -853,6 +916,13 @@
   "lux": 24400,
   "note": null
  },
+ "IDXnsD9": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
  "ID114LGP": {
   "frac": 1,
   "light": 7700,
@@ -867,6 +937,13 @@
   "lux": 22800,
   "note": null
  },
+ "IDXnswJ": {
+  "frac": 1,
+  "light": 6250,
+  "normal": 11450,
+  "lux": 20800,
+  "note": null
+ },
  "IDTu6pi": {
   "frac": 1,
   "light": 7200,
@@ -874,11 +951,424 @@
   "lux": 24000,
   "note": null
  },
+ "IDZ2Ple": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "IDYSL7y": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13150,
+  "lux": 23900,
+  "note": null
+ },
  "IDZHVlN": {
   "frac": 1,
   "light": 6350,
   "normal": 11700,
   "lux": 21250,
+  "note": null
+ },
+ "IDZOGy4": {
+  "frac": 1,
+  "light": 10300,
+  "normal": 18900,
+  "lux": 34400,
+  "note": null
+ },
+ "IDQ44cI": {
+  "frac": 1,
+  "light": 8400,
+  "normal": 15400,
+  "lux": 28000,
+  "note": null
+ },
+ "IDKj5aP": {
+  "frac": 1,
+  "light": 8150,
+  "normal": 14950,
+  "lux": 27200,
+  "note": null
+ },
+ "IDQ2zhO": {
+  "frac": 1,
+  "light": 6600,
+  "normal": 12100,
+  "lux": 22000,
+  "note": null
+ },
+ "IDZhqpg": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12750,
+  "lux": 23200,
+  "note": null
+ },
+ "IDYnX5e": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "ID10mQKm": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12750,
+  "lux": 23200,
+  "note": null
+ },
+ "IDOgzlo": {
+  "frac": 1,
+  "light": 8900,
+  "normal": 16300,
+  "lux": 29600,
+  "note": null
+ },
+ "IDZK7U2": {
+  "frac": 1,
+  "light": 8900,
+  "normal": 16300,
+  "lux": 29600,
+  "note": null
+ },
+ "IDXTdAE": {
+  "frac": 1,
+  "light": 9000,
+  "normal": 16500,
+  "lux": 30000,
+  "note": null
+ },
+ "IDWyPLi": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDWBACo": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDWw78o": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "ID112VVg": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "ID10QvQ4": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDVh3dZ": {
+  "frac": 1,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
+  "note": null
+ },
+ "IDUPqUS": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDU7h6m": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12750,
+  "lux": 23200,
+  "note": null
+ },
+ "ID112HE4": {
+  "frac": 1,
+  "light": 7950,
+  "normal": 14550,
+  "lux": 26450,
+  "note": null
+ },
+ "IDXtduM": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "IDW97X4": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
+ "IDW54rn": {
+  "frac": 1,
+  "light": 7500,
+  "normal": 13800,
+  "lux": 25050,
+  "note": null
+ },
+ "IDZGWTX": {
+  "frac": 1,
+  "light": 7800,
+  "normal": 14300,
+  "lux": 26000,
+  "note": null
+ },
+ "IDZUCte": {
+  "frac": 1,
+  "light": 7100,
+  "normal": 13000,
+  "lux": 23600,
+  "note": null
+ },
+ "ID106GKL": {
+  "frac": 1,
+  "light": 8750,
+  "normal": 16050,
+  "lux": 29200,
+  "note": null
+ },
+ "IDWFxAJ": {
+  "frac": 1,
+  "light": 7100,
+  "normal": 13000,
+  "lux": 23600,
+  "note": null
+ },
+ "IDWZUpB": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
+ "IDZXxA0": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12750,
+  "lux": 23200,
+  "note": null
+ },
+ "IDZKaTW": {
+  "frac": 1,
+  "light": 7950,
+  "normal": 14550,
+  "lux": 26450,
+  "note": null
+ },
+ "ID10bA7C": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12750,
+  "lux": 23200,
+  "note": null
+ },
+ "IDVNQoU": {
+  "frac": 1,
+  "light": 6700,
+  "normal": 12300,
+  "lux": 22400,
+  "note": null
+ },
+ "IDZhzoa": {
+  "frac": 1,
+  "light": 6300,
+  "normal": 11600,
+  "lux": 21100,
+  "note": null
+ },
+ "ID10Mn77": {
+  "frac": 1,
+  "light": 6950,
+  "normal": 12700,
+  "lux": 23100,
+  "note": null
+ },
+ "IDZOyNR": {
+  "frac": 1,
+  "light": 6900,
+  "normal": 12650,
+  "lux": 22950,
+  "note": null
+ },
+ "IDVnbce": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "ID112ifB": {
+  "frac": 1,
+  "light": 6700,
+  "normal": 12300,
+  "lux": 22400,
+  "note": null
+ },
+ "IDY4nAi": {
+  "frac": 1,
+  "light": 8250,
+  "normal": 15100,
+  "lux": 27450,
+  "note": null
+ },
+ "IDY4niz": {
+  "frac": 1,
+  "light": 8200,
+  "normal": 15050,
+  "lux": 27350,
+  "note": null
+ },
+ "IDZXluQ": {
+  "frac": 1,
+  "light": 7600,
+  "normal": 13950,
+  "lux": 25400,
+  "note": null
+ },
+ "IDUoLbg": {
+  "frac": 1,
+  "light": 6250,
+  "normal": 11450,
+  "lux": 20800,
+  "note": null
+ },
+ "IDZUoNw": {
+  "frac": 1,
+  "light": 13350,
+  "normal": 24450,
+  "lux": 44500,
+  "note": null
+ },
+ "ID10K9tm": {
+  "frac": 1,
+  "light": 6250,
+  "normal": 11450,
+  "lux": 20800,
+  "note": null
+ },
+ "ID10x7mv": {
+  "frac": 1,
+  "light": 6250,
+  "normal": 11450,
+  "lux": 20800,
+  "note": null
+ },
+ "IDViPAV": {
+  "frac": 1,
+  "light": 12000,
+  "normal": 22000,
+  "lux": 40000,
+  "note": null
+ },
+ "IDW6qoi": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "IDZlkUd": {
+  "frac": 1,
+  "light": 6350,
+  "normal": 11650,
+  "lux": 21200,
+  "note": null
+ },
+ "ID103tkz": {
+  "frac": 1,
+  "light": 6050,
+  "normal": 11150,
+  "lux": 20250,
+  "note": null
+ },
+ "ID10OqRC": {
+  "frac": 1,
+  "light": 6400,
+  "normal": 11750,
+  "lux": 21350,
+  "note": null
+ },
+ "ID10C1iw": {
+  "frac": 1,
+  "light": 6050,
+  "normal": 11150,
+  "lux": 20250,
+  "note": null
+ },
+ "IDZW1H6": {
+  "frac": 1,
+  "light": 6350,
+  "normal": 11650,
+  "lux": 21200,
+  "note": null
+ },
+ "ID10CnGX": {
+  "frac": 1,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
+  "note": null
+ },
+ "IDYLS60": {
+  "frac": 1,
+  "light": 6250,
+  "normal": 11450,
+  "lux": 20800,
+  "note": null
+ },
+ "IDZv0FC": {
+  "frac": 1,
+  "light": 6350,
+  "normal": 11650,
+  "lux": 21200,
+  "note": null
+ },
+ "ID10RLEJ": {
+  "frac": 1,
+  "light": 6200,
+  "normal": 11400,
+  "lux": 20700,
+  "note": null
+ },
+ "IDINsdc": {
+  "frac": 1,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
+  "note": null
+ },
+ "ID113wzA": {
+  "frac": 1,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
+  "note": null
+ },
+ "IDZvyAm": {
+  "frac": 1,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
   "note": null
  },
  "IDWJkJd": {
@@ -895,53 +1385,74 @@
   "lux": 26750,
   "note": null
  },
- "ID10QvQ4": {
+ "IDWwB8R": {
   "frac": 1,
-  "light": 7800,
-  "normal": 14300,
-  "lux": 26000,
+  "light": 16300,
+  "normal": 29850,
+  "lux": 54300,
   "note": null
  },
- "IDW54rn": {
+ "ID114ECz": {
   "frac": 1,
-  "light": 7500,
-  "normal": 13800,
-  "lux": 25050,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
   "note": null
  },
- "IDWFxAJ": {
+ "IDXGNHI": {
   "frac": 1,
-  "light": 7100,
-  "normal": 13000,
-  "lux": 23600,
+  "light": 36000,
+  "normal": 66000,
+  "lux": 120000,
   "note": null
  },
- "IDVnbce": {
+ "IDQmQQE": {
   "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
+  "light": 8650,
+  "normal": 15850,
+  "lux": 28800,
   "note": null
  },
- "IDZXluQ": {
+ "ID10Dze2": {
   "frac": 1,
-  "light": 7600,
-  "normal": 13950,
-  "lux": 25400,
+  "light": 7300,
+  "normal": 13400,
+  "lux": 24400,
   "note": null
  },
- "ID103tkz": {
+ "IDQmYOy": {
   "frac": 1,
-  "light": 6050,
-  "normal": 11150,
-  "lux": 20250,
+  "light": 58550,
+  "normal": 107350,
+  "lux": 195200,
   "note": null
  },
- "IDZJ7ZX": {
+ "ID10surY": {
   "frac": 1,
-  "light": 10700,
-  "normal": 19600,
-  "lux": 35600,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
+  "note": null
+ },
+ "IDOjeQI": {
+  "frac": 1,
+  "light": 7350,
+  "normal": 13500,
+  "lux": 24500,
+  "note": null
+ },
+ "ID10WwfE": {
+  "frac": 1,
+  "light": 8150,
+  "normal": 14950,
+  "lux": 27200,
+  "note": null
+ },
+ "ID107Bvl": {
+  "frac": 1,
+  "light": 14250,
+  "normal": 26100,
+  "lux": 47500,
   "note": null
  },
  "IDTnLgg": {
@@ -951,11 +1462,25 @@
   "lux": 24800,
   "note": null
  },
- "ID10mQKm": {
+ "ID10UfvA": {
   "frac": 1,
-  "light": 6950,
-  "normal": 12750,
-  "lux": 23200,
+  "light": 7100,
+  "normal": 13000,
+  "lux": 23600,
+  "note": null
+ },
+ "ID10Yi6i": {
+  "frac": 1,
+  "light": 6800,
+  "normal": 12450,
+  "lux": 22700,
+  "note": null
+ },
+ "IDZJ7ZX": {
+  "frac": 1,
+  "light": 10700,
+  "normal": 19600,
+  "lux": 35600,
   "note": null
  },
  "LUNNBsilver_3": {

@@ -88,13 +88,16 @@ function markNew(u) {
   if (u.isNew && (L.UNFIN.test(txt) || L.BAD_TEXT.test(txt))) u.isNew = false;
   return u;
 }
-// «Від забудовника» — OLX сам помечает первичный рынок и продажу от застройщика структурными
-// полями параметров, не текстом объявления: «apartments_object_type:key» = «primary_market»
-// и «contract_type:key» содержит «from_developer». Это надёжнее текстовых эвристик и
-// используется, чтобы чистовую от застройщика не выбрасывать, а вести в отдельную категорию
-// (просьба покупателя 08.09.2026) — в отличие от чистовой у обычного перекупщика, которая
-// как и раньше выбрасывается совсем.
-const devPrimaryOf = p => p['apartments_object_type:key'] === 'primary_market' && /from_developer/i.test(p['contract_type:key'] || '');
+// Первинний ринок — OLX сам помечает структурным полем «apartments_object_type:key» =
+// «primary_market» (без привязки к тексту объявления). Раньше сюда же требовался
+// «contract_type:key» с «from_developer» («Від забудовника»), но правило от 08.09.2026
+// (после разбора конкретного объявления, у которого этого поля не было, хотя по фото и
+// описанию «на ключах, можна починати ремонт» это точно такая же сырая новостройка)
+// покупатель попросил расширить: любая новостройка без отделки уходит в «чистовая от
+// застройщика», а не выбрасывается — независимо от того, подтверждает ли OLX продавца
+// как самого застройщика. Кто именно продаёт (сам застройщик или перекупщик) карточка
+// больше не проверяет — см. оговорку в подсказке на карточке и в README.
+const primaryMarketOf = p => p['apartments_object_type:key'] === 'primary_market';
 
 function finish(u) {
   // координаты → км до города → область → индекс
@@ -165,7 +168,7 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
     floor: num(p['floor:key'] || p.floor), floors: num(p['total_floors:key'] || p.total_floors),
     repair: p.repair || null, market: p.apartments_object_type || null, houseType: p.property_type_appartments_sale || null,
     isNew: /новобудова/i.test(p.apartments_object_type || ''),
-    devPrimary: devPrimaryOf(p),
+    primaryMarket: primaryMarketOf(p),
     walls: p.house_type || null, heating: p.heating || null, bathroom: p.bathroom || null, comm: p.communications || null,
     noCommission: /без комісії/i.test(p.commission || ''),
     loc: x.loc, cityId: x.cityId, region: x.region, obl: L.REGION2SLUG[x.region] || null,
@@ -180,11 +183,12 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
   // не пускала метка, в получистовую — отсутствие текстового признака недостроя.
   // Состояние решают те же правила, что и у всех: поле «Ремонт» и текст объявления.
   if (L.BAD_REPAIR.test(u.repair || '')) {
-    // чистовая напрямую от застройщика (просьба покупателя 08.09.2026: «отбирать после
-    // застройщиков отдельным фильтром») — не выбрасываем совсем, а ведём в «чистовая от
-    // застройщика»: OLX сам помечает такие лоты «Первинний ринок» + «Від забудовника».
-    // У обычного перекупщика (devPrimary=false) чистовая по-прежнему выбрасывается совсем.
-    if (u.devPrimary) { finish(u); if (gate(u)) pushRaw(u, 'devnew'); }
+    // чистовая новостройка (просьба покупателя 08.09.2026: «отбирать после застройщиков
+    // отдельным фильтром», расширено в тот же день — не только подтверждённые продажи от
+    // застройщика, любая «Первинний ринок» без отделки) — не выбрасываем совсем, а ведём
+    // в «чистовая от застройщика». У вторички (primaryMarket=false) чистовая по-прежнему
+    // выбрасывается совсем — это её не касается.
+    if (u.primaryMarket) { finish(u); if (gate(u)) pushRaw(u, 'devnew'); }
     drop.unfin++; continue;
   }
   if (L.BAD_TEXT.test((u.title || '') + ' ' + (u.desc || ''))) { drop.unfin++; continue; }
@@ -345,10 +349,12 @@ function nbPass(u) {
   if (verdict === 'ok') return true;
   nbHold.add(u.id);
   if (verdict === 'no') {
-    // чистова напрямую від забудовника — не викидаємо, а ведемо у «чистовая от застройщика»
-    // (просьба покупателя 08.09.2026), навіть якщо на фото коробка/рендер: це і є суть категорії
-    if (u.devPrimary) { pushRaw(u, 'devnew'); drop.nbShellDev++; return false; }
-    drop.nbShell++; return false;  // на фото чистовая, план или рендер — и это не застройщик
+    // первинний ринок без відделки — не викидаємо, а ведемо у «чистовая от застройщика»
+    // (просьба покупателя 08.09.2026, расширено в тот же день на любую «Первинний ринок»,
+    // не только подтверждённую продажу от застройщика), навіть якщо на фото коробка/рендер:
+    // це і є суть категорії
+    if (u.primaryMarket) { pushRaw(u, 'devnew'); drop.nbShellDev++; return false; }
+    drop.nbShell++; return false;  // на фото чистовая, план или рендер, и это вторичка
   }
   if (!(u.photos || []).length) { drop.nbNoPhoto++; return false; }
   nbCand.push(u); drop.nbWait++; return false;
