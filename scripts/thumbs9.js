@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const D = path.join(__dirname, 'data') + path.sep;
-const { units, semi } = JSON.parse(fs.readFileSync(D + 'units9.json', 'utf8'));
+const { units, semi, raw } = JSON.parse(fs.readFileSync(D + 'units9.json', 'utf8'));
 const OUT_DATA = D + 'thumbs9.json', OUT_URL = D + 'thumb-urls9.json';
 const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/5e19b764-3f94-4fb8-8c59-b1d354783282/scratchpad/';
 const D2 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/2ba88487-cdb9-423e-b5e9-69abf018ad10/scratchpad/';
@@ -26,7 +26,7 @@ function thumbUrl(u) {
 }
 
 (async () => {
-  const all = [...units, ...semi];
+  const all = [...units, ...semi, ...raw];
   const targets = all.filter(u => !data[u.id] && !oldData[u.id] && thumbUrl(u));
   console.log('лотов:', all.length, '| миниатюр к загрузке:', targets.length);
   let ok = 0, bad = 0, bytes = 0;

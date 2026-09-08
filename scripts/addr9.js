@@ -10,10 +10,10 @@ const OUT = D + 'addr9.json';
 const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const { units, semi } = rd(D + 'units9.json');
+const { units, semi, raw } = rd(D + 'units9.json');
 const geo9 = rd(D + 'geocode9.json');
 const cache = fs.existsSync(OUT) ? rd(OUT) : {};
-const ALL = [...units, ...semi];
+const ALL = [...units, ...semi, ...raw];
 
 const KM = (a, b, c, d) => Math.hypot((a - c) * 111.32, (b - d) * 111.32 * Math.cos((a + c) / 2 * Math.PI / 180));
 // радиус доверия: адрес должен быть рядом с базовой точкой населённого пункта

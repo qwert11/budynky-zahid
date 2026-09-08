@@ -46,8 +46,23 @@ const usdOf = u => u.cur === 'USD' ? u.price : (u.curConv === 'USD' ? u.priceCon
 const num = v => { const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isNaN(n) ? null : n; };
 
 const drop = { dead: 0, excluded: 0, share: 0, unfin: 0, far: 0, nogeo: 0, badtype: 0, budget: 0, small: 0, unvetted: 0, zak: 0,
-  nbShell: 0, nbNoPhoto: 0, nbWait: 0 };
+  nbShell: 0, nbShellDev: 0, nbNoPhoto: 0, nbWait: 0 };
 let pinnedKept = 0;
+// «Чистовая от застройщика» — третья категория готовности, отдельная и от готового, и от
+// получистовой (просьба покупателя 08.09.2026: «отбирать после застройщиков отдельным
+// фильтром», три категории — готовое / получистовая / чистовая после застройщика).
+// nbHold объявлен здесь же, а не в блоке новостроек ниже: чистовая от OLX-застройщика
+// перехватывается раньше — прямо в разборе квартир (секция 2), до фотопроверки новостроек.
+const rawCand = [];
+const seenRaw = new Set();
+const nbHold = new Set(); // id новостроек вне «готового»: отклонённые, ждущие фотопроверки, ушедшие в «чистовая от застройщика»
+function pushRaw(u, cls) {
+  if (seenRaw.has(u.id)) return;
+  seenRaw.add(u.id); nbHold.add(u.id);
+  u.isNew = false; u.ready = 'raw'; u.semi = cls;
+  u.quality = u.kind === 'house' ? L.semiHouseQuality9(u) : L.semiFlatQuality9(u);
+  rawCand.push(u);
+}
 
 function coordsFor(u) {
   // адрес из текста объявления точнее центра населённого пункта
@@ -73,6 +88,13 @@ function markNew(u) {
   if (u.isNew && (L.UNFIN.test(txt) || L.BAD_TEXT.test(txt))) u.isNew = false;
   return u;
 }
+// «Від забудовника» — OLX сам помечает первичный рынок и продажу от застройщика структурными
+// полями параметров, не текстом объявления: «apartments_object_type:key» = «primary_market»
+// и «contract_type:key» содержит «from_developer». Это надёжнее текстовых эвристик и
+// используется, чтобы чистовую от застройщика не выбрасывать, а вести в отдельную категорию
+// (просьба покупателя 08.09.2026) — в отличие от чистовой у обычного перекупщика, которая
+// как и раньше выбрасывается совсем.
+const devPrimaryOf = p => p['apartments_object_type:key'] === 'primary_market' && /from_developer/i.test(p['contract_type:key'] || '');
 
 function finish(u) {
   // координаты → км до города → область → индекс
@@ -143,6 +165,7 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
     floor: num(p['floor:key'] || p.floor), floors: num(p['total_floors:key'] || p.total_floors),
     repair: p.repair || null, market: p.apartments_object_type || null, houseType: p.property_type_appartments_sale || null,
     isNew: /новобудова/i.test(p.apartments_object_type || ''),
+    devPrimary: devPrimaryOf(p),
     walls: p.house_type || null, heating: p.heating || null, bathroom: p.bathroom || null, comm: p.communications || null,
     noCommission: /без комісії/i.test(p.commission || ''),
     loc: x.loc, cityId: x.cityId, region: x.region, obl: L.REGION2SLUG[x.region] || null,
@@ -156,7 +179,14 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
   // от фактического состояния, и 143 лота проваливались мимо обоих наборов: в готовое
   // не пускала метка, в получистовую — отсутствие текстового признака недостроя.
   // Состояние решают те же правила, что и у всех: поле «Ремонт» и текст объявления.
-  if (L.BAD_REPAIR.test(u.repair || '')) { drop.unfin++; continue; }
+  if (L.BAD_REPAIR.test(u.repair || '')) {
+    // чистовая напрямую от застройщика (просьба покупателя 08.09.2026: «отбирать после
+    // застройщиков отдельным фильтром») — не выбрасываем совсем, а ведём в «чистовая от
+    // застройщика»: OLX сам помечает такие лоты «Первинний ринок» + «Від забудовника».
+    // У обычного перекупщика (devPrimary=false) чистовая по-прежнему выбрасывается совсем.
+    if (u.devPrimary) { finish(u); if (gate(u)) pushRaw(u, 'devnew'); }
+    drop.unfin++; continue;
+  }
   if (L.BAD_TEXT.test((u.title || '') + ' ' + (u.desc || ''))) { drop.unfin++; continue; }
   if (L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 260))) { drop.share++; continue; }
   finish(u);
@@ -252,6 +282,17 @@ const fbAll = loadExt('fb-candidates.json', 'fb', null, EXT).map(finish).filter(
 // улице из заголовка/описания — так же, как у OLX.
 const rielAll = loadExt('rieltor9-candidates.json', 'riel', null, D).map(finish).filter(gate);
 const metrAll = loadExt('metrazh9-candidates.json', 'metr', null, D).map(finish).filter(gate);
+// dom.ria.com и flatfy.ua (добавлены 08.09.2026, просьба покупателя «нашёл ещё 2 сайта,
+// собери из них тоже»). Оба заведены тем же способом, что Rieltor/Metrazh — координаты
+// уже в карточке источника (geoFile не нужен), бюджет/площадь/комнаты/текстовые фильтры
+// (UNFIN/SHARE/BAD_TEXT) применены ещё в самом сборщике, поэтому в «получистовую» эти
+// источники не попадают, как и Rieltor/Metrazh, — только в готовое.
+// flatfy.ua — метапоиск группы LUN, не своя база: контрольная выборка показала, что
+// подавляющее большинство карточек — зеркала rieltor.ua/olx.ua/lun.ua/dom.ria.com,
+// уже присутствующих в каталоге под своим именем. Такие зеркала сборщик (flatfy9.js)
+// выбрасывает по полю site.name сам, до записи в data/flatfy9-candidates.json.
+const domriaAll = loadExt('domria9-candidates.json', 'domria', null, D).map(finish).filter(gate);
+const flatfyAll = loadExt('flatfy9-candidates.json', 'flatfy', null, D).map(finish).filter(gate);
 
 /* ════════ 5. топ-50 на область в каждом наборе источник×тип (готовое) ════════ */
 function dedupe(arr) {
@@ -297,14 +338,18 @@ function pickTop(sets, out, stats, prefix) {
    Вердикт no — бетон, стяжка и штукатурка; только планировка; только рендер
    застройщика; только фасад или двор. Фото нет вовсе — тоже no: проверить нечем. */
 const nbCand = [];        // ждут фотопроверки
-const nbHold = new Set(); // id, не допущенных в каталог: и отклонённые, и ждущие
 function nbPass(u) {
   if (!u.isNew) return true;
   if (PINNED.has(u.id)) return true;                       // разобранное избранное держим всегда
   const verdict = vet[u.id] || (legacyVetted.has(u.id) ? 'ok' : null);
   if (verdict === 'ok') return true;
   nbHold.add(u.id);
-  if (verdict === 'no') { drop.nbShell++; return false; }  // на фото чистовая, план или рендер
+  if (verdict === 'no') {
+    // чистова напрямую від забудовника — не викидаємо, а ведемо у «чистовая от застройщика»
+    // (просьба покупателя 08.09.2026), навіть якщо на фото коробка/рендер: це і є суть категорії
+    if (u.devPrimary) { pushRaw(u, 'devnew'); drop.nbShellDev++; return false; }
+    drop.nbShell++; return false;  // на фото чистовая, план или рендер — и это не застройщик
+  }
   if (!(u.photos || []).length) { drop.nbNoPhoto++; return false; }
   nbCand.push(u); drop.nbWait++; return false;
 }
@@ -315,6 +360,8 @@ const sets = {
   'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass)),
   'riel|house': dedupe(rielAll.filter(u => u.kind === 'house').filter(nbPass)), 'riel|flat': dedupe(rielAll.filter(u => u.kind === 'flat').filter(nbPass)),
   'metr|house': dedupe(metrAll.filter(u => u.kind === 'house').filter(nbPass)), 'metr|flat': dedupe(metrAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'domria|house': dedupe(domriaAll.filter(u => u.kind === 'house').filter(nbPass)), 'domria|flat': dedupe(domriaAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'flatfy|house': dedupe(flatfyAll.filter(u => u.kind === 'house').filter(nbPass)), 'flatfy|flat': dedupe(flatfyAll.filter(u => u.kind === 'flat').filter(nbPass)),
 };
 const units = [];
 const setStats = [];
@@ -452,8 +499,10 @@ for (const s of semiLive) {
 // 07.09.2026 — «добавь ещё варианты, чистовые квартиры от проверенного застройщика»).
 // Бюджет и доверие к застройщику (год основания + сдано/в процессе домов на LUN) уже
 // отфильтрованы в scripts/lun-nb9.js — здесь только гео-ворота и топ-50, как у всех.
+// С 08.09.2026 это отдельная категория «чистовая от застройщика» (см. pushRaw выше), а не
+// часть получистовой: жить там нельзя вообще, в отличие от получистовой, куда можно заехать.
 const lunnbAll = loadExt('lun-nb9-candidates.json', 'lunnb', null, D).map(finish).filter(gate);
-for (const u of lunnbAll) pushSemi(u, 'devnew');
+for (const u of lunnbAll) pushRaw(u, 'devnew');
 // 6d. топ-50 на область в каждом наборе источник×тип — как у готового
 const semiSets = {};
 for (const u of dedupe(semiCand)) {
@@ -462,20 +511,30 @@ for (const u of dedupe(semiCand)) {
 }
 const semi = [];
 pickTop(semiSets, semi, setStats, 'semi:');
+// 6e. «чистовая от застройщика» — топ-50 на область в каждом наборе источник×тип, той же формы,
+// что готовое и получистовая (просьба покупателя 08.09.2026: отдельная третья категория,
+// не конкурирует за места ни с готовым, ни с получистовой)
+const rawSets = {};
+for (const u of dedupe(rawCand)) {
+  const k = u.src + '|' + u.kind;
+  (rawSets[k] = rawSets[k] || []).push(u);
+}
+const raw = [];
+pickTop(rawSets, raw, setStats, 'raw:');
 // «к рынку области»: насколько цена за м² ниже медианы готового жилья того же типа в той же области
 const median = arr => { if (!arr.length) return null; const s = arr.slice().sort((a, b) => a - b); return s.length % 2 ? s[s.length >> 1] : Math.round((s[s.length / 2 - 1] + s[s.length / 2]) / 2); };
 const medPpm = {};
 for (const u of units) if (u.ppm) (medPpm[u.obl + '|' + u.kind] = medPpm[u.obl + '|' + u.kind] || []).push(u.ppm);
 for (const k of Object.keys(medPpm)) medPpm[k] = median(medPpm[k]);
 const medAll = { house: median(units.filter(u => u.kind === 'house' && u.ppm).map(u => u.ppm)), flat: median(units.filter(u => u.kind === 'flat' && u.ppm).map(u => u.ppm)) };
-for (const u of semi) {
+for (const u of [...semi, ...raw]) {
   const med = medPpm[u.obl + '|' + u.kind] || medAll[u.kind];
   u.medPpm = med || null;
   u.disc = med && u.ppm ? Math.round((1 - u.ppm / med) * 100) : null;
 }
 
 /* ════════ 7. один объект в разных источниках ════════ */
-const all = [...units, ...semi];
+const all = [...units, ...semi, ...raw];
 const norm = s => String(s || '').toLowerCase().replace(/[’'ʼ`]/g, "'").trim();
 for (const u of all) u.dups = [];
 for (let i = 0; i < all.length; i++) {
@@ -497,7 +556,7 @@ for (let i = 0; i < all.length; i++) {
 }
 const dupN = all.filter(u => u.dups.length).length;
 
-fs.writeFileSync(D + 'units9.json', JSON.stringify({ units, semi }));
+fs.writeFileSync(D + 'units9.json', JSON.stringify({ units, semi, raw }));
 fs.writeFileSync(D + 'vet-need.json', JSON.stringify(housesCand.map(u => ({
   id: u.id, obl: u.obl, quality: u.quality, km: u.km, city: u.city, price: u.price, area: u.area, land: u.land,
   photos: u.photos.slice(0, 4), title: u.title, link: u.link,
@@ -518,9 +577,12 @@ console.log('готовых лотов:', units.length, 'по областям:'
 console.log('получистовая: отбор', JSON.stringify(semiDrop), '| кандидатов', semiCand.length, '| в топах', semi.length, '| с прежней страницы', liveKept);
 const semiCls = {}; semi.forEach(u => semiCls[u.semi] = (semiCls[u.semi] || 0) + 1);
 console.log('получистовая по классам:', JSON.stringify(semiCls));
+console.log('чистовая от застройщика: кандидатов', rawCand.length, '| в топах', raw.length,
+  '| источники', JSON.stringify(raw.reduce((m, u) => { m[u.src] = (m[u.src] || 0) + 1; return m; }, {})));
 console.log('домов OLX ждёт фотопроверки:', housesCand.length, 'из них по областям:',
   JSON.stringify(housesCand.reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {})));
 console.log('новострой: в каталоге', units.filter(u => u.isNew).length,
-  '| отклонено по фото (чистовая/план/рендер)', drop.nbShell,
+  '| отклонено по фото, не забудовник (чистовая/план/рендер)', drop.nbShell,
+  '| отклонено по фото, забудовник → «чистовая»', drop.nbShellDev,
   '| без фото', drop.nbNoPhoto, '| ждёт фотопроверки', drop.nbWait);
 console.log('лотов с дублем в другом источнике:', dupN);

@@ -512,7 +512,7 @@ function showList(cl){
     const dead=!!(window.BHDEAD&&window.BHDEAD.has(id)), del=!!(window.BHDEL&&window.BHDEL.has(id));
     return '<div class="cli'+(del?' isdel':'')+(dead?' isdead':'')+'">'+
       '<a href="'+esc(q.p.u||'#')+'" target="_blank" rel="noopener" title="Открыть объявление в источнике">'+
-      '№'+q.p.r+' · '+money(q.p.p)+' · '+esc(q.p.t)+(q.p.g==='semi'?' ⚒':'')+' →</a>'+
+      '№'+q.p.r+' · '+money(q.p.p)+' · '+esc(q.p.t)+(q.p.g==='semi'?' ⚒':(q.p.g==='raw'?' 🏗':''))+' →</a>'+
       '<button type="button" class="fav" data-fav="'+id+'"'+(_l?' data-lvl="'+_l+'"':'')+' aria-pressed="'+(_l?'true':'false')+'" title="'+LVLT[_l]+'">'+(_l?'★'.repeat(_l):'★')+'</button>'+
       '<button type="button" class="unav" data-unav="'+id+'" aria-pressed="'+(dead?'true':'false')+'" title="'+(dead?'Снять пометку «недоступно»':'Пометить недоступным (объявление снято)')+'">✕</button>'+
       '<button type="button" class="delb" data-del="'+id+'" aria-pressed="'+(del?'true':'false')+'" title="'+(del?'Вернуть в подборку':'Удалить из подборки (скроется из каталога и с карты)')+'">'+TRASH+'</button>'+

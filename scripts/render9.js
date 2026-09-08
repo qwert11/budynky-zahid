@@ -11,7 +11,7 @@ const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 const ex = f => fs.existsSync(f);
 
 const DATE = '3 сентября 2026';
-const { units, semi } = rd(D + 'units9.json');
+const { units, semi, raw } = rd(D + 'units9.json');
 const market = ex(D + 'market9.json') ? rd(D + 'market9.json') : { byId: {} };
 const marketOld = ex(D5 + 'market-all.json') ? rd(D5 + 'market-all.json') : { byId: {} };
 const mkt = id => market.byId[id] || marketOld.byId[id] || null;
@@ -178,8 +178,8 @@ function chkBody(u) {
 }
 
 const byId = {};
-for (const u of [...units, ...semi]) byId[u.id] = u;
-const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК', riel: 'RIELTOR', metr: 'МЕТРАЖ', lunnb: 'ЗАСТРОЙЩИК' };
+for (const u of [...units, ...semi, ...raw]) byId[u.id] = u;
+const SRC_LABEL = { olx: 'OLX', lun: 'ЛУН', tg: 'ТЕЛЕГРАМ', fb: 'ФЕЙСБУК', riel: 'RIELTOR', metr: 'МЕТРАЖ', lunnb: 'ЗАСТРОЙЩИК', domria: 'DOM.RIA', flatfy: 'FLATFY' };
 const KIND_LABEL = { house: 'дом', flat: 'квартира' };
 function dupBadges(u) {
   if (!u.dups || !u.dups.length) return '';
@@ -251,12 +251,13 @@ function idx(u) {
   if (fb) parts.push(fb);
   const cb = chkBadge(u);
   if (cb) parts.push(cb);
-  const isSemi = u.ready === 'semi';
-  if (isSemi) parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри набора «получистовая»: близость к городу с двойным весом, цена за м², что уже готово к жизни, площадь, ${u.kind === 'flat' ? 'комнаты и этаж' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
+  const isSemi = u.ready === 'semi' || u.ready === 'raw';
+  const semiSetLabel = u.ready === 'raw' ? 'чистовая от застройщика' : 'получистовая';
+  if (isSemi) parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри набора «${semiSetLabel}»: близость к городу с двойным весом, цена за м², что уже готово к жизни, площадь, ${u.kind === 'flat' ? 'комнаты и этаж' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
   else parts.push(`<span class="ix ixq" title="Индекс цена/качество внутри своего набора: близость к городу с двойным весом, цена за м², площадь, ${u.kind === 'flat' ? 'комнаты, этаж, ремонт' : 'участок'}"><b>${u.quality}</b><i>цена/качество</i></span>`);
   parts.push(`<span class="ix ixp" title="Цена в объявлении"><b>$${fmt(u.price)}</b><i>цена</i></span>`);
   if (isSemi) {
-    // у получистовой вместо спроса и рынка — «что готово» и «к рынку области»
+    // у получистовой и у чистовой от застройщика вместо спроса и рынка — «что готово» и «к рынку области»
     const sc = SEMI[u.semi] || SEMI.unfin;
     parts.push(`<span class="ix ixw" title="${esc(sc.title)}"><b>${esc(sc.short)}</b><i>что готово</i></span>`);
     if (u.disc != null && u.medPpm) {
@@ -276,13 +277,15 @@ function idx(u) {
   if (u.ppm) parts.push(`<span class="ix" title="Цена за квадратный метр"><b>$${fmt(u.ppm)}</b><i>за м²</i></span>`);
   if (u.kind === 'flat' && u.floor) parts.push(`<span class="ix" title="Этаж и этажность дома"><b>${u.floor}${u.floors ? '/' + u.floors : ''}</b><i>этаж</i></span>`);
   const ps = posted(u);
-  const WHERE = { olx: 'на OLX', lun: 'на ЛУНе', tg: 'в канале', fb: 'на Фейсбуке', riel: 'на Rieltor.ua', metr: 'на Метраже' };
+  const WHERE = { olx: 'на OLX', lun: 'на ЛУНе', tg: 'в канале', fb: 'на Фейсбуке', riel: 'на Rieltor.ua', metr: 'на Метраже', domria: 'на dom.ria', flatfy: 'на Flatfy' };
   const WHERE_T = {
     olx: 'Размещено на OLX ' + (ps ? ps.date : '') + '. На странице объявления OLX показывает дату последнего поднятия',
     lun: 'Дата объявления на ЛУНе',
     tg: 'Дата поста в канале Телеграма — не дата размещения объекта: агрегаторы перевыкладывают один лот месяцами',
     fb: 'Дата публикации в Facebook Marketplace',
     riel: 'Дата объявления на Rieltor.ua', metr: 'Дата объявления на Метраже',
+    domria: 'Дата объявления на dom.ria.com',
+    flatfy: 'Дата, когда flatfy.ua впервые проиндексировал объявление (само объявление размещено на другом сайте — flatfy его агрегирует)',
   };
   if (ps) parts.push(`<span class="ix ixd" title="${WHERE_T[u.src] || ''}, продаётся ${ps.age}"><b>${ps.date}</b><i>${WHERE[u.src] || 'на OLX'} ${ps.age}</i></span>`);
   return `<div class="ixs">${parts.join('')}</div>`;
@@ -314,12 +317,18 @@ function rowFor(u, mode) {
     riel: 'Объявление с Rieltor.ua · координаты из карточки продавца',
     metr: 'Объявление с Metrazh.com.ua' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес дома'),
     lunnb: 'Прайс напрямую от застройщика (LUN, раздел «Новобудови») — цена «от» на самый дешёвый юнит этого типа комнатности, не конкретная квартира' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес ЖК'),
+    domria: 'Объявление с dom.ria.com · координаты из карточки продавца',
+    flatfy: 'Найдено через агрегатор flatfy.ua (группа LUN) — ссылка ведёт на исходное объявление на другом сайте, само flatfy своих объявлений не размещает',
   };
   const semiCls = SEMI[u.semi] || SEMI.unfin;
-  const semiTitle = u.semi === 'devnew' && u.developer
-    ? `Первичная продажа напрямую от застройщика «${u.developer}», чистова обробка (без ремонта) — жить пока нельзя. Проверен по своему послужному списку на LUN: не младше 5 лет на рынке и минимум 2 сданных дома.${u.term ? ' Термін введення ' + u.term + '.' : ''}`
+  const semiTitle = u.semi === 'devnew'
+    ? (u.developer
+        ? `Первичная продажа напрямую от застройщика «${u.developer}», чистова обробка (без ремонта) — жить пока нельзя. Проверен по своему послужному списку на LUN: не младше 5 лет на рынке и минимум 2 сданных дома.${u.term ? ' Термін введення ' + u.term + '.' : ''}`
+        : (u.src === 'olx'
+            ? 'Первичная продажа напрямую от застройщика: OLX сам помечает лот «Первинний ринок» и условие «Від забудовника» (иногда с рассрочкой от застройщика). Чистова обробка (без ремонта) — жить пока нельзя. Послужной список застройщика тут не проверяется (в отличие от ЛУНа) — уточняйте у продавца.'
+            : semiCls.title))
     : semiCls.title;
-  const semiB = u.ready === 'semi' ? `<span class="semib" title="${esc(semiTitle)}">${semiCls.badge}</span>` : '';
+  const semiB = (u.ready === 'semi' || u.ready === 'raw') ? `<span class="semib" title="${esc(semiTitle)}">${semiCls.badge}</span>` : '';
   const newB = u.isNew ? `<span class="newb" title="Новостройка, проверенная по фотографиям: на снимках жилой интерьер, а не бетон под чистову. Такие лоты идут первыми и не вытесняются вторичкой из топ-50. Новострой без живых фото (стяжка и штукатурка, только планировка или рендер, только фасад) в каталог не берётся вовсе. Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';
   const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${newB}${semiB}${dupBadges(u)}`;
   const m = mkt(u.id);
@@ -328,7 +337,7 @@ function rowFor(u, mode) {
     `data-src="${u.src}"`, `data-kind="${u.kind}"`,
     u.obl ? `data-obl="${u.obl}"` : '',
     u.isNew ? 'data-new="1"' : '',
-    u.ready === 'semi' ? `data-ready="semi" data-semi="${u.semi}"` + (u.disc != null ? ` data-disc="${u.disc}"` : '') : '',
+    (u.ready === 'semi' || u.ready === 'raw') ? `data-ready="${u.ready}" data-semi="${u.semi}"` + (u.disc != null ? ` data-disc="${u.disc}"` : '') : '',
     family[u.id] && family[u.id].fit ? `data-fit="${family[u.id].fit}"` : '',
     u.ppm ? `data-ppm="${u.ppm}"` : '', u.area ? `data-area="${u.area}"` : '', u.land ? `data-land="${u.land}"` : '',
     u.rooms ? `data-rooms="${u.rooms}"` : '',
@@ -342,14 +351,15 @@ function rowFor(u, mode) {
 }
 
 function rowsFor(mode) {
-  // получистовая идёт после готового: на странице это отдельный список со своей шапкой
-  return [...units, ...semi].map(u => rowFor(u, mode)).join('\n');
+  // получистовая и чистовая от застройщика идут после готового: на странице это
+  // отдельные списки со своими шапками
+  return [...units, ...semi, ...raw].map(u => rowFor(u, mode)).join('\n');
 }
 
 /* ── точки карты ── */
 const pts = [];
 let noGeo = 0;
-for (const u of [...units, ...semi]) {
+for (const u of [...units, ...semi, ...raw]) {
   if (!u.lat || !u.lon) { noGeo++; continue; }
   const p = {
     r: u.rankIn, i: u.id, lat: +(+u.lat).toFixed(4), lon: +(+u.lon).toFixed(4), p: u.price,
@@ -358,7 +368,7 @@ for (const u of [...units, ...semi]) {
   };
   if (u.obl) p.o = u.obl;
   if (u.isNew) p.nb = 1;
-  if (u.ready === 'semi') p.g = 'semi';
+  if (u.ready === 'semi' || u.ready === 'raw') p.g = u.ready;
   // откуда взята точка: h — адрес с номером дома, s — улица, p — село названо в тексте
   if (u.geoSrc === 'house') p.w = 'h';
   else if (u.geoSrc === 'street') p.w = 's';
@@ -368,7 +378,7 @@ for (const u of [...units, ...semi]) {
   pts.push(p);
 }
 
-const N = units.length + semi.length;
+const N = units.length + semi.length + raw.length;
 const acc = { h: 0, s: 0, p: 0 };
 for (const p of pts) if (p.w) acc[p.w]++;
 const exact = acc.h + acc.s;
@@ -581,7 +591,7 @@ const site = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\
 fs.writeFileSync(path.join(__dirname, '..', 'index.html'), site);
 
 console.log('артефакт:', (htmlData.length / 1048576).toFixed(2), 'МБ | страница Pages:', (site.length / 1048576).toFixed(2), 'МБ');
-console.log('лотов:', N, '(готовых', units.length, '+ получистовых', semi.length + ') | точек:', pts.length, '| без координат:', noGeo);
+console.log('лотов:', N, '(готовых', units.length, '+ получистовых', semi.length, '+ чистовых от застройщика', raw.length, ') | точек:', pts.length, '| без координат:', noGeo);
 console.log('ячеек промышленности:', IND.length, '| с рыночными кольцами:', [...units].filter(u => mkt(u.id)).length);
-console.log('с просм/день:', units.filter(u => u.vpd != null).length, '| без миниатюры (артефакт):', [...units, ...semi].filter(u => !thumbFor(u, 'data')).length);
-console.log('двойники:', [...units, ...semi].filter(u => u.dups && u.dups.length).length);
+console.log('с просм/день:', units.filter(u => u.vpd != null).length, '| без миниатюры (артефакт):', [...units, ...semi, ...raw].filter(u => !thumbFor(u, 'data')).length);
+console.log('двойники:', [...units, ...semi, ...raw].filter(u => u.dups && u.dups.length).length);
