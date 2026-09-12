@@ -67,6 +67,26 @@ if (blocked.length) {
   blocked = again;
 }
 
+// Подтверждение снятия вторым запросом. 12.09.2026 сравнение с прогоном GitHub Actions
+// показало: раннер записал в снятые 5 лотов, которые на самом деле живы (перепроверены
+// поштучно, все 200). То есть источник иногда отвечает 404 на живое объявление —
+// у датацентровых адресов это бывает чаще. Одиночный 404 больше не приговор:
+// лот признаётся снятым, только если 404/410 повторился с паузой.
+if (dead.size) {
+  const confirmed = new Set(), resurrected = [];
+  for (const id of dead) {
+    const p = byId.get(id);
+    if (!p) { confirmed.add(id); continue; }   // лота нет в каталоге — оставляем как есть
+    await sleep(200);
+    const st = await status(p.u);
+    if (st === 200) resurrected.push(id);      // живо: первый 404 был ложным
+    else confirmed.add(id);                    // 404/410 подтвердился (или проверить не вышло)
+  }
+  if (resurrected.length) console.log(`ложных снятий отсеяно: ${resurrected.length} (${resurrected.join(' ')})`);
+  dead.clear();
+  for (const id of confirmed) dead.add(id);
+}
+
 console.log(`проверено ${checked}, недоступно ${dead.size}, ошибок/блокировок ${blocked.length}`);
 if (blocked.length) console.log('не удалось проверить:', blocked.join(' '));
 
