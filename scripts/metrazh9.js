@@ -53,7 +53,7 @@ async function fetchHtml(url) {
 // только статус — для проверки живости зеркала OLX (404/410 = снято, как в check-dead.mjs)
 async function fetchStatus(url) {
   try {
-    const r = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'uk-UA,uk;q=0.9' } });
+    const r = await fetch(url, { headers: { 'user-agent': UA, 'accept': '*/*', 'accept-language': 'uk-UA,uk;q=0.9' } });
     await r.arrayBuffer().catch(() => {});
     return r.status;
   } catch { return 0; }

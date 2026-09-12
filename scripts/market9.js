@@ -2,12 +2,14 @@
 // (кэш прошлых сборок переиспользуется). Категории: продажа домов 1602 /
 // квартир 1758; аренда домов 330, квартир 1760. → data/market9-cache.json
 const fs = require('fs');
+// OLX отвечает Node'у 403 — ходим через curl (scripts/olx-fetch.js)
+const { curlJson } = require('./olx-fetch');
 const path = require('path');
 const D = path.join(__dirname, 'data') + path.sep;
 const OLD_CACHE = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-New-folder/5e19b764-3f94-4fb8-8c59-b1d354783282/scratchpad/market2-cache.json';
 const CACHE = D + 'market9-cache.json';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
-const H = { 'user-agent': UA, 'accept-language': 'uk-UA,uk;q=0.9' };
+const H = { 'user-agent': UA, 'accept': '*/*', 'accept-language': 'uk-UA,uk;q=0.9' };
 const A = 'https://www.olx.ua/api/v1/offers/';
 const NOW = Date.now();
 const SALE = { house: 1602, flat: 1758 };
@@ -25,17 +27,8 @@ const save = () => fs.writeFileSync(CACHE, JSON.stringify(cache));
 const med = a => { const s = a.filter(x => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
 const norm = s => String(s || '').toLowerCase().replace(/[’'ʼ`]/g, "'").trim();
 
-async function getJson(u, tries = 3) {
-  for (let t = 0; t < tries; t++) {
-    try {
-      const r = await fetch(u, { headers: H });
-      if (r.status === 429 || r.status >= 500) { await sleep(1500 * (t + 1)); continue; }
-      if (!r.ok) return null;
-      return await r.json();
-    } catch { await sleep(700 * (t + 1)); }
-  }
-  return null;
-}
+// через curl: OLX с 12.09.2026 отвечает Node-у 403 по TLS-отпечатку (см. scripts/olx-fetch.js)
+const getJson = (u, tries = 4) => curlJson(u, tries);
 async function listing(cat, cityId, dist, pages = 1) {
   const key = `${cat}|${cityId}|${dist}|${pages}`;
   if (cache.list[key]) return cache.list[key];

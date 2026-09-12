@@ -28,6 +28,11 @@ const industry = ex(D + 'industry.json') ? rd(D + 'industry.json') : { cells: []
 const strikes = ex(D + 'strikes.json') ? rd(D + 'strikes.json') : { cities: [], oblasts: [], from: '', to: '', posts: 0 };
 const addr9 = ex(D + 'addr9.json') ? rd(D + 'addr9.json') : {};
 const renov9 = ex(D + 'renov.json') ? rd(D + 'renov.json') : {};
+// когда лот впервые появился в нашем каталоге (см. scripts/first-seen.js)
+const firstSeen0 = ex(D + 'first-seen.json') ? rd(D + 'first-seen.json') : { seen: {}, runs: [], updated: '' };
+const SEEN = firstSeen0.seen || {};
+const RUNS = firstSeen0.runs || [];
+const LASTRUN = firstSeen0.updated || (RUNS.length ? RUNS[RUNS.length - 1] : '');
 const shapes = rd(D + 'oblast-shapes9.json');
 const dead0 = ex(path.join(__dirname, '..', 'dead.json')) ? rd(path.join(__dirname, '..', 'dead.json')) : { checked: '', dead: [] };
 
@@ -95,6 +100,17 @@ function posted(u) {
   const mon = Math.round(days / 30.44);
   const age = days < 60 ? days + ' дн' : (mon < 24 ? mon + ' мес' : (days / 365.25).toFixed(1).replace('.', ',') + ' года');
   return { date: d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear(), days, age, iso: u.created.slice(0, 10) };
+}
+// вторая дата (просьба покупателя 11.09.2026): когда лот подтянулся в наш каталог
+// очередным парсингом. Источник — реестр data/first-seen.json, см. scripts/first-seen.js
+function seenAt(u) {
+  const iso = SEEN[u.id];
+  if (!iso) return null;
+  const d = new Date(iso + 'T12:00:00Z');
+  if (isNaN(d)) return null;
+  const days = Math.max(0, Math.round((NOW - d) / 86400000));
+  const age = days === 0 ? 'сегодня' : (days === 1 ? 'вчера' : (days < 60 ? days + ' дн назад' : Math.round(days / 30.44) + ' мес назад'));
+  return { date: d.getUTCDate() + ' ' + MON[d.getUTCMonth()], days, age, iso };
 }
 /* «нам подходит» и чек-листы — как раньше */
 const FR = 19, FC = 2 * Math.PI * FR, FSEG = FC * 112 / 360;
@@ -301,6 +317,13 @@ function idx(u) {
     flatfy: 'Дата, когда flatfy.ua впервые проиндексировал объявление (само объявление размещено на другом сайте — flatfy его агрегирует)',
   };
   if (ps) parts.push(`<span class="ix ixd" title="${WHERE_T[u.src] || ''}, продаётся ${ps.age}"><b>${ps.date}</b><i>${WHERE[u.src] || 'на OLX'} ${ps.age}</i></span>`);
+  const sn = seenAt(u);
+  if (sn) {
+    const st = `Когда лот подтянулся в наш каталог: ${sn.iso} (${sn.age}). Это дата парсинга, а не дата объявления — `
+      + `лот мог висеть на источнике задолго до того, как попал к нам в топ-50. `
+      + `История ведётся по сборкам каталога с 25.08.2026; последний сбор — ${LASTRUN || '—'}.`;
+    parts.push(`<span class="ix ixn2${sn.days <= 1 ? ' ixn2f' : ''}" title="${esc(st)}"><b>${sn.date}</b><i>у нас ${sn.age}</i></span>`);
+  }
   return `<div class="ixs">${parts.join('')}</div>`;
 }
 
@@ -357,7 +380,8 @@ function rowFor(u, mode) {
     u.vpd != null ? `data-vpd="${u.vpd}"` : '', u.views != null ? `data-views="${u.views}"` : '',
     u.km != null ? `data-km="${u.km}"` : '',
     m ? `data-mbuy="${m.buy == null ? '' : m.buy}" data-mrent="${m.rent}"` : '',
-    u.days != null ? `data-days="${u.days}"` + (u.created ? ` data-created="${u.created.slice(0, 10)}"` : '') : ''
+    u.days != null ? `data-days="${u.days}"` + (u.created ? ` data-created="${u.created.slice(0, 10)}"` : '') : '',
+    (() => { const s = seenAt(u); return s ? `data-seen="${s.iso}" data-seendays="${s.days}"` : ''; })()
   ].filter(Boolean).join(' ');
   const img = thumbFor(u, mode);
   return `<div class="row" id="row-${u.id}" ${d}><a class="ph" href="${esc(u.link)}" target="_blank" rel="noopener">${img ? `<img src="${img}" alt="" loading="lazy">` : '<span class="nophoto"></span>'}</a><div class="b"><div class="t"><span class="tx"><span class="rnk">${u.rankIn}</span><a href="${esc(u.link)}" target="_blank" rel="noopener">${esc(u.title)}</a>${badges}</span>${favBtn(u.id)}</div><div class="m">${meta}</div>${idx(u)}${fitBody(u)}${chkBody(u)}</div></div>`;
@@ -381,6 +405,9 @@ for (const u of [...units, ...semi, ...raw]) {
   };
   if (u.obl) p.o = u.obl;
   if (u.isNew) p.nb = 1;
+  // дни для фильтров по датам: sd — сколько дней лот у нас, pd — сколько на источнике
+  { const s = seenAt(u); if (s) p.sd = s.days; }
+  { const ps2 = posted(u); if (ps2) p.pd = ps2.days; }
   if (u.ready === 'semi' || u.ready === 'raw') p.g = u.ready;
   // откуда взята точка: h — адрес с номером дома, s — улица, p — село названо в тексте
   if (u.geoSrc === 'house') p.w = 'h';

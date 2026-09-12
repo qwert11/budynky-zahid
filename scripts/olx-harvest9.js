@@ -6,8 +6,10 @@
 // только новый кусок: node olx-harvest9.js houses 41000 45000 — накопительный
 // store дополнится, лоты дедуплицируются по id объявления.
 const fs = require('fs');
+// запросы к OLX идут через curl: с 12.09.2026 антибот режет TLS-отпечаток Node
+const { curlJson } = require('./olx-fetch');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
-const H = { 'user-agent': UA, 'accept-language': 'uk-UA,uk;q=0.9' };
+const H = { 'user-agent': UA, 'accept': '*/*', 'accept-language': 'uk-UA,uk;q=0.9' };
 const A = 'https://www.olx.ua/api/v1/offers/';
 const CAP = 1000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -26,17 +28,7 @@ const REGIONS = [
   [20, 'Хмельницька'], [6, 'Житомирська'], [24, 'Вінницька'],
 ];
 
-async function getJson(u, tries = 4) {
-  for (let t = 0; t < tries; t++) {
-    try {
-      const r = await fetch(u, { headers: H });
-      if (r.status === 429 || r.status >= 500) { await sleep(2000 * (t + 1)); continue; }
-      if (!r.ok) return null;
-      return await r.json();
-    } catch { await sleep(900 * (t + 1)); }
-  }
-  return null;
-}
+const getJson = (u, tries = 6) => curlJson(u, tries);
 
 const q = (regionId, from, to, offset, limit) =>
   `${A}?offset=${offset}&limit=${limit}&category_id=${CAT}&region_id=${regionId}` +
