@@ -46,7 +46,7 @@ const usdOf = u => u.cur === 'USD' ? u.price : (u.curConv === 'USD' ? u.priceCon
 const num = v => { const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isNaN(n) ? null : n; };
 
 const drop = { dead: 0, excluded: 0, share: 0, unfin: 0, far: 0, nogeo: 0, badtype: 0, budget: 0, small: 0, unvetted: 0, zak: 0,
-  nbShell: 0, nbShellDev: 0, nbNoPhoto: 0, nbWait: 0 };
+  nbShell: 0 };
 let pinnedKept = 0;
 // «Чистовая от застройщика» — третья категория готовности, отдельная и от готового, и от
 // получистовой (просьба покупателя 08.09.2026: «отбирать после застройщиков отдельным
@@ -183,12 +183,11 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
   // не пускала метка, в получистовую — отсутствие текстового признака недостроя.
   // Состояние решают те же правила, что и у всех: поле «Ремонт» и текст объявления.
   if (L.BAD_REPAIR.test(u.repair || '')) {
-    // чистовая новостройка (просьба покупателя 08.09.2026: «отбирать после застройщиков
-    // отдельным фильтром», расширено в тот же день — не только подтверждённые продажи от
-    // застройщика, любая «Первинний ринок» без отделки) — не выбрасываем совсем, а ведём
-    // в «чистовая от застройщика». У вторички (primaryMarket=false) чистовая по-прежнему
-    // выбрасывается совсем — это её не касается.
-    if (u.primaryMarket) { finish(u); if (gate(u)) pushRaw(u, 'devnew'); }
+    // Чистовая — всё под ремонт целиком — с 13.09.2026 отдельный третий список, и туда
+    // идёт любая такая квартира, а не только «Первинний ринок» от застройщика
+    // (правило покупателя: в каталог попадают все квартиры, состояние решает список).
+    finish(u);
+    if (gate(u)) pushRaw(u, u.primaryMarket ? 'devnew' : 'shell');
     drop.unfin++; continue;
   }
   if (L.BAD_TEXT.test((u.title || '') + ' ' + (u.desc || ''))) { drop.unfin++; continue; }
@@ -341,23 +340,22 @@ function pickTop(sets, out, stats, prefix) {
    Вердикт ok — на фото жилой интерьер: пол, обои или краска, двери, кухня, мебель.
    Вердикт no — бетон, стяжка и штукатурка; только планировка; только рендер
    застройщика; только фасад или двор. Фото нет вовсе — тоже no: проверить нечем. */
-const nbCand = [];        // ждут фотопроверки
+const nbCand = [];        // ждут фотопроверки (вердикт уточняет категорию, но лот уже в каталоге)
 function nbPass(u) {
   if (!u.isNew) return true;
   if (PINNED.has(u.id)) return true;                       // разобранное избранное держим всегда
   const verdict = vet[u.id] || (legacyVetted.has(u.id) ? 'ok' : null);
   if (verdict === 'ok') return true;
-  nbHold.add(u.id);
   if (verdict === 'no') {
-    // первинний ринок без відделки — не викидаємо, а ведемо у «чистовая от застройщика»
-    // (просьба покупателя 08.09.2026, расширено в тот же день на любую «Первинний ринок»,
-    // не только подтверждённую продажу от застройщика), навіть якщо на фото коробка/рендер:
-    // це і є суть категорії
-    if (u.primaryMarket) { pushRaw(u, 'devnew'); drop.nbShellDev++; return false; }
-    drop.nbShell++; return false;  // на фото чистовая, план или рендер, и это вторичка
+    // На фото бетон, стяжка, план или рендер — жить нельзя, но это не повод выбрасывать:
+    // такой лот и есть «чистовая» (правило покупателя 13.09.2026 — в каталог идут все
+    // квартиры, а состояние решает, в какой из трёх списков лот попадёт).
+    pushRaw(u, 'shell'); drop.nbShell++; return false;
   }
-  if (!(u.photos || []).length) { drop.nbNoPhoto++; return false; }
-  nbCand.push(u); drop.nbWait++; return false;
+  // непроверенных больше не держим за воротами: ставим в очередь на фотопроверку,
+  // но в каталоге лот уже есть — вердикт потом переложит его в нужный список
+  if ((u.photos || []).length) nbCand.push(u);
+  return true;
 }
 const sets = {
   'olx|house': dedupe(housesOlx.filter(nbPass)), 'olx|flat': dedupe(flatsOlx.filter(nbPass)),
@@ -389,12 +387,11 @@ for (const s of semiLive) liveById[s.id] = s;
 // доля объекта — не берём; но «частина будинку придатна, інша — потребує» — это наш класс part
 const shareSemi = u => L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 100)) && !L.SEMI_TXT.part.test(u.desc || '');
 // «Получистовая» — это жильё, в которое можно заселиться и доводить ремонт
-// (правило покупателя 03.09.2026). Коробка под чистовую жильём не является:
-// у класса shell в его же описании сказано «заехать сразу нельзя», поэтому
-// такие лоты в набор не берём вовсе.
-const SEMI_SKIP = new Set(['shell']);
+// (правило покупателя 03.09.2026). Коробка под чистовую — не получистовая: заехать
+// в неё нельзя. Но и не мусор — с 13.09.2026 она уходит в третий список, «чистовая»
+// (всё под ремонт целиком), а не выбрасывается из каталога.
 function pushSemi(u, cls) {
-  if (SEMI_SKIP.has(cls)) { semiDrop.notlivable = (semiDrop.notlivable || 0) + 1; return; }
+  if (cls === 'shell') { pushRaw(u, 'shell'); return; }
   // новострой без фотопроверки не должен просочиться сюда через второй проход:
   // бейдж «НОВОСТРОЙ» и приоритет действуют в обоих списках
   if (nbHold.has(u.id)) { semiDrop.nbHold = (semiDrop.nbHold || 0) + 1; return; }
@@ -417,7 +414,8 @@ for (const u of housesPool) {
   if (vet[u.id] === 'ok') { semiDrop.vetOkReady++; continue; }          // на фото жилой дом — это кандидат в готовое
   let cls = liveById[u.id] ? (liveById[u.id].attrs.semi || null) : null;  // класс с прежней страницы надёжнее регэкспа
   if (!cls) cls = L.semiClass(u);
-  if (cls === 'repair' && vet[u.id] === 'no') cls = L.SEMI_TXT.util.test((u.title || '') + ' ' + (u.desc || '')) ? 'shell' : null;
+  // «жилая, ремонт постепенно», но на фото голые стены — это не получистовая, а чистовая
+  if (cls === 'repair' && vet[u.id] === 'no') cls = 'shell';
   if (!cls) { semiDrop.noclass++; continue; }
   if (u.km == null) finish(u);
   if (!gate(u)) { semiDrop.gate++; continue; }
@@ -587,8 +585,7 @@ console.log('чистовая от застройщика: кандидатов'
   '| источники', JSON.stringify(raw.reduce((m, u) => { m[u.src] = (m[u.src] || 0) + 1; return m; }, {})));
 console.log('домов OLX ждёт фотопроверки:', housesCand.length, 'из них по областям:',
   JSON.stringify(housesCand.reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {})));
-console.log('новострой: в каталоге', units.filter(u => u.isNew).length,
-  '| отклонено по фото, не забудовник (чистовая/план/рендер)', drop.nbShell,
-  '| отклонено по фото, забудовник → «чистовая»', drop.nbShellDev,
-  '| без фото', drop.nbNoPhoto, '| ждёт фотопроверки', drop.nbWait);
+console.log('новострой: в готовом', units.filter(u => u.isNew).length,
+  '| по фото без отделки → «чистовая»', drop.nbShell,
+  '| стоит в очереди на фотопроверку (и при этом уже в каталоге)', nbCand.length);
 console.log('лотов с дублем в другом источнике:', dupN);
