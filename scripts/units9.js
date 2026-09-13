@@ -27,7 +27,11 @@ const deL = o => {
 const rdLots = f => { const j = rd(f); if (Array.isArray(j)) j.forEach(deL); else if (j.items) Object.values(j.items).forEach(deL); return j; };
 const ex = f => fs.existsSync(f);
 
-const TOP = 50, KM_MAX = 10;
+// TOP_FLAT: для квартир потолок в пять раз выше (просьба покупателя 13.09.2026).
+// При топ-50 только по квартирам OLX за бортом оставалось 518 лотов, прошедших все
+// фильтры, и перекос был резкий: 225 из них в Ивано-Франковске и 48 в Хмельницком —
+// то есть именно там, где предложений больше всего, каталог показывал пятую часть рынка.
+const TOP = 50, TOP_FLAT = 250, KM_MAX = 10;
 const DEAD = new Set(rd(path.join(__dirname, '..', 'dead.json')).dead || []);
 const EXCLUDED = new Set(rd(path.join(__dirname, '..', 'excluded.json')).excluded || []);
 const geo9 = rd(D + 'geocode9.json');
@@ -321,8 +325,9 @@ function pickTop(sets, out, stats, prefix) {
       // новостройки идут первыми и внутри себя по индексу — они не должны вылетать
       // из топ-50 под давлением вторички (просьба покупателя 03.09.2026)
       list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || b.quality - a.quality);
-      list.slice(0, TOP).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key; out.push(u); });
-      parts.push(o + ':' + Math.min(list.length, TOP));
+      const top = key.endsWith('|flat') ? TOP_FLAT : TOP;
+      list.slice(0, top).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key; out.push(u); });
+      parts.push(o + ':' + Math.min(list.length, top));
     }
     stats.push(((prefix || '') + key).padEnd(15) + ' ' + parts.sort().join(' '));
   }
