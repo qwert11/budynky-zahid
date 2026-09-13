@@ -305,7 +305,12 @@ const flatfyAll = loadExt('flatfy9-candidates.json', 'flatfy', null, D).map(fini
 function dedupe(arr) {
   const seen = new Set(), out = [];
   for (const u of arr.sort((a, b) => b.quality - a.quality)) {
-    const k = [u.kind, u.price, Math.round(u.area || 0), (u.loc || '').toLowerCase()].join('|');
+    // Этаж и этажность обязательны в ключе: без них в городе с новостройками
+    // схлопывались РАЗНЫЕ квартиры. 13.09.2026 так пропала квартира на 5/10 в кирпичном
+    // доме — её принял за дубль лот на 9/14 в монолитном, потому что совпали только
+    // цена, площадь и город. Настоящий перепост одного объекта совпадает и по этажу.
+    const k = [u.kind, u.price, Math.round(u.area || 0), (u.loc || '').toLowerCase(),
+      u.floor || '', u.floors || ''].join('|');
     if (seen.has(k)) continue;
     seen.add(k); out.push(u);
   }
