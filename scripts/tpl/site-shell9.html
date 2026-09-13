@@ -1058,6 +1058,12 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     <label title="Жильё, в которое можно заселиться и доводить ремонт: часть уже жилая (этаж, половина дома, флигель) либо жилое состояние под ремонт. Обычные коробки под чистовую сюда не входят — заехать в них нельзя. Идёт отдельным списком после готового, за места в топ-50 с ним не конкурирует"><input type="checkbox" data-f="ready" value="semi" checked> ⚒ получистовая <i data-cnt="ready:semi"></i></label>
     <label title="Жильё, где под ремонт всё целиком: отделки нет, заехать сразу нельзя — поэтому это не «получистовая», а третий список. Сюда идёт вся чистовая: новострой без отделки (и от застройщика, и от перекупщика), вторичка с голыми стенами, коробки с заведёнными сетями. Бейдж «Застройщик» означает проверенный по послужному списку прайс с LUN. Идёт отдельным списком после получистовой, за места в топ-50 ни с кем не конкурирует"><input type="checkbox" data-f="ready" value="raw" checked> 🏗 чистовая <i data-cnt="ready:raw"></i></label>
   </span>
+  <span class="fltg" role="group" aria-label="Комнаты">
+    <span class="fltl">Комнаты</span>
+    <label title="Двухкомнатные квартиры. Фильтр действует только на квартиры: дома он не скрывает никогда"><input type="checkbox" data-f="rooms" value="r2" checked> 2 комнаты <i data-cnt="rooms:r2"></i></label>
+    <label title="Трёхкомнатные и больше. Фильтр действует только на квартиры: дома он не скрывает никогда"><input type="checkbox" data-f="rooms" value="r3" checked> 3 и больше <i data-cnt="rooms:r3"></i></label>
+    <label title="Квартиры, у которых в объявлении не указано число комнат — уточнять у продавца"><input type="checkbox" data-f="rooms" value="r0" checked> не указано <i data-cnt="rooms:r0"></i></label>
+  </span>
   <span class="fltg" role="group" aria-label="Область">
     <span class="fltl">Область</span>
     <label><input type="checkbox" data-f="obl" value="vol" checked> Волынь <i data-cnt="obl:vol"></i></label>
@@ -1372,7 +1378,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
   }
   var flt={src:{olx:true,lun:true,tg:true,fb:true,riel:true,metr:true,lunnb:true,domria:true,flatfy:true}, kind:{house:true,flat:true},
            ready:{done:true,semi:true,raw:true}, obl:{vol:true,rov:true,lv:true,ter:true,if:true,chv:true,khm:true,zht:true,vin:true},
-           price:{p30:true,p35:true,p40:true}, big65:false, onlynew:false,
+           price:{p30:true,p35:true,p40:true}, rooms:{r2:true,r3:true,r0:true}, big65:false, onlynew:false,
            // две даты (11.09.2026): «не старше N дней» — у нас в каталоге и на источнике.
            // null = период не ограничен
            seenMax:null, postedMax:null};
@@ -1386,6 +1392,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
       if(fraw.kind) flt.kind={house:fraw.kind.house!==false, flat:fraw.kind.flat!==false};
       if(fraw.ready) flt.ready={done:fraw.ready.done!==false, semi:fraw.ready.semi!==false, raw:fraw.ready.raw!==false};
       if(fraw.price) flt.price={p30:fraw.price.p30!==false, p35:fraw.price.p35!==false, p40:fraw.price.p40!==false};
+      if(fraw.rooms) flt.rooms={r2:fraw.rooms.r2!==false, r3:fraw.rooms.r3!==false, r0:fraw.rooms.r0!==false};
       if(fraw.obl) for(var oi=0;oi<OBLS.length;oi++) flt.obl[OBLS[oi]]=fraw.obl[OBLS[oi]]!==false;
       flt.big65=!!fraw.big65;
       flt.onlynew=!!fraw.onlynew;
@@ -1401,6 +1408,11 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     var eb=bandOf(el.dataset.price);
     if(eb && flt.price[eb]===false) return false;
     if(el.dataset.obl && flt.obl[el.dataset.obl]===false) return false;
+    if((el.dataset.kind||'house')==='flat'){
+      var rn=parseFloat(el.dataset.rooms||'');
+      var rk=!(rn>0)?'r0':(rn<=2?'r2':'r3');
+      if(flt.rooms[rk]===false) return false;
+    }
     if(flt.big65 && !(parseFloat(el.dataset.area||'0')>=65)) return false;
     if(flt.onlynew && el.dataset.new!=='1') return false;
     // лот без даты под ограничение периода не подпадает: пустое значение — не «свежий»
@@ -1426,6 +1438,7 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
     var c={'src:olx':0,'src:lun':0,'src:tg':0,'src:fb':0,'src:riel':0,'src:metr':0,'src:lunnb':0,'src:domria':0,'src:flatfy':0,'kind:house':0,'kind:flat':0,
            'ready:done':0,'ready:semi':0,'ready:raw':0,'big65':0,'onlynew':0,'seen:7':0,'posted:7':0,
            'price:p30':0,'price:p35':0,'price:p40':0,
+           'rooms:r2':0,'rooms:r3':0,'rooms:r0':0,
            'obl:vol':0,'obl:rov':0,'obl:lv':0,'obl:ter':0,'obl:if':0,'obl:chv':0,'obl:khm':0,'obl:zht':0,'obl:vin':0};
     for(var i=0;i<items.length;i++){
       var d=items[i].dataset;
@@ -1434,6 +1447,10 @@ footer{color:var(--muted); font-size:13px; margin-top:36px;}
       c['ready:'+(d.ready||'done')]++;
       var cb=bandOf(d.price); if(cb) c['price:'+cb]++;
       if(d.obl&&c['obl:'+d.obl]!=null) c['obl:'+d.obl]++;
+      if((d.kind||'house')==='flat'){
+        var rn2=parseFloat(d.rooms||'');
+        c['rooms:'+(!(rn2>0)?'r0':(rn2<=2?'r2':'r3'))]++;
+      }
       if(parseFloat(d.area||'0')>=65) c.big65++;
       if(d.new==='1') c.onlynew++;
       // у обоих счётчиков окно — неделя: сколько нового пришло в каталог и сколько
