@@ -1,13 +1,4 @@
 {
- "https://lun.ua/uk/continuum-development": {
-  "name": "Continuum Development",
-  "href": "https://lun.ua/uk/continuum-development",
-  "founded": 2005,
-  "delivered": 8,
-  "deliveredSince": 2010,
-  "inProgress": 10,
-  "trusted": true
- },
  "https://lun.ua/uk/алкан": {
   "name": "Алкан",
   "href": "https://lun.ua/uk/алкан",
@@ -15,6 +6,15 @@
   "delivered": 4,
   "deliveredSince": 2010,
   "inProgress": 1,
+  "trusted": true
+ },
+ "https://lun.ua/uk/continuum-development": {
+  "name": "Continuum Development",
+  "href": "https://lun.ua/uk/continuum-development",
+  "founded": 2005,
+  "delivered": 8,
+  "deliveredSince": 2010,
+  "inProgress": 10,
   "trusted": true
  },
  "https://lun.ua/uk/орбіта": {
@@ -116,6 +116,15 @@
   "inProgress": 1,
   "trusted": true
  },
+ "https://lun.ua/uk/vertical-development": {
+  "name": "Vertical Development",
+  "href": "https://lun.ua/uk/vertical-development",
+  "founded": null,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 0,
+  "trusted": false
+ },
  "https://lun.ua/uk/green-rest-development": {
   "name": "Green Rest Development",
   "href": "https://lun.ua/uk/green-rest-development",
@@ -134,15 +143,6 @@
   "inProgress": 3,
   "trusted": false
  },
- "https://lun.ua/uk/стоград": {
-  "name": "Стоград",
-  "href": "https://lun.ua/uk/стоград",
-  "founded": 2008,
-  "delivered": 32,
-  "deliveredSince": 2010,
-  "inProgress": 16,
-  "trusted": true
- },
  "https://lun.ua/uk/renome-comfort": {
   "name": "RENOME Comfort",
   "href": "https://lun.ua/uk/renome-comfort",
@@ -150,6 +150,15 @@
   "delivered": 15,
   "deliveredSince": 2010,
   "inProgress": 2,
+  "trusted": true
+ },
+ "https://lun.ua/uk/стоград": {
+  "name": "Стоград",
+  "href": "https://lun.ua/uk/стоград",
+  "founded": 2008,
+  "delivered": 32,
+  "deliveredSince": 2010,
+  "inProgress": 16,
   "trusted": true
  },
  "https://lun.ua/uk/група-смарт": {
@@ -170,6 +179,24 @@
   "inProgress": 2,
   "trusted": false
  },
+ "https://lun.ua/uk/optimus": {
+  "name": "Optimus",
+  "href": "https://lun.ua/uk/optimus",
+  "founded": 2019,
+  "delivered": 4,
+  "deliveredSince": 2010,
+  "inProgress": 3,
+  "trusted": true
+ },
+ "https://lun.ua/uk/свій-девелопмент": {
+  "name": "СВІЙ ДЕВЕЛОПМЕНТ",
+  "href": "https://lun.ua/uk/свій-девелопмент",
+  "founded": 2022,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 3,
+  "trusted": false
+ },
  "https://lun.ua/uk/monolit-development": {
   "name": "Monolit Development",
   "href": "https://lun.ua/uk/monolit-development",
@@ -187,15 +214,6 @@
   "deliveredSince": 2010,
   "inProgress": 0,
   "trusted": false
- },
- "https://lun.ua/uk/optimus": {
-  "name": "Optimus",
-  "href": "https://lun.ua/uk/optimus",
-  "founded": 2019,
-  "delivered": 4,
-  "deliveredSince": 2010,
-  "inProgress": 3,
-  "trusted": true
  },
  "https://lun.ua/uk/апартамент-буд": {
   "name": "Апартамент-Буд",
@@ -233,15 +251,6 @@
   "inProgress": 1,
   "trusted": true
  },
- "https://lun.ua/uk/spatium-group": {
-  "name": "Spatium Group",
-  "href": "https://lun.ua/uk/spatium-group",
-  "founded": 2019,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 2,
-  "trusted": false
- },
  "https://lun.ua/uk/екополіс": {
   "name": "Екополіс",
   "href": "https://lun.ua/uk/екополіс",
@@ -258,6 +267,15 @@
   "delivered": 0,
   "deliveredSince": null,
   "inProgress": 8,
+  "trusted": false
+ },
+ "https://lun.ua/uk/gbg-development": {
+  "name": "GBG Development",
+  "href": "https://lun.ua/uk/gbg-development",
+  "founded": 2020,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 1,
   "trusted": false
  },
  "https://lun.ua/uk/continent": {
@@ -278,15 +296,6 @@
   "inProgress": 0,
   "trusted": false
  },
- "https://lun.ua/uk/terra-solis": {
-  "name": "Terra Solis",
-  "href": "https://lun.ua/uk/terra-solis",
-  "founded": 2020,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 2,
-  "trusted": false
- },
  "https://lun.ua/uk/avalon-inc": {
   "name": "Avalon",
   "href": "https://lun.ua/uk/avalon-inc",
@@ -294,15 +303,6 @@
   "delivered": 0,
   "deliveredSince": null,
   "inProgress": 0,
-  "trusted": false
- },
- "https://lun.ua/uk/gbg-development": {
-  "name": "GBG Development",
-  "href": "https://lun.ua/uk/gbg-development",
-  "founded": 2020,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 1,
   "trusted": false
  },
  "https://lun.ua/uk/globus": {
@@ -313,6 +313,15 @@
   "deliveredSince": 2010,
   "inProgress": 5,
   "trusted": true
+ },
+ "https://lun.ua/uk/terra-solis": {
+  "name": "Terra Solis",
+  "href": "https://lun.ua/uk/terra-solis",
+  "founded": 2020,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 2,
+  "trusted": false
  },
  "https://lun.ua/uk/будинки-та-люди": {
   "name": "Будинки та люди",
@@ -503,15 +512,6 @@
   "inProgress": 2,
   "trusted": true
  },
- "https://lun.ua/uk/ріел-буд": {
-  "name": "РІЕЛ-БУД",
-  "href": "https://lun.ua/uk/ріел-буд",
-  "founded": 2021,
-  "delivered": 4,
-  "deliveredSince": 2010,
-  "inProgress": 2,
-  "trusted": true
- },
  "https://lun.ua/uk/явір-90": {
   "name": "Явір-90",
   "href": "https://lun.ua/uk/явір-90",
@@ -530,6 +530,15 @@
   "inProgress": 8,
   "trusted": true
  },
+ "https://lun.ua/uk/ріел-буд": {
+  "name": "РІЕЛ-БУД",
+  "href": "https://lun.ua/uk/ріел-буд",
+  "founded": 2021,
+  "delivered": 4,
+  "deliveredSince": 2010,
+  "inProgress": 2,
+  "trusted": true
+ },
  "https://lun.ua/uk/креатор-буд": {
   "name": "Креатор-Буд",
   "href": "https://lun.ua/uk/креатор-буд",
@@ -539,15 +548,6 @@
   "inProgress": 0,
   "trusted": false
  },
- "https://lun.ua/uk/тернопільбуд": {
-  "name": "ТернопільБуд",
-  "href": "https://lun.ua/uk/тернопільбуд",
-  "founded": 1944,
-  "delivered": 33,
-  "deliveredSince": 2010,
-  "inProgress": 14,
-  "trusted": true
- },
  "https://lun.ua/uk/грін-парк": {
   "name": "Грін Парк",
   "href": "https://lun.ua/uk/грін-парк",
@@ -555,6 +555,15 @@
   "delivered": 3,
   "deliveredSince": 2010,
   "inProgress": 1,
+  "trusted": true
+ },
+ "https://lun.ua/uk/тернопільбуд": {
+  "name": "ТернопільБуд",
+  "href": "https://lun.ua/uk/тернопільбуд",
+  "founded": 1944,
+  "delivered": 33,
+  "deliveredSince": 2010,
+  "inProgress": 14,
   "trusted": true
  },
  "https://lun.ua/uk/axe-development": {
@@ -584,6 +593,15 @@
   "inProgress": 2,
   "trusted": true
  },
+ "https://lun.ua/uk/інвест-родина": {
+  "name": "Інвест Родина",
+  "href": "https://lun.ua/uk/інвест-родина",
+  "founded": 2006,
+  "delivered": 4,
+  "deliveredSince": 2010,
+  "inProgress": 5,
+  "trusted": true
+ },
  "https://lun.ua/uk/архібуд": {
   "name": "АРХІБУД",
   "href": "https://lun.ua/uk/архібуд",
@@ -593,14 +611,14 @@
   "inProgress": 2,
   "trusted": false
  },
- "https://lun.ua/uk/інвест-родина": {
-  "name": "Інвест Родина",
-  "href": "https://lun.ua/uk/інвест-родина",
-  "founded": 2006,
-  "delivered": 4,
-  "deliveredSince": 2010,
-  "inProgress": 5,
-  "trusted": true
+ "https://lun.ua/uk/vd-group": {
+  "name": "VD Group",
+  "href": "https://lun.ua/uk/vd-group",
+  "founded": null,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 0,
+  "trusted": false
  },
  "https://lun.ua/uk/blago": {
   "name": "Blago",
@@ -620,24 +638,6 @@
   "inProgress": 0,
   "trusted": false
  },
- "https://lun.ua/uk/socium-developer": {
-  "name": "Socium Developer",
-  "href": "https://lun.ua/uk/socium-developer",
-  "founded": null,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 0,
-  "trusted": false
- },
- "https://lun.ua/uk/vd-group": {
-  "name": "VD Group",
-  "href": "https://lun.ua/uk/vd-group",
-  "founded": null,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 0,
-  "trusted": false
- },
  "https://lun.ua/uk/vambud": {
   "name": "VAMBUD",
   "href": "https://lun.ua/uk/vambud",
@@ -647,9 +647,9 @@
   "inProgress": 19,
   "trusted": true
  },
- "https://lun.ua/uk/vertical-development": {
-  "name": "Vertical Development",
-  "href": "https://lun.ua/uk/vertical-development",
+ "https://lun.ua/uk/socium-developer": {
+  "name": "Socium Developer",
+  "href": "https://lun.ua/uk/socium-developer",
   "founded": null,
   "delivered": 0,
   "deliveredSince": null,
@@ -755,6 +755,15 @@
   "inProgress": 5,
   "trusted": true
  },
+ "https://lun.ua/uk/v-bud": {
+  "name": "V-Bud",
+  "href": "https://lun.ua/uk/v-bud",
+  "founded": 2019,
+  "delivered": 0,
+  "deliveredSince": null,
+  "inProgress": 1,
+  "trusted": false
+ },
  "https://lun.ua/uk/kromaxbud": {
   "name": "KromaxBud",
   "href": "https://lun.ua/uk/kromaxbud",
@@ -764,12 +773,30 @@
   "inProgress": 5,
   "trusted": true
  },
+ "https://lun.ua/uk/сузіря": {
+  "name": "Сузір&#x27;я",
+  "href": "https://lun.ua/uk/сузіря",
+  "founded": 1995,
+  "delivered": 4,
+  "deliveredSince": 2010,
+  "inProgress": 1,
+  "trusted": true
+ },
  "https://lun.ua/uk/bud-city": {
   "name": "Bud City",
   "href": "https://lun.ua/uk/bud-city",
   "founded": 2015,
   "delivered": 1,
   "deliveredSince": 2010,
+  "inProgress": 3,
+  "trusted": false
+ },
+ "https://lun.ua/uk/sab-group": {
+  "name": "SAB Group",
+  "href": "https://lun.ua/uk/sab-group",
+  "founded": 2024,
+  "delivered": 0,
+  "deliveredSince": null,
   "inProgress": 3,
   "trusted": false
  },
@@ -782,42 +809,6 @@
   "inProgress": 1,
   "trusted": true
  },
- "https://lun.ua/uk/ромтісбуд": {
-  "name": "Ромтісбуд",
-  "href": "https://lun.ua/uk/ромтісбуд",
-  "founded": 2011,
-  "delivered": 6,
-  "deliveredSince": 2010,
-  "inProgress": 4,
-  "trusted": true
- },
- "https://lun.ua/uk/v-bud": {
-  "name": "V-Bud",
-  "href": "https://lun.ua/uk/v-bud",
-  "founded": 2019,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 1,
-  "trusted": false
- },
- "https://lun.ua/uk/сузіря": {
-  "name": "Сузір&#x27;я",
-  "href": "https://lun.ua/uk/сузіря",
-  "founded": 1995,
-  "delivered": 4,
-  "deliveredSince": 2010,
-  "inProgress": 1,
-  "trusted": true
- },
- "https://lun.ua/uk/sab-group": {
-  "name": "SAB Group",
-  "href": "https://lun.ua/uk/sab-group",
-  "founded": 2024,
-  "delivered": 0,
-  "deliveredSince": null,
-  "inProgress": 3,
-  "trusted": false
- },
  "https://lun.ua/uk/чернівціжитлобуд": {
   "name": "Чернівціжитлобуд",
   "href": "https://lun.ua/uk/чернівціжитлобуд",
@@ -825,15 +816,6 @@
   "delivered": 13,
   "deliveredSince": 2010,
   "inProgress": 3,
-  "trusted": true
- },
- "https://lun.ua/uk/parus-group": {
-  "name": "Parus Group",
-  "href": "https://lun.ua/uk/parus-group",
-  "founded": 2018,
-  "delivered": 2,
-  "deliveredSince": 2010,
-  "inProgress": 2,
   "trusted": true
  },
  "https://lun.ua/uk/акварелі-буковини": {
@@ -844,6 +826,24 @@
   "deliveredSince": null,
   "inProgress": 1,
   "trusted": false
+ },
+ "https://lun.ua/uk/ромтісбуд": {
+  "name": "Ромтісбуд",
+  "href": "https://lun.ua/uk/ромтісбуд",
+  "founded": 2011,
+  "delivered": 6,
+  "deliveredSince": 2010,
+  "inProgress": 4,
+  "trusted": true
+ },
+ "https://lun.ua/uk/parus-group": {
+  "name": "Parus Group",
+  "href": "https://lun.ua/uk/parus-group",
+  "founded": 2018,
+  "delivered": 2,
+  "deliveredSince": 2010,
+  "inProgress": 2,
+  "trusted": true
  },
  "https://lun.ua/uk/камтранс": {
   "name": "КАМТРАНС",
@@ -869,7 +869,7 @@
   "founded": 2016,
   "delivered": 24,
   "deliveredSince": 2010,
-  "inProgress": 23,
+  "inProgress": 24,
   "trusted": true
  },
  "https://lun.ua/uk/azarias-group": {
@@ -917,15 +917,6 @@
   "inProgress": 2,
   "trusted": true
  },
- "https://lun.ua/uk/avila-building-group": {
-  "name": "Avila Building Group",
-  "href": "https://lun.ua/uk/avila-building-group",
-  "founded": 2010,
-  "delivered": 22,
-  "deliveredSince": 2010,
-  "inProgress": 5,
-  "trusted": true
- },
  "https://lun.ua/uk/амд-констракшн": {
   "name": "АМД КОНСТРАКШН",
   "href": "https://lun.ua/uk/амд-констракшн",
@@ -934,6 +925,15 @@
   "deliveredSince": 2010,
   "inProgress": 6,
   "trusted": false
+ },
+ "https://lun.ua/uk/avila-building-group": {
+  "name": "Avila Building Group",
+  "href": "https://lun.ua/uk/avila-building-group",
+  "founded": 2010,
+  "delivered": 22,
+  "deliveredSince": 2010,
+  "inProgress": 5,
+  "trusted": true
  },
  "https://lun.ua/uk/sk-group": {
   "name": "SK Group",
@@ -951,6 +951,15 @@
   "delivered": 26,
   "deliveredSince": 2010,
   "inProgress": 5,
+  "trusted": true
+ },
+ "https://lun.ua/uk/втм": {
+  "name": "ВТМ",
+  "href": "https://lun.ua/uk/втм",
+  "founded": 2015,
+  "delivered": 6,
+  "deliveredSince": 2010,
+  "inProgress": 1,
   "trusted": true
  },
  "https://lun.ua/uk/dita": {
@@ -980,29 +989,11 @@
   "inProgress": 2,
   "trusted": true
  },
- "https://lun.ua/uk/всесвіт": {
-  "name": "Всесвіт",
-  "href": "https://lun.ua/uk/всесвіт",
-  "founded": 1997,
-  "delivered": 11,
-  "deliveredSince": 2010,
-  "inProgress": 2,
-  "trusted": true
- },
  "https://lun.ua/uk/ubc": {
   "name": "UBC",
   "href": "https://lun.ua/uk/ubc",
   "founded": 2004,
   "delivered": 20,
-  "deliveredSince": 2010,
-  "inProgress": 1,
-  "trusted": true
- },
- "https://lun.ua/uk/втм": {
-  "name": "ВТМ",
-  "href": "https://lun.ua/uk/втм",
-  "founded": 2015,
-  "delivered": 6,
   "deliveredSince": 2010,
   "inProgress": 1,
   "trusted": true
@@ -1079,15 +1070,6 @@
   "inProgress": 1,
   "trusted": false
  },
- "https://lun.ua/uk/sgi": {
-  "name": "SGI",
-  "href": "https://lun.ua/uk/sgi",
-  "founded": 2006,
-  "delivered": 1,
-  "deliveredSince": 2010,
-  "inProgress": 2,
-  "trusted": false
- },
  "https://lun.ua/uk/респект": {
   "name": "Респект",
   "href": "https://lun.ua/uk/респект",
@@ -1096,6 +1078,15 @@
   "deliveredSince": 2010,
   "inProgress": 0,
   "trusted": true
+ },
+ "https://lun.ua/uk/sgi": {
+  "name": "SGI",
+  "href": "https://lun.ua/uk/sgi",
+  "founded": 2006,
+  "delivered": 1,
+  "deliveredSince": 2010,
+  "inProgress": 2,
+  "trusted": false
  },
  "https://lun.ua/uk/каскад-будінвест": {
   "name": "Каскад-Будінвест",
@@ -1139,7 +1130,7 @@
   "founded": 1953,
   "delivered": 29,
   "deliveredSince": 2010,
-  "inProgress": 15,
+  "inProgress": 16,
   "trusted": true
  },
  "https://lun.ua/uk/поділля": {
