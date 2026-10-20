@@ -35,6 +35,9 @@ const CITY = {
 };
 const TYPES = { kvartiry: 'flat', doma: 'house' };
 const MAXPAGE = 20;
+// [house|flat from to] — добрать тип и полосу цены, дописав к собранному (см. cliBand в lib9.js)
+const BAND = L.cliBand(process.argv);
+const OUT = D + 'metrazh9-candidates.json';
 const ROOMS_W = [[/^Однокомнатн|^Студ/i, 1], [/^Двухкомнатн/i, 2], [/^Тр[её]хкомнатн/i, 3],
   [/^Четыр[её]хкомнатн/i, 4], [/^Пятикомнатн/i, 5], [/^Шестикомнатн/i, 6]];
 const roomsOf = t => { for (const [re, n] of ROOMS_W) if (re.test(t || '')) return n; return null; };
@@ -113,9 +116,10 @@ function parseCards(html) {
   const stats = { pages: 0, raw: 0, kept: 0, byObl: {} };
   for (const [obl, [slug, cityUa, zone, lat, lon]] of Object.entries(CITY)) {
     for (const [typePath, kind] of Object.entries(TYPES)) {
+      if (BAND.only && kind !== BAND.only) continue;
       let list = [];
       for (let page = 1; page <= MAXPAGE; page++) {
-        const url = `https://metrazh.com.ua/${slug}/prodazha/${typePath}/?page=${page}&p[c]=USD&p[f]=${L.BUDGET_LO}&p[t]=${L.BUDGET_HI}`;
+        const url = `https://metrazh.com.ua/${slug}/prodazha/${typePath}/?page=${page}&p[c]=USD&p[f]=${BAND.from}&p[t]=${BAND.to}`;
         const html = await fetchHtml(url);
         stats.pages++;
         await sleep(1800 + Math.random() * 900);
@@ -127,7 +131,7 @@ function parseCards(html) {
       }
       stats.raw += list.length;
       for (const c of list) {
-        if (!(c.price >= L.BUDGET_LO && c.price <= L.BUDGET_HI)) continue;
+        if (!(c.price >= BAND.from && c.price <= BAND.to)) continue;
         const txt = c.title + ' ' + c.desc;
         if (kind === 'house' && (c.area || 0) < 65) continue;
         if (kind === 'flat' && ((c.area || 0) < 50 || (c.rooms != null && c.rooms < 2))) continue;
@@ -167,7 +171,10 @@ function parseCards(html) {
     if (checked % 40 === 0) console.log('  проверено', checked, '/', cand.length);
     await sleep(1500 + Math.random() * 700);
   }
-  fs.writeFileSync(D + 'metrazh9-candidates.json', JSON.stringify(final));
+  // при доборе полосы старые кандидаты остаются, новые дописываются поверх по id
+  const prev = BAND.partial && fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, 'utf8')) : [];
+  const merged = Object.values(Object.fromEntries([...prev, ...final].map(x => [x.id, x])));
+  fs.writeFileSync(OUT, JSON.stringify(merged));
   const finalByObl = {};
   const OBL_OF_ZONE = Object.fromEntries(Object.entries(CITY).map(([o, v]) => [v[2], o]));
   for (const c of final) { const o = OBL_OF_ZONE[c.zone] || '?'; finalByObl[o] = (finalByObl[o] || 0) + 1; }

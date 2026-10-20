@@ -27,6 +27,8 @@
 // data/domria9-candidates.json попадёт только то, что реально может пройти дальше.
 //
 // → data/domria9-candidates.json (формат loadExt() в units9.js).
+// usage: node domria9.js [house|flat from to] — с аргументами добирает только этот тип и
+// полосу цены и дописывает к уже собранному файлу (так добавлены дома $20–30 тыс., 20.10.2026).
 const fs = require('fs');
 const path = require('path');
 const L = require('./lib9');
@@ -50,6 +52,8 @@ const CITY = {
 // у SSR-страницы /prodazha-domov/ и category=1/realty_type=2 у /prodazha-kvartir/)
 const TYPES = { house: [4, 0], flat: [1, 2] };
 const LIMIT = 100;
+const BAND = L.cliBand(process.argv);
+const OUT = D + 'domria9-candidates.json';
 
 async function fetchJson(url, referer) {
   for (let t = 0; t < 4; t++) {
@@ -90,15 +94,17 @@ function photoUrl(file) {
 (async () => {
   fs.mkdirSync(D, { recursive: true });
   const store = {};
+  if (BAND.partial && fs.existsSync(OUT)) for (const x of JSON.parse(fs.readFileSync(OUT, 'utf8'))) store[x.id] = x;
   const stats = { idPages: 0, ids: 0, fetched: 0, kept: 0, byObl: {} };
   for (const [obl, [slug, cityUa, zone, cityId, stateId]] of Object.entries(CITY)) {
     for (const [kind, [category, realtyType]] of Object.entries(TYPES)) {
+      if (BAND.only && kind !== BAND.only) continue;
       const catPath = kind === 'house' ? 'prodazha-domov' : 'prodazha-kvartir';
       const referer = `https://dom.ria.com/uk/${catPath}/${slug}/`;
       const ids = [];
       for (let page = 0; ; page++) {
         const q = `category=${category}&realty_type=${realtyType}&operation=1&state_id=${stateId}&city_id=${cityId}` +
-          `&wo_dupl=1&price_from=${L.BUDGET_LO}&price_to=${L.BUDGET_HI}&page=${page}&limit=${LIMIT}`;
+          `&wo_dupl=1&price_from=${BAND.from}&price_to=${BAND.to}&page=${page}&limit=${LIMIT}`;
         const j = await fetchJson(`https://dom.ria.com/node/searchEngine/v2/?${q}`, referer);
         stats.idPages++;
         await sleep(900 + Math.random() * 500);
@@ -117,7 +123,7 @@ function photoUrl(file) {
         const r = st && st.listing && st.listing.data && st.listing.data.realty;
         if (!r) continue;
         const usd = r.priceArr && r.priceArr['1'] ? +String(r.priceArr['1']).replace(/\s/g, '') : null;
-        if (!L.inBudget(usd)) continue;
+        if (!(usd >= BAND.from && usd <= BAND.to)) continue;
         const area = r.total_square_meters || null;
         const rooms = r.rooms_count || null;
         if (kind === 'house' && (area || 0) < 65) continue;
@@ -143,7 +149,7 @@ function photoUrl(file) {
       }
     }
   }
-  fs.writeFileSync(D + 'domria9-candidates.json', JSON.stringify(Object.values(store)));
+  fs.writeFileSync(OUT, JSON.stringify(Object.values(store)));
   console.log('domria9: запросов ID-списка', stats.idPages, '| ID в бюджете всего', stats.ids,
     '| карточек открыто', stats.fetched, '| прошли фильтры', stats.kept);
   console.log('по областям:', stats.byObl);

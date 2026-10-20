@@ -1,1 +1,21 @@
-[]
+[
+ {
+  "id": "METR5174007",
+  "obl": "lv",
+  "src": "metr",
+  "kind": "house",
+  "quality": 84,
+  "km": 0,
+  "city": "Львів",
+  "price": 30000,
+  "area": 220,
+  "rooms": null,
+  "floor": null,
+  "floors": null,
+  "photos": [
+   "https://metrazh.com.ua/files/images/items/5174/5174007lefe46da0.jpg"
+  ],
+  "title": "Новобудова в с. Добрівляни",
+  "link": "https://metrazh.com.ua/novobudova-v-s-dobrivlani-5174007.html"
+ }
+]

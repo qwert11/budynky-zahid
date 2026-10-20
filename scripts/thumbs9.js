@@ -34,6 +34,15 @@ function thumbUrl(u) {
   for (let i = 0; i < targets.length; i += CONC) {
     await Promise.all(targets.slice(i, i + CONC).map(async u => {
       const url = thumbUrl(u);
+      // миниатюра уже лежит в репозитории (FB: ссылки scontent протухают, см. fb9-parse.js)
+      if (/^img\//.test(url)) {
+        const f = path.join(__dirname, '..', url);
+        if (!fs.existsSync(f)) { bad++; return; }
+        const buf = fs.readFileSync(f);
+        data[u.id] = 'data:image/jpeg;base64,' + buf.toString('base64');
+        urls[u.id] = url; bytes += buf.length; ok++;
+        return;
+      }
       for (let t = 0; t < 3; t++) {
         try {
           const r = await fetch(url, { headers: { 'user-agent': UA } });

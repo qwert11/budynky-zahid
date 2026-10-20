@@ -26,6 +26,9 @@ const CITIES9 = [
   ['Болехів', 49.0631, 23.8525, 10], ['Снятин', 48.45, 25.5667, 10], ['Городенка', 48.6667, 25.5, 9],
   ['Рогатин', 49.4089, 24.6089, 8], ['Тлумач', 48.8664, 25.0, 8], ['Косів', 48.3167, 25.095, 8],
   ['Новодністровськ', 48.5833, 27.4333, 10], ['Хотин', 48.5072, 26.4914, 9],
+  // Сокиряни (~8,7 тыс.) — пропущены при доборе городов; нашлись 20.10.2026 по примеру
+  // покупателя (дом в Гвіздівцях, 7 км от Сокирян)
+  ['Сокиряни', 48.4483, 27.4139, 9],
   ['Ківерці', 50.8342, 25.4614, 14], ['Рожище', 50.9089, 25.2697, 13], ['Горохів', 50.5006, 24.7625, 9],
   ['Камінь-Каширський', 51.6239, 24.9614, 12], ['Любомль', 51.2264, 24.0364, 10], ['Берестечко', 50.36, 25.11, 2],
   ['Радивилів', 50.1308, 25.2564, 10], ['Млинів', 50.5081, 25.6136, 8], ['Гоща', 50.6, 26.6667, 5],
@@ -120,17 +123,36 @@ function flatQuality9(u) {
 // Полосы не пересекаются: нижняя граница включительно, верхняя исключительно,
 // у последней — включительно. Лот попадает ровно в одну полосу.
 const BUDGET_LO = 30000, BUDGET_HI = 45000;
+// Полоса $20–30 тыс. (просьба покупателя 20.10.2026: «ещё один фильтр 20–30 тыс., загони
+// сюда дома, не вытесняй ничего, на каждую область топ-100 домов»). Только дома — квартиры
+// в ней не собираются. Отбор в ней идёт своей квотой (TOP_LOW в units9.js) и за места
+// с полосами $30–45 тыс. не конкурирует: состав основного бюджета от неё не меняется.
+const LOW_LO = 20000;
 const PRICE_BANDS = [
+  { key: 'p20', lo: LOW_LO, hi: 30000, label: '$20–30 тыс.' },
   { key: 'p30', lo: 30000, hi: 35000, label: '$30–35 тыс.' },
   { key: 'p35', lo: 35000, hi: 40000, label: '$35–40 тыс.' },
   { key: 'p40', lo: 40000, hi: BUDGET_HI, label: '$40–45 тыс.' },
 ];
 const inBudget = p => p != null && p >= BUDGET_LO && p <= BUDGET_HI;
+const inLow = p => p != null && p >= LOW_LO && p < BUDGET_LO;
+// бюджет с учётом типа: дом — $20–45 тыс., квартира — $30–45 тыс.
+const inBudgetKind = (p, kind) => inBudget(p) || (kind === 'house' && inLow(p));
+// ярус отбора: у полосы $20–30 тыс. своя квота, остальные полосы делят общую
+const tierOf = p => inLow(p) ? 'low' : 'main';
 const bandOf = p => {
   if (p == null) return null;
   for (const b of PRICE_BANDS) if (p >= b.lo && (p < b.hi || b.hi === BUDGET_HI && p <= b.hi)) return b.key;
   return null;
 };
+// Аргументы сборщиков сторонних площадок: `node x.js house 20000 30000` — добрать
+// только этот тип и эту полосу цены, дописав к уже собранному файлу кандидатов
+// (без аргументов — полный сбор основного бюджета с нуля, как раньше).
+function cliBand(argv) {
+  const only = ['house', 'flat'].includes(argv[2]) ? argv[2] : null;
+  const from = Number(argv[3] || BUDGET_LO), to = Number(argv[4] || BUDGET_HI);
+  return { only, from, to, partial: !!only };
+}
 
 // Латиница вперемешку с кириллицей ломает все текстовые фильтры: продавцы пишут
 // «буд i вельний вагончик» и «стi нки з газоблоку» латинской i, и UNFIN такой лот
@@ -271,5 +293,5 @@ function semiFlatQuality9(u) {
   return scale((ppm + area + (rooms + floor) / 2 + ready) / 6 + near / 3 + bonus);
 }
 
-module.exports = { CITIES9, deLatin, BUDGET_LO, BUDGET_HI, PRICE_BANDS, inBudget, bandOf, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, BUILD_TYPE_W, buildTypeW, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
+module.exports = { CITIES9, deLatin, BUDGET_LO, BUDGET_HI, LOW_LO, PRICE_BANDS, inBudget, inLow, inBudgetKind, tierOf, bandOf, cliBand, hav, nearestCity, bell, up, down, scale, houseQuality9, flatQuality9, BUILD_TYPE_W, buildTypeW, UNFIN, SHARE, BAD_REPAIR, BAD_TEXT, REGION2SLUG, SLUG2LABEL, inPolys, oblastOf, clamp,
   SEMI, SEMI_TXT, semiClass, semiHouseQuality9, semiFlatQuality9 };

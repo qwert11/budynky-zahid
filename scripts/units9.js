@@ -31,7 +31,13 @@ const ex = f => fs.existsSync(f);
 // При топ-50 только по квартирам OLX за бортом оставалось 518 лотов, прошедших все
 // фильтры, и перекос был резкий: 225 из них в Ивано-Франковске и 48 в Хмельницком —
 // то есть именно там, где предложений больше всего, каталог показывал пятую часть рынка.
-const TOP = 50, TOP_FLAT = 250, KM_MAX = 10;
+// TOP_LOW: дома $20–30 тыс. (просьба покупателя 20.10.2026) — своя квота, топ-100 на
+// область, и за места с основным бюджетом $30–45 тыс. они не конкурируют: pickTop
+// раскладывает лоты по ярусам цены отдельно, поэтому топы $30–45 тыс. от этой полосы
+// не меняются ни на один лот.
+// TOP (дома, основной бюджет): 50 → 100 тогда же — «домов вообще много, на каждый
+// источник сделай топ-100, чтобы влезло побольше». Только добавляет: прежние 50 остаются.
+const TOP = 100, TOP_FLAT = 250, TOP_LOW = 100, KM_MAX = 10;
 const DEAD = new Set(rd(path.join(__dirname, '..', 'dead.json')).dead || []);
 const EXCLUDED = new Set(rd(path.join(__dirname, '..', 'excluded.json')).excluded || []);
 const geo9 = rd(D + 'geocode9.json');
@@ -147,7 +153,7 @@ const housesPool = Object.values(rdLots(D + 'olx9-houses.json').items).map(x => 
 const housesCand = [];
 const housesOlx = [];
 for (const u of housesPool) {
-  if (!L.inBudget(u.price)) { drop.budget++; continue; }
+  if (!L.inBudgetKind(u.price, 'house')) { drop.budget++; continue; }
   if ((u.area || 0) < 65) { drop.small++; continue; }
   if (['dacha', 'garden_house'].includes(u.propType || '')) { drop.badtype++; continue; }
   if (L.SHARE.test((u.title || '') + ' ' + String(u.desc || '').slice(0, 260))) { drop.share++; continue; }
@@ -225,7 +231,7 @@ function shapeLun(x) {
 }
 const lunClean = [...(ex(D5 + 'lun-clean.json') ? rdLots(D5 + 'lun-clean.json') : []), ...(ex(D + 'lun9-clean.json') ? rdLots(D + 'lun9-clean.json') : [])];
 for (const x of lunClean) {
-  if (x.unfinished || !L.inBudget(x.price)) continue;
+  if (x.unfinished || !L.inBudgetKind(x.price, x.kind)) continue;
   const u = shapeLun(x);
   const d = lunDet[u.id] || (ex(D + 'lun9-details.json') ? (rd(D + 'lun9-details.json')[u.id] || null) : null);
   if (d && !d.error) {
@@ -278,11 +284,14 @@ function loadExt(file, src, geoFile, dir) {
       noCommission: false, desc: r.text || '', locExact: !!r.locExact, chan: r.ch || null,
       developer: r.developer || null, term: r.term || null,
     };
-  }).filter(u => L.inBudget(u.price));
+  }).filter(u => L.inBudgetKind(u.price, u.kind));
 }
 const tgAll = [...loadExt('tme-candidates.json', 'tg', 'tg-geocode.json', EXT), ...loadExt('tg9-candidates.json', 'tg', 'tg9-geocode.json', D)]
   .map(finish).filter(gate);
-const fbAll = loadExt('fb-candidates.json', 'fb', null, EXT).map(finish).filter(gate);
+// fb9-candidates.json — посты групп Facebook о продаже домов (группа «Будиночок у селі»,
+// 20.10.2026, scripts/fb9-group.js): только с явной ценой в тексте
+const fbAll = [...loadExt('fb-candidates.json', 'fb', null, EXT), ...loadExt('fb9-candidates.json', 'fb', null, D)]
+  .map(finish).filter(gate);
 // Rieltor.ua отдаёт координаты прямо в карточке поиска; Metrazh координат не даёт —
 // сборщик (metrazh9.js) сам подставляет центр города поиска в r.lat/r.lon, поэтому
 // geoFile обоим не нужен. addr9.js на следующем прогоне уточнит точку у Metrazh по
@@ -301,9 +310,36 @@ const metrAll = loadExt('metrazh9-candidates.json', 'metr', null, D).map(finish)
 const domriaAll = loadExt('domria9-candidates.json', 'domria', null, D).map(finish).filter(gate);
 const flatfyAll = loadExt('flatfy9-candidates.json', 'flatfy', null, D).map(finish).filter(gate);
 
+/* ════════ 4c. наследство: лоты, чьи исходники жили в scratchpad прежних сессий ════════
+   ЛУН и Телеграм запада, Facebook Marketplace (сессии 5e19b764 и 7f7d4dba) — Temp вычищен
+   к 20.10.2026, и без этих файлов пересборка молча выбросила бы 134 лота, а их места заняли
+   бы другие. Лоты сохранены уже разобранными из сборки 19.09.2026 (data/legacy-ext9.json):
+   повторно проходят ворота (снятые, исключённые, до 10 км) и конкурируют в своём наборе
+   как раньше. Если исходник появится снова, свежая версия лота главнее. */
+const legacyExt = ex(D + 'legacy-ext9.json') ? rd(D + 'legacy-ext9.json') : [];
+const legacySemi = [];
+{
+  const fresh = new Set([...lunAll, ...tgAll, ...fbAll].map(u => u.id));
+  const into = { lun: lunAll, tg: tgAll, fb: fbAll };
+  for (const u of legacyExt) {
+    if (fresh.has(u.id) || !into[u.src] || !gate(u)) continue;
+    if (u.ready === 'raw') pushRaw(u, u.semi);
+    else if (u.ready === 'semi') legacySemi.push(u);
+    else into[u.src].push(u);
+  }
+}
+
 /* ════════ 5. топ-50 на область в каждом наборе источник×тип (готовое) ════════ */
+// Из перепостов одного объекта остаётся тот, что стоял в прошлой сборке (units9.json до
+// перезаписи этим прогоном), и только среди новых — лучший по индексу. Раньше выигрывал лучший
+// по индексу всегда, и уточнение адреса (20.10.2026) поменяло победителя у пяти объектов:
+// объект оставался, но под другим ID — а избранное, заметки и корзина покупателя привязаны
+// к ID карточки. («Раньше появился в каталоге» по first-seen.json не годится: так выигрывали
+// перепосты, давно выпавшие из каталога.)
+const PREV = new Set();
+if (ex(D + 'units9.json')) { const p = rd(D + 'units9.json'); for (const k of ['units', 'semi', 'raw']) for (const u of p[k] || []) PREV.add(u.id); }
 function dedupe(arr) {
-  const seen = new Set(), out = [];
+  const best = new Map();
   for (const u of arr.sort((a, b) => b.quality - a.quality)) {
     // Этаж и этажность обязательны в ключе: без них в городе с новостройками
     // схлопывались РАЗНЫЕ квартиры. 13.09.2026 так пропала квартира на 5/10 в кирпичном
@@ -311,28 +347,32 @@ function dedupe(arr) {
     // цена, площадь и город. Настоящий перепост одного объекта совпадает и по этажу.
     const k = [u.kind, u.price, Math.round(u.area || 0), (u.loc || '').toLowerCase(),
       u.floor || '', u.floors || ''].join('|');
-    if (seen.has(k)) continue;
-    seen.add(k); out.push(u);
+    const cur = best.get(k);
+    if (!cur) { best.set(k, u); continue; }
+    if (PREV.has(u.id) && !PREV.has(cur.id)) best.set(k, u);
   }
-  return out;
+  return [...best.values()].sort((a, b) => b.quality - a.quality);
 }
-// раскладка по областям и обрезка до TOP; setKey — подпись набора, prefix — 'semi:' для получистовой
+// раскладка по областям и обрезка до TOP; setKey — подпись набора, prefix — 'semi:' для получистовой.
+// Полоса $20–30 тыс. — отдельный ярус внутри области («<обл>~low»): лоты в нём делят
+// между собой только свою квоту TOP_LOW и не занимают мест основного бюджета.
 function pickTop(sets, out, stats, prefix) {
   for (const [key, arr] of Object.entries(sets)) {
     const byObl = {};
     for (const u of arr) {
-      const o = u.obl || 'unk';
+      const o = (u.obl || 'unk') + (L.tierOf(u.price) === 'low' ? '~low' : '');
       (byObl[o] = byObl[o] || []).push(u);
     }
     const parts = [];
-    for (const [o, list] of Object.entries(byObl)) {
+    for (const [ok, list] of Object.entries(byObl)) {
+      const [o, low] = ok.split('~');
       if (o === 'unk' || o === 'zak') continue;
       // новостройки идут первыми и внутри себя по индексу — они не должны вылетать
       // из топ-50 под давлением вторички (просьба покупателя 03.09.2026)
       list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || b.quality - a.quality);
-      const top = key.endsWith('|flat') ? TOP_FLAT : TOP;
-      list.slice(0, top).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key; out.push(u); });
-      parts.push(o + ':' + Math.min(list.length, top));
+      const top = low ? TOP_LOW : key.endsWith('|flat') ? TOP_FLAT : TOP;
+      list.slice(0, top).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key + (low ? '~low' : ''); out.push(u); });
+      parts.push(ok + ':' + Math.min(list.length, top));
     }
     stats.push(((prefix || '') + key).padEnd(15) + ' ' + parts.sort().join(' '));
   }
@@ -417,7 +457,7 @@ function pushSemi(u, cls) {
 // 6a. дома и квартиры OLX из свежего сбора
 for (const u of housesPool) {
   if (readyIds.has(u.id)) { semiDrop.ready++; continue; }
-  if (!L.inBudget(u.price)) { semiDrop.budget++; continue; }
+  if (!L.inBudgetKind(u.price, 'house')) { semiDrop.budget++; continue; }
   if ((u.area || 0) < 65) { semiDrop.small++; continue; }
   if (['dacha', 'garden_house'].includes(u.propType || '')) { semiDrop.badtype++; continue; }
   if (shareSemi(u)) { semiDrop.share++; continue; }
@@ -458,7 +498,7 @@ for (const x of Object.values(rdLots(D + 'olx9-flats.json').items)) {
 }
 // 6b. ЛУН: лоты с флагом unfinished из нормализатора
 for (const x of lunClean) {
-  if (!x.unfinished || !L.inBudget(x.price)) continue;
+  if (!x.unfinished || !L.inBudgetKind(x.price, x.kind)) continue;
   if (readyIds.has(x.id)) continue;
   const u = shapeLun(x);
   const d = lunDet[u.id] || (ex(D + 'lun9-details.json') ? (rd(D + 'lun9-details.json')[u.id] || null) : null);
@@ -517,6 +557,7 @@ for (const s of semiLive) {
 // часть получистовой: жить там нельзя вообще, в отличие от получистовой, куда можно заехать.
 const lunnbAll = loadExt('lun-nb9-candidates.json', 'lunnb', null, D).map(finish).filter(gate);
 for (const u of lunnbAll) pushRaw(u, 'devnew');
+for (const u of legacySemi) if (!readyIds.has(u.id)) pushSemi(u, u.semi);   // наследство (секция 4c)
 // 6d. топ-50 на область в каждом наборе источник×тип — как у готового
 const semiSets = {};
 for (const u of dedupe(semiCand)) {
@@ -537,10 +578,13 @@ const raw = [];
 pickTop(rawSets, raw, setStats, 'raw:');
 // «к рынку области»: насколько цена за м² ниже медианы готового жилья того же типа в той же области
 const median = arr => { if (!arr.length) return null; const s = arr.slice().sort((a, b) => a - b); return s.length % 2 ? s[s.length >> 1] : Math.round((s[s.length / 2 - 1] + s[s.length / 2]) / 2); };
+// Медиана — по основному бюджету $30–45 тыс.: дешёвые дома полосы $20–30 тыс. в неё не входят,
+// иначе «к рынку области» у прежних карточек поменялось бы без единого нового факта о них.
+const mainUnits = units.filter(u => L.tierOf(u.price) === 'main');
 const medPpm = {};
-for (const u of units) if (u.ppm) (medPpm[u.obl + '|' + u.kind] = medPpm[u.obl + '|' + u.kind] || []).push(u.ppm);
+for (const u of mainUnits) if (u.ppm) (medPpm[u.obl + '|' + u.kind] = medPpm[u.obl + '|' + u.kind] || []).push(u.ppm);
 for (const k of Object.keys(medPpm)) medPpm[k] = median(medPpm[k]);
-const medAll = { house: median(units.filter(u => u.kind === 'house' && u.ppm).map(u => u.ppm)), flat: median(units.filter(u => u.kind === 'flat' && u.ppm).map(u => u.ppm)) };
+const medAll = { house: median(mainUnits.filter(u => u.kind === 'house' && u.ppm).map(u => u.ppm)), flat: median(mainUnits.filter(u => u.kind === 'flat' && u.ppm).map(u => u.ppm)) };
 for (const u of [...semi, ...raw]) {
   const med = medPpm[u.obl + '|' + u.kind] || medAll[u.kind];
   u.medPpm = med || null;
@@ -588,6 +632,8 @@ setStats.forEach(s => console.log(s));
 const oblCnt = {};
 units.forEach(u => oblCnt[u.obl] = (oblCnt[u.obl] || 0) + 1);
 console.log('готовых лотов:', units.length, 'по областям:', JSON.stringify(oblCnt));
+const lowCnt = (arr) => arr.filter(u => L.tierOf(u.price) === 'low').reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {});
+console.log('полоса $20–30 тыс. (дома): готовых', JSON.stringify(lowCnt(units)), '| получистовая', JSON.stringify(lowCnt(semi)), '| чистовая', JSON.stringify(lowCnt(raw)));
 console.log('получистовая: отбор', JSON.stringify(semiDrop), '| кандидатов', semiCand.length, '| в топах', semi.length, '| с прежней страницы', liveKept);
 const semiCls = {}; semi.forEach(u => semiCls[u.semi] = (semiCls[u.semi] || 0) + 1);
 console.log('получистовая по классам:', JSON.stringify(semiCls));

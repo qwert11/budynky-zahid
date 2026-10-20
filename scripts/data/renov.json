@@ -1,4 +1,221 @@
 {
+ "IDYIFK0": {
+  "frac": 0.5,
+  "light": 6000,
+  "normal": 11000,
+  "lux": 20000,
+  "note": null
+ },
+ "IDGbbZn": {
+  "frac": 0.8,
+  "light": 28800,
+  "normal": 52800,
+  "lux": 96000,
+  "note": null
+ },
+ "ID115Mpy": {
+  "frac": 0.8,
+  "light": 7100,
+  "normal": 13000,
+  "lux": 23700,
+  "note": null
+ },
+ "ID10inEV": {
+  "frac": 1,
+  "light": 11450,
+  "normal": 36000,
+  "lux": 65450,
+  "note": null
+ },
+ "ID10Z0Li": {
+  "frac": 0.8,
+  "light": 13150,
+  "normal": 24100,
+  "lux": 43850,
+  "note": null
+ },
+ "IDYVZAI": {
+  "frac": 0.5,
+  "light": 5500,
+  "normal": 10100,
+  "lux": 18400,
+  "note": null
+ },
+ "ID10E6Mn": {
+  "frac": 1,
+  "light": 5950,
+  "normal": 18700,
+  "lux": 34000,
+  "note": null
+ },
+ "IDZc6rg": {
+  "frac": 0.8,
+  "light": 23250,
+  "normal": 42600,
+  "lux": 77450,
+  "note": null
+ },
+ "IDdeyNW": {
+  "frac": 0.8,
+  "light": 24000,
+  "normal": 44000,
+  "lux": 80000,
+  "note": null
+ },
+ "ID10VIBY": {
+  "frac": 0.8,
+  "light": 15350,
+  "normal": 28150,
+  "lux": 51200,
+  "note": null
+ },
+ "IDWUh6i": {
+  "frac": 0.5,
+  "light": 3000,
+  "normal": 5500,
+  "lux": 10000,
+  "note": null
+ },
+ "IDYLj2m": {
+  "frac": 0.8,
+  "light": 2750,
+  "normal": 5000,
+  "lux": 9100,
+  "note": null
+ },
+ "ID1169Ho": {
+  "frac": 0.8,
+  "light": 2400,
+  "normal": 4400,
+  "lux": 8000,
+  "note": null
+ },
+ "ID11aGu5": {
+  "frac": 1,
+  "light": 7450,
+  "normal": 23400,
+  "lux": 42500,
+  "note": null
+ },
+ "IDZqoU0": {
+  "frac": 0.8,
+  "light": 15750,
+  "normal": 28850,
+  "lux": 52500,
+  "note": null
+ },
+ "ID119V4F": {
+  "frac": 0.5,
+  "light": 8650,
+  "normal": 15850,
+  "lux": 28800,
+  "note": null
+ },
+ "IDUfKCr": {
+  "frac": 0.8,
+  "light": 15350,
+  "normal": 28150,
+  "lux": 51200,
+  "note": null
+ },
+ "IDYRlb1": {
+  "frac": 0.8,
+  "light": 21100,
+  "normal": 38700,
+  "lux": 70400,
+  "note": null
+ },
+ "ID118sLi": {
+  "frac": 0.45,
+  "light": 2800,
+  "normal": 5200,
+  "lux": 9400,
+  "note": null
+ },
+ "IDVrYzj": {
+  "frac": 0.8,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "ID10Xrf3": {
+  "frac": 0.5,
+  "light": 2600,
+  "normal": 4750,
+  "lux": 8600,
+  "note": null
+ },
+ "ID10HCot": {
+  "frac": 0.8,
+  "light": 5950,
+  "normal": 10900,
+  "lux": 19850,
+  "note": null
+ },
+ "ID10HlYL": {
+  "frac": 0.8,
+  "light": 10850,
+  "normal": 19900,
+  "lux": 36150,
+  "note": null
+ },
+ "IDUFp2v": {
+  "frac": 0.8,
+  "light": 10000,
+  "normal": 18300,
+  "lux": 33300,
+  "note": null
+ },
+ "ID11aHbi": {
+  "frac": 0.8,
+  "light": 8850,
+  "normal": 16200,
+  "lux": 29450,
+  "note": null
+ },
+ "IDZpr5R": {
+  "frac": 0.8,
+  "light": 19200,
+  "normal": 35200,
+  "lux": 64000,
+  "note": null
+ },
+ "ID118hB8": {
+  "frac": 0.8,
+  "light": 4200,
+  "normal": 7750,
+  "lux": 14100,
+  "note": null
+ },
+ "IDZMmr0": {
+  "frac": 0.45,
+  "light": 4050,
+  "normal": 7450,
+  "lux": 13500,
+  "note": null
+ },
+ "IDXJEhN": {
+  "frac": 0.5,
+  "light": 2600,
+  "normal": 4750,
+  "lux": 8600,
+  "note": null
+ },
+ "IDZLTzo": {
+  "frac": 0.8,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
+ "IDUWCFh": {
+  "frac": 0.45,
+  "light": 3450,
+  "normal": 6350,
+  "lux": 11500,
+  "note": null
+ },
  "IDUBgqO": {
   "frac": 1,
   "light": 5800,
@@ -391,188 +608,6 @@
   "lux": 16000,
   "note": null
  },
- "ID10inEV": {
-  "frac": 1,
-  "light": 11450,
-  "normal": 36000,
-  "lux": 65450,
-  "note": null
- },
- "ID10Z0Li": {
-  "frac": 0.8,
-  "light": 13150,
-  "normal": 24100,
-  "lux": 43850,
-  "note": null
- },
- "IDYVZAI": {
-  "frac": 0.5,
-  "light": 5500,
-  "normal": 10100,
-  "lux": 18400,
-  "note": null
- },
- "ID10E6Mn": {
-  "frac": 1,
-  "light": 5950,
-  "normal": 18700,
-  "lux": 34000,
-  "note": null
- },
- "IDZc6rg": {
-  "frac": 0.8,
-  "light": 23250,
-  "normal": 42600,
-  "lux": 77450,
-  "note": null
- },
- "IDdeyNW": {
-  "frac": 0.8,
-  "light": 24000,
-  "normal": 44000,
-  "lux": 80000,
-  "note": null
- },
- "ID10VIBY": {
-  "frac": 0.8,
-  "light": 15350,
-  "normal": 28150,
-  "lux": 51200,
-  "note": null
- },
- "IDWUh6i": {
-  "frac": 0.5,
-  "light": 3000,
-  "normal": 5500,
-  "lux": 10000,
-  "note": null
- },
- "IDYLj2m": {
-  "frac": 0.8,
-  "light": 2750,
-  "normal": 5000,
-  "lux": 9100,
-  "note": null
- },
- "ID1169Ho": {
-  "frac": 0.8,
-  "light": 2400,
-  "normal": 4400,
-  "lux": 8000,
-  "note": null
- },
- "ID11aGu5": {
-  "frac": 1,
-  "light": 7450,
-  "normal": 23400,
-  "lux": 42500,
-  "note": null
- },
- "IDZqoU0": {
-  "frac": 0.8,
-  "light": 15750,
-  "normal": 28850,
-  "lux": 52500,
-  "note": null
- },
- "ID119V4F": {
-  "frac": 0.5,
-  "light": 8650,
-  "normal": 15850,
-  "lux": 28800,
-  "note": null
- },
- "IDUfKCr": {
-  "frac": 0.8,
-  "light": 15350,
-  "normal": 28150,
-  "lux": 51200,
-  "note": null
- },
- "IDYRlb1": {
-  "frac": 0.8,
-  "light": 21100,
-  "normal": 38700,
-  "lux": 70400,
-  "note": null
- },
- "ID118sLi": {
-  "frac": 0.45,
-  "light": 2800,
-  "normal": 5200,
-  "lux": 9400,
-  "note": null
- },
- "IDVrYzj": {
-  "frac": 0.8,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
-  "note": null
- },
- "ID10Xrf3": {
-  "frac": 0.5,
-  "light": 2600,
-  "normal": 4750,
-  "lux": 8600,
-  "note": null
- },
- "ID10HCot": {
-  "frac": 0.8,
-  "light": 5950,
-  "normal": 10900,
-  "lux": 19850,
-  "note": null
- },
- "ID10HlYL": {
-  "frac": 0.8,
-  "light": 10850,
-  "normal": 19900,
-  "lux": 36150,
-  "note": null
- },
- "ID11aHbi": {
-  "frac": 0.8,
-  "light": 8850,
-  "normal": 16200,
-  "lux": 29450,
-  "note": null
- },
- "IDZpr5R": {
-  "frac": 0.8,
-  "light": 19200,
-  "normal": 35200,
-  "lux": 64000,
-  "note": null
- },
- "ID118hB8": {
-  "frac": 0.8,
-  "light": 4200,
-  "normal": 7750,
-  "lux": 14100,
-  "note": null
- },
- "IDZMmr0": {
-  "frac": 0.45,
-  "light": 4050,
-  "normal": 7450,
-  "lux": 13500,
-  "note": null
- },
- "IDXJEhN": {
-  "frac": 0.5,
-  "light": 2600,
-  "normal": 4750,
-  "lux": 8600,
-  "note": null
- },
- "IDUWCFh": {
-  "frac": 0.45,
-  "light": 3450,
-  "normal": 6350,
-  "lux": 11500,
-  "note": null
- },
  "ID10X0oU": {
   "frac": 1,
   "light": 8500,
@@ -937,13 +972,6 @@
   "lux": 25600,
   "note": null
  },
- "ID11bl7F": {
-  "frac": 1,
-  "light": 7700,
-  "normal": 14100,
-  "lux": 25600,
-  "note": null
- },
  "IDYakg5": {
   "frac": 1,
   "light": 7350,
@@ -1054,13 +1082,6 @@
   "light": 7200,
   "normal": 13200,
   "lux": 24000,
-  "note": null
- },
- "ID11hs3A": {
-  "frac": 1,
-  "light": 10050,
-  "normal": 18450,
-  "lux": 33500,
   "note": null
  },
  "ID10RCyd": {
@@ -1232,6 +1253,13 @@
   "note": null
  },
  "IDODCRF": {
+  "frac": 1,
+  "light": 7700,
+  "normal": 14100,
+  "lux": 25600,
+  "note": null
+ },
+ "ID11bl7F": {
   "frac": 1,
   "light": 7700,
   "normal": 14100,
@@ -1532,13 +1560,6 @@
   "lux": 22950,
   "note": null
  },
- "ID11icnO": {
-  "frac": 1,
-  "light": 7300,
-  "normal": 13400,
-  "lux": 24400,
-  "note": null
- },
  "IDZF8fH": {
   "frac": 1,
   "light": 6700,
@@ -1677,13 +1698,6 @@
   "light": 6600,
   "normal": 12100,
   "lux": 21950,
-  "note": null
- },
- "IDZJc0G": {
-  "frac": 1,
-  "light": 7200,
-  "normal": 13200,
-  "lux": 24000,
   "note": null
  },
  "ID11hOUX": {
@@ -1861,11 +1875,18 @@
   "lux": 22000,
   "note": null
  },
- "ID11i90f": {
+ "ID11hs3A": {
   "frac": 1,
-  "light": 6850,
-  "normal": 12600,
-  "lux": 22900,
+  "light": 10050,
+  "normal": 18450,
+  "lux": 33500,
+  "note": null
+ },
+ "ID11icnO": {
+  "frac": 1,
+  "light": 7300,
+  "normal": 13400,
+  "lux": 24400,
   "note": null
  },
  "IDJn0yt": {
@@ -1938,6 +1959,13 @@
   "lux": 23850,
   "note": null
  },
+ "IDZJc0G": {
+  "frac": 1,
+  "light": 7200,
+  "normal": 13200,
+  "lux": 24000,
+  "note": null
+ },
  "IDXdiw1": {
   "frac": 1,
   "light": 6250,
@@ -1971,13 +1999,6 @@
   "light": 7000,
   "normal": 12800,
   "lux": 23250,
-  "note": null
- },
- "ID11hJhN": {
-  "frac": 1,
-  "light": 6850,
-  "normal": 12600,
-  "lux": 22900,
   "note": null
  },
  "IDZXeHX": {
@@ -2071,11 +2092,11 @@
   "lux": 20950,
   "note": null
  },
- "IDVa6BQ": {
+ "ID11i90f": {
   "frac": 1,
-  "light": 6100,
-  "normal": 11200,
-  "lux": 20400,
+  "light": 6850,
+  "normal": 12600,
+  "lux": 22900,
   "note": null
  },
  "ID11fXsv": {
@@ -2162,6 +2183,13 @@
   "lux": 20300,
   "note": null
  },
+ "ID115GTi": {
+  "frac": 1,
+  "light": 7900,
+  "normal": 14500,
+  "lux": 26400,
+  "note": null
+ },
  "IDXQ8AT": {
   "frac": 1,
   "light": 6600,
@@ -2174,6 +2202,13 @@
   "light": 6100,
   "normal": 11200,
   "lux": 20400,
+  "note": null
+ },
+ "ID11hJhN": {
+  "frac": 1,
+  "light": 6850,
+  "normal": 12600,
+  "lux": 22900,
   "note": null
  },
  "ID10crWQ": {
@@ -2274,6 +2309,13 @@
   "lux": 20000,
   "note": null
  },
+ "IDVa6BQ": {
+  "frac": 1,
+  "light": 6100,
+  "normal": 11200,
+  "lux": 20400,
+  "note": null
+ },
  "IDOgN4B": {
   "frac": 1,
   "light": 13450,
@@ -2300,13 +2342,6 @@
   "light": 6900,
   "normal": 12600,
   "lux": 22900,
-  "note": null
- },
- "ID115GTi": {
-  "frac": 1,
-  "light": 7900,
-  "normal": 14500,
-  "lux": 26400,
   "note": null
  },
  "IDXuQFS": {
@@ -3037,13 +3072,6 @@
   "lux": 32000,
   "note": null
  },
- "IDZRWqa": {
-  "frac": 1,
-  "light": 6500,
-  "normal": 11900,
-  "lux": 21700,
-  "note": null
- },
  "IDOjeQI": {
   "frac": 1,
   "light": 7350,
@@ -3063,6 +3091,13 @@
   "light": 14250,
   "normal": 26100,
   "lux": 47500,
+  "note": null
+ },
+ "IDZRWqa": {
+  "frac": 1,
+  "light": 6500,
+  "normal": 11900,
+  "lux": 21700,
   "note": null
  },
  "ID10qJG1": {
@@ -3177,6 +3212,13 @@
   "lux": 57050,
   "note": null
  },
+ "IDVtFHx": {
+  "frac": 1,
+  "light": 12600,
+  "normal": 23100,
+  "lux": 42000,
+  "note": null
+ },
  "ID103Cvx": {
   "frac": 1,
   "light": 21750,
@@ -3275,6 +3317,118 @@
   "lux": 30400,
   "note": null
  },
+ "ID10jNOx": {
+  "frac": 1,
+  "light": 14400,
+  "normal": 26400,
+  "lux": 48000,
+  "note": null
+ },
+ "IDSI7A3": {
+  "frac": 1,
+  "light": 15250,
+  "normal": 27950,
+  "lux": 50800,
+  "note": null
+ },
+ "ID111Izp": {
+  "frac": 1,
+  "light": 10200,
+  "normal": 18700,
+  "lux": 34000,
+  "note": null
+ },
+ "ID11pOE7": {
+  "frac": 1,
+  "light": 10800,
+  "normal": 19800,
+  "lux": 36000,
+  "note": null
+ },
+ "IDYcd6L": {
+  "frac": 1,
+  "light": 24000,
+  "normal": 44000,
+  "lux": 80000,
+  "note": null
+ },
+ "IDXI41i": {
+  "frac": 1,
+  "light": 21250,
+  "normal": 38950,
+  "lux": 70800,
+  "note": null
+ },
+ "IDWZUE9": {
+  "frac": 1,
+  "light": 24000,
+  "normal": 44000,
+  "lux": 80000,
+  "note": null
+ },
+ "IDLY5qj": {
+  "frac": 1,
+  "light": 33100,
+  "normal": 60700,
+  "lux": 110400,
+  "note": null
+ },
+ "ID10Tn2B": {
+  "frac": 1,
+  "light": 9900,
+  "normal": 18150,
+  "lux": 32950,
+  "note": null
+ },
+ "IDYXjeT": {
+  "frac": 1,
+  "light": 18000,
+  "normal": 33000,
+  "lux": 60000,
+  "note": null
+ },
+ "ID10uneb": {
+  "frac": 1,
+  "light": 12000,
+  "normal": 22000,
+  "lux": 40000,
+  "note": null
+ },
+ "ID10DIVt": {
+  "frac": 1,
+  "light": 18000,
+  "normal": 33000,
+  "lux": 60000,
+  "note": null
+ },
+ "ID10PGde": {
+  "frac": 1,
+  "light": 18000,
+  "normal": 33000,
+  "lux": 60000,
+  "note": null
+ },
+ "ID10OpF4": {
+  "frac": 1,
+  "light": 38400,
+  "normal": 70400,
+  "lux": 128000,
+  "note": null
+ },
+ "ID11rnN0": {
+  "frac": 1,
+  "light": 9600,
+  "normal": 17600,
+  "lux": 32000,
+  "note": null
+ },
+ "ID10APZE": {
+  "frac": 1,
+  "light": 8050,
+  "normal": 14750,
+  "lux": 26800,
+  "note": null
+ },
  "ID10t3qc": {
   "frac": 1,
   "light": 19200,
@@ -3303,18 +3457,60 @@
   "lux": 36000,
   "note": null
  },
+ "ID10bt39": {
+  "frac": 1,
+  "light": 10800,
+  "normal": 19800,
+  "lux": 36000,
+  "note": null
+ },
+ "ID10kUEu": {
+  "frac": 1,
+  "light": 9700,
+  "normal": 17800,
+  "lux": 32400,
+  "note": null
+ },
+ "IDWBUhs": {
+  "frac": 1,
+  "light": 16800,
+  "normal": 30800,
+  "lux": 56000,
+  "note": null
+ },
+ "ID11muPs": {
+  "frac": 1,
+  "light": 8750,
+  "normal": 16050,
+  "lux": 29200,
+  "note": null
+ },
+ "ID112qtg": {
+  "frac": 1,
+  "light": 8250,
+  "normal": 15100,
+  "lux": 27500,
+  "note": null
+ },
+ "ID10Hmcf": {
+  "frac": 1,
+  "light": 23900,
+  "normal": 43800,
+  "lux": 79600,
+  "note": null
+ },
+ "IDWIInF": {
+  "frac": 1,
+  "light": 12000,
+  "normal": 22000,
+  "lux": 40000,
+  "note": null
+ },
  "ID11eVOr": {
   "frac": 1,
   "light": 21350,
   "normal": 39150,
   "lux": 71200,
-  "note": null
- },
- "IDZei04": {
-  "frac": 1,
-  "light": 42000,
-  "normal": 77000,
-  "lux": 140000,
   "note": null
  },
  "IDUzHGz": {
@@ -3350,6 +3546,13 @@
   "light": 24000,
   "normal": 44000,
   "lux": 80000,
+  "note": null
+ },
+ "IDSsL8g": {
+  "frac": 1,
+  "light": 19200,
+  "normal": 35200,
+  "lux": 64000,
   "note": null
  },
  "IDVMwJa": {
@@ -3401,11 +3604,123 @@
   "lux": 40000,
   "note": null
  },
- "ID10kUEu": {
+ "IDTJfXs": {
   "frac": 1,
-  "light": 9700,
-  "normal": 17800,
-  "lux": 32400,
+  "light": 31800,
+  "normal": 58300,
+  "lux": 106000,
+  "note": null
+ },
+ "ID11nrTT": {
+  "frac": 1,
+  "light": 10800,
+  "normal": 19800,
+  "lux": 36000,
+  "note": null
+ },
+ "IDXKxVe": {
+  "frac": 1,
+  "light": 17750,
+  "normal": 32550,
+  "lux": 59200,
+  "note": null
+ },
+ "IDZqD4H": {
+  "frac": 1,
+  "light": 13550,
+  "normal": 24850,
+  "lux": 45200,
+  "note": null
+ },
+ "ID10HVAl": {
+  "frac": 1,
+  "light": 14050,
+  "normal": 25750,
+  "lux": 46800,
+  "note": null
+ },
+ "ID117AVG": {
+  "frac": 1,
+  "light": 14050,
+  "normal": 25750,
+  "lux": 46800,
+  "note": null
+ },
+ "IDYq3Kf": {
+  "frac": 1,
+  "light": 13200,
+  "normal": 24200,
+  "lux": 44000,
+  "note": null
+ },
+ "ID112rmO": {
+  "frac": 1,
+  "light": 15600,
+  "normal": 28600,
+  "lux": 52000,
+  "note": null
+ },
+ "ID11fnFx": {
+  "frac": 1,
+  "light": 13200,
+  "normal": 24200,
+  "lux": 44000,
+  "note": null
+ },
+ "ID11i2k3": {
+  "frac": 1,
+  "light": 13200,
+  "normal": 24200,
+  "lux": 44000,
+  "note": null
+ },
+ "IDZmDJO": {
+  "frac": 1,
+  "light": 10800,
+  "normal": 19800,
+  "lux": 36000,
+  "note": null
+ },
+ "ID107wEu": {
+  "frac": 1,
+  "light": 10800,
+  "normal": 19800,
+  "lux": 36000,
+  "note": null
+ },
+ "ID110uWS": {
+  "frac": 1,
+  "light": 14050,
+  "normal": 25750,
+  "lux": 46800,
+  "note": null
+ },
+ "IDYiLLC": {
+  "frac": 1,
+  "light": 16700,
+  "normal": 30600,
+  "lux": 55600,
+  "note": null
+ },
+ "ID10zEdw": {
+  "frac": 1,
+  "light": 8300,
+  "normal": 15200,
+  "lux": 27600,
+  "note": null
+ },
+ "ID111RDy": {
+  "frac": 1,
+  "light": 8400,
+  "normal": 15400,
+  "lux": 28000,
+  "note": null
+ },
+ "IDZSO48": {
+  "frac": 1,
+  "light": 38400,
+  "normal": 70400,
+  "lux": 128000,
   "note": null
  },
  "IDXl1Sa": {
@@ -3471,116 +3786,18 @@
   "lux": 27200,
   "note": null
  },
- "IDTJfXs": {
+ "IDZei04": {
   "frac": 1,
-  "light": 31800,
-  "normal": 58300,
-  "lux": 106000,
+  "light": 42000,
+  "normal": 77000,
+  "lux": 140000,
   "note": null
  },
- "IDXKxVe": {
-  "frac": 1,
-  "light": 17750,
-  "normal": 32550,
-  "lux": 59200,
-  "note": null
- },
- "IDZqD4H": {
-  "frac": 1,
-  "light": 13550,
-  "normal": 24850,
-  "lux": 45200,
-  "note": null
- },
- "ID10HVAl": {
-  "frac": 1,
-  "light": 14050,
-  "normal": 25750,
-  "lux": 46800,
-  "note": null
- },
- "ID117AVG": {
-  "frac": 1,
-  "light": 14050,
-  "normal": 25750,
-  "lux": 46800,
-  "note": null
- },
- "IDYq3Kf": {
-  "frac": 1,
-  "light": 13200,
-  "normal": 24200,
-  "lux": 44000,
-  "note": null
- },
- "ID112rmO": {
-  "frac": 1,
-  "light": 15600,
-  "normal": 28600,
-  "lux": 52000,
-  "note": null
- },
- "ID11fnFx": {
-  "frac": 1,
-  "light": 13200,
-  "normal": 24200,
-  "lux": 44000,
-  "note": null
- },
- "IDZmDJO": {
-  "frac": 1,
-  "light": 10800,
-  "normal": 19800,
-  "lux": 36000,
-  "note": null
- },
- "ID107wEu": {
-  "frac": 1,
-  "light": 10800,
-  "normal": 19800,
-  "lux": 36000,
-  "note": null
- },
- "ID110uWS": {
-  "frac": 1,
-  "light": 14050,
-  "normal": 25750,
-  "lux": 46800,
-  "note": null
- },
- "IDYiLLC": {
-  "frac": 1,
-  "light": 16700,
-  "normal": 30600,
-  "lux": 55600,
-  "note": null
- },
- "ID11i2k3": {
-  "frac": 1,
-  "light": 13200,
-  "normal": 24200,
-  "lux": 44000,
-  "note": null
- },
- "ID10zEdw": {
-  "frac": 1,
-  "light": 8300,
-  "normal": 15200,
-  "lux": 27600,
-  "note": null
- },
- "ID111RDy": {
+ "ID115Dys": {
   "frac": 1,
   "light": 8400,
   "normal": 15400,
   "lux": 28000,
-  "note": null
- },
- "IDZSO48": {
-  "frac": 1,
-  "light": 38400,
-  "normal": 70400,
-  "lux": 128000,
   "note": null
  },
  "METR4550142": {
@@ -3611,11 +3828,11 @@
   "lux": 24950,
   "note": null
  },
- "METR4636935": {
+ "METR4556857": {
   "frac": 1,
-  "light": 6850,
-  "normal": 12550,
-  "lux": 22800,
+  "light": 8400,
+  "normal": 15400,
+  "lux": 28000,
   "note": null
  },
  "METR5017567": {
@@ -3625,18 +3842,18 @@
   "lux": 23100,
   "note": null
  },
+ "METR4636935": {
+  "frac": 1,
+  "light": 6850,
+  "normal": 12550,
+  "lux": 22800,
+  "note": null
+ },
  "METR5110411": {
   "frac": 1,
   "light": 6800,
   "normal": 12450,
   "lux": 22600,
-  "note": null
- },
- "METR4556857": {
-  "frac": 1,
-  "light": 8400,
-  "normal": 15400,
-  "lux": 28000,
   "note": null
  },
  "METR4754489": {

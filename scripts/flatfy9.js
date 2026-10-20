@@ -39,6 +39,9 @@ const CITY = {
   vin: [10003908, 'Вінниця', 'Винничина'],
 };
 const TYPES = { house: 3, flat: 1 }; // section_id
+// [house|flat from to] — добрать тип и полосу цены, дописав к собранному (см. cliBand в lib9.js)
+const BAND = L.cliBand(process.argv);
+const OUT = D + 'flatfy9-candidates.json';
 // источники, уже присутствующие в каталоге под своим именем — карточки-зеркала с этих
 // сайтов не дают новой площади рынка (см. шапку файла)
 const SKIP_SITES = new Set(['rieltor.ua', 'olx.ua', 'lun.ua', 'dom.ria.com', 'metrazh.com.ua']);
@@ -62,12 +65,14 @@ function photoUrl(imageId) {
 (async () => {
   fs.mkdirSync(D, { recursive: true });
   const store = {};
+  if (BAND.partial && fs.existsSync(OUT)) for (const x of JSON.parse(fs.readFileSync(OUT, 'utf8'))) store[x.id] = x;
   const stats = { pages: 0, raw: 0, mirrors: {}, kept: 0, byObl: {} };
   for (const [obl, [geoId, cityUa, zone]] of Object.entries(CITY)) {
     for (const [kind, sectionId] of Object.entries(TYPES)) {
+      if (BAND.only && kind !== BAND.only) continue;
       let page = 1, total = Infinity, seen = 0;
       for (; seen < total; page++) {
-        const q = `section_id=${sectionId}&geo_id=${geoId}&price_min=${L.BUDGET_LO}&price_max=${L.BUDGET_HI}&currency=USD&page=${page}`;
+        const q = `section_id=${sectionId}&geo_id=${geoId}&price_min=${BAND.from}&price_max=${BAND.to}&currency=USD&page=${page}`;
         const j = await fetchJson(`https://flatfy.ua/api/realties?${q}`);
         stats.pages++;
         await sleep(700 + Math.random() * 500);
@@ -80,7 +85,7 @@ function photoUrl(imageId) {
           const site = (it.site && (it.site.internal_name || it.site.name) || '').toLowerCase();
           if (SKIP_SITES.has(site)) { stats.mirrors[site] = (stats.mirrors[site] || 0) + 1; continue; }
           const price = it.price;
-          if (!L.inBudget(price)) continue;
+          if (!(price >= BAND.from && price <= BAND.to)) continue;
           const area = it.area_total || null;
           const rooms = it.room_count || null;
           if (kind === 'house' && (area || 0) < 65) continue;
@@ -110,7 +115,7 @@ function photoUrl(imageId) {
       console.log(obl, kind, '— всего в бюджете (сайт):', total, '| страниц пройдено', page - 1);
     }
   }
-  fs.writeFileSync(D + 'flatfy9-candidates.json', JSON.stringify(Object.values(store)));
+  fs.writeFileSync(OUT, JSON.stringify(Object.values(store)));
   console.log('flatfy9: страниц', stats.pages, '| карточек всего', stats.raw, '| зеркала по сайтам', stats.mirrors,
     '| независимых и по правилам', stats.kept);
   console.log('по областям:', stats.byObl);

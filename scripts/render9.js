@@ -1,4 +1,4 @@
-// Сборка страницы каталога v3 из units9.json: топ-50 область×тип×источник + перенесённый
+// Сборка страницы каталога v3 из units9.json: топ область×тип×источник (дома 100, квартиры 250) + перенесённый
 // набор «получистовая». Пишет две версии: best-houses9.html (артефакт, data URI картинок)
 // и ../index.html (GitHub Pages, внешние URL картинок).
 const fs = require('fs');
@@ -10,7 +10,7 @@ const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-
 const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 const ex = f => fs.existsSync(f);
 
-const DATE = '19 сентября 2026';
+const DATE = '19 сентября 2026, дома $20–30 тыс. и группа Facebook — 20 октября 2026';
 const { units, semi, raw } = rd(D + 'units9.json');
 const market = ex(D + 'market9.json') ? rd(D + 'market9.json') : { byId: {} };
 const marketOld = ex(D5 + 'market-all.json') ? rd(D5 + 'market-all.json') : { byId: {} };
@@ -311,7 +311,7 @@ function idx(u) {
     olx: 'Размещено на OLX ' + (ps ? ps.date : '') + '. На странице объявления OLX показывает дату последнего поднятия',
     lun: 'Дата объявления на ЛУНе',
     tg: 'Дата поста в канале Телеграма — не дата размещения объекта: агрегаторы перевыкладывают один лот месяцами',
-    fb: 'Дата публикации в Facebook Marketplace',
+    fb: /\/groups\//.test(u.link || '') ? 'Дата поста в группе Facebook — продавцы перевыкладывают пост, поэтому дата может быть моложе самого предложения' : 'Дата публикации в Facebook Marketplace',
     riel: 'Дата объявления на Rieltor.ua', metr: 'Дата объявления на Метраже',
     domria: 'Дата объявления на dom.ria.com',
     flatfy: 'Дата, когда flatfy.ua впервые проиндексировал объявление (само объявление размещено на другом сайте — flatfy его агрегирует)',
@@ -320,7 +320,7 @@ function idx(u) {
   const sn = seenAt(u);
   if (sn) {
     const st = `Когда лот подтянулся в наш каталог: ${sn.iso} (${sn.age}). Это дата парсинга, а не дата объявления — `
-      + `лот мог висеть на источнике задолго до того, как попал к нам в топ-50. `
+      + `лот мог висеть на источнике задолго до того, как попал к нам в каталог. `
       + `История ведётся по сборкам каталога с 25.08.2026; последний сбор — ${LASTRUN || '—'}.`;
     parts.push(`<span class="ix ixn2${sn.days <= 1 ? ' ixn2f' : ''}" title="${esc(st)}"><b>${sn.date}</b><i>у нас ${sn.age}</i></span>`);
   }
@@ -349,7 +349,7 @@ function rowFor(u, mode) {
     lun: 'Объявление найдено на lun.ua',
     olx: 'Объявление с OLX.ua',
     tg: 'Пост в публичном канале Telegram' + (u.chan ? ' @' + u.chan : '') + (u.locExact ? '' : ' · село в посте не указано, точка стоит на городе'),
-    fb: 'Объявление в Facebook Marketplace',
+    fb: /\/groups\//.test(u.link || '') ? 'Пост в группе Facebook о продаже домов: цена, площадь и село взяты из текста поста, село найдено на карте по названию — уточняйте у продавца' : 'Объявление в Facebook Marketplace',
     riel: 'Объявление с Rieltor.ua · координаты из карточки продавца',
     metr: 'Объявление с Metrazh.com.ua' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес дома'),
     lunnb: 'Прайс напрямую от застройщика (LUN, раздел «Новобудови») — цена «от» на самый дешёвый юнит этого типа комнатности, не конкретная квартира' + (u.locExact ? '' : ' · точка на карте — центр города поиска, не адрес ЖК'),
@@ -365,7 +365,7 @@ function rowFor(u, mode) {
             : semiCls.title))
     : semiCls.title;
   const semiB = (u.ready === 'semi' || u.ready === 'raw') ? `<span class="semib" title="${esc(semiTitle)}">${semiCls.badge}</span>` : '';
-  const newB = u.isNew ? `<span class="newb" title="Новостройка, проверенная по фотографиям: на снимках жилой интерьер, а не бетон под чистову. Такие лоты идут первыми и не вытесняются вторичкой из топ-50. Новострой без живых фото (стяжка и штукатурка, только планировка или рендер, только фасад) с 13.09.2026 не выбрасывается, а идёт в список «чистовая». Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';
+  const newB = u.isNew ? `<span class="newb" title="Новостройка, проверенная по фотографиям: на снимках жилой интерьер, а не бетон под чистову. Такие лоты идут первыми и не вытесняются вторичкой из топа. Новострой без живых фото (стяжка и штукатурка, только планировка или рендер, только фасад) с 13.09.2026 не выбрасывается, а идёт в список «чистовая». Проверьте, что продаётся — зарегистрированное право собственности или имущественные права по договору с застройщиком: это разные договоры, налоги и риск">НОВОСТРОЙ</span>` : '';
   const badges = `<span class="srcb srcb-${u.src}" title="${SRC_HINT[u.src] || ''}">${SRC_LABEL[u.src]}</span><span class="kindb" title="Тип жилья">${KIND_LABEL[u.kind]}</span>${newB}${semiB}${dupBadges(u)}`;
   const m = mkt(u.id);
   const d = [
@@ -488,7 +488,9 @@ const cluster = clusterTpl
   .replace('{{PTS}}', () => JSON.stringify(pts).replace(/<\//g, '<\\/'))
   .replace('{{INDUSTRY}}', () => JSON.stringify(IND))
   .replace('{{STRIKES}}', () => JSON.stringify(STRIKES))
-  .replace('{{CITYSHAPES}}', () => JSON.stringify(rd(D2 + 'city-shapes.json').filter(c => c.name !== 'Ужгород')))
+  // контуры городов раньше читались из scratchpad сессии 2ba88487; Temp вычищен, и 20.10.2026
+  // они перенесены в репозиторий (извлечены из опубликованной сборки 19.09.2026)
+  .replace('{{CITYSHAPES}}', () => JSON.stringify(rd(D + 'city-shapes.json').filter(c => c.name !== 'Ужгород')))
   .replace('{{OBLASTS}}', () => JSON.stringify(shapes.map(o => ({ name: o.name, path: o.path, lx: o.lx, ly: o.ly }))))
   .replace('{{GEOACC}}', () => GEOACC)
   .replace('{{CITIES}}', () => JSON.stringify(MAP_CITIES))
