@@ -31,13 +31,13 @@ const ex = f => fs.existsSync(f);
 // При топ-50 только по квартирам OLX за бортом оставалось 518 лотов, прошедших все
 // фильтры, и перекос был резкий: 225 из них в Ивано-Франковске и 48 в Хмельницком —
 // то есть именно там, где предложений больше всего, каталог показывал пятую часть рынка.
-// TOP_LOW: дома $20–30 тыс. (просьба покупателя 20.10.2026) — своя квота, топ-100 на
-// область, и за места с основным бюджетом $30–45 тыс. они не конкурируют: pickTop
-// раскладывает лоты по ярусам цены отдельно, поэтому топы $30–45 тыс. от этой полосы
-// не меняются ни на один лот.
-// TOP (дома, основной бюджет): 50 → 100 тогда же — «домов вообще много, на каждый
-// источник сделай топ-100, чтобы влезло побольше». Только добавляет: прежние 50 остаются.
-const TOP = 100, TOP_FLAT = 250, TOP_LOW = 100, KM_MAX = 10;
+// TOP (дома): 50 → 100 (просьба покупателя 20.10.2026 — «домов вообще много, на каждый
+// источник сделай топ-100, чтобы влезло побольше») и квота — на каждую полосу цены
+// отдельно. Сначала своя сотня появилась у полосы $20–30 тыс., затем (20.10.2026, «затяни
+// группы домов по аналогии 30–35, 35–40, 40–45») — у каждой из трёх полос $30–45 тыс.:
+// pickTop раскладывает дома области по полосам PRICE_BANDS, и дом занимает место только
+// среди домов своей полосы. Это только добавляет: общая сотня $30–45 тыс. теперь три сотни.
+const TOP = 100, TOP_FLAT = 250, KM_MAX = 10;
 const DEAD = new Set(rd(path.join(__dirname, '..', 'dead.json')).dead || []);
 const EXCLUDED = new Set(rd(path.join(__dirname, '..', 'excluded.json')).excluded || []);
 const geo9 = rd(D + 'geocode9.json');
@@ -345,8 +345,10 @@ function dedupe(arr) {
     // схлопывались РАЗНЫЕ квартиры. 13.09.2026 так пропала квартира на 5/10 в кирпичном
     // доме — её принял за дубль лот на 9/14 в монолитном, потому что совпали только
     // цена, площадь и город. Настоящий перепост одного объекта совпадает и по этажу.
+    // У домов то же самое делает участок: 20.10.2026 в Хмельницком склеились два разных
+    // дома одного агентства по $37 000 и 68 м² — у одного 3 сотки у озера, у другого 12 у леса.
     const k = [u.kind, u.price, Math.round(u.area || 0), (u.loc || '').toLowerCase(),
-      u.floor || '', u.floors || ''].join('|');
+      u.floor || '', u.floors || '', u.kind === 'house' ? Math.round((u.land || 0) * 10) : ''].join('|');
     const cur = best.get(k);
     if (!cur) { best.set(k, u); continue; }
     if (PREV.has(u.id) && !PREV.has(cur.id)) best.set(k, u);
@@ -354,24 +356,25 @@ function dedupe(arr) {
   return [...best.values()].sort((a, b) => b.quality - a.quality);
 }
 // раскладка по областям и обрезка до TOP; setKey — подпись набора, prefix — 'semi:' для получистовой.
-// Полоса $20–30 тыс. — отдельный ярус внутри области («<обл>~low»): лоты в нём делят
-// между собой только свою квоту TOP_LOW и не занимают мест основного бюджета.
+// Дома — отдельный ярус на каждую полосу цены внутри области («<обл>~p20» … «<обл>~p40»):
+// лоты полосы делят между собой только свою сотню и не занимают мест соседних полос.
+// Квартиры — одним ярусом на весь бюджет $30–45 тыс., как раньше.
 function pickTop(sets, out, stats, prefix) {
   for (const [key, arr] of Object.entries(sets)) {
     const byObl = {};
     for (const u of arr) {
-      const o = (u.obl || 'unk') + (L.tierOf(u.price) === 'low' ? '~low' : '');
+      const o = (u.obl || 'unk') + (u.kind === 'house' ? '~' + (L.bandOf(u.price) || 'out') : '');
       (byObl[o] = byObl[o] || []).push(u);
     }
     const parts = [];
     for (const [ok, list] of Object.entries(byObl)) {
-      const [o, low] = ok.split('~');
+      const [o, band] = ok.split('~');
       if (o === 'unk' || o === 'zak') continue;
       // новостройки идут первыми и внутри себя по индексу — они не должны вылетать
       // из топ-50 под давлением вторички (просьба покупателя 03.09.2026)
       list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || b.quality - a.quality);
-      const top = low ? TOP_LOW : key.endsWith('|flat') ? TOP_FLAT : TOP;
-      list.slice(0, top).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key + (low ? '~low' : ''); out.push(u); });
+      const top = key.endsWith('|flat') ? TOP_FLAT : TOP;
+      list.slice(0, top).forEach((u, i) => { u.rankIn = i + 1; u.setKey = (prefix || '') + key + (band ? '~' + band : ''); out.push(u); });
       parts.push(ok + ':' + Math.min(list.length, top));
     }
     stats.push(((prefix || '') + key).padEnd(15) + ' ' + parts.sort().join(' '));
@@ -407,15 +410,25 @@ function nbPass(u) {
   if ((u.photos || []).length) nbCand.push(u);
   return true;
 }
+// Черновой стан — не готовое жильё (правило покупателя: чистовая — отдельный третий список).
+// Слова продавца в тексте (isRough в lib9.js) или поле OLX «Ремонт» у дома: фотопроверка домов
+// смотрит первый кадр, обычно фасад, и коробку «після будівельників» за ним не видит.
+function notRough(u) {
+  if (PINNED.has(u.id)) return true;
+  const rep = u.src === 'olx' && u.kind === 'house' && /після будівельник|під чистову/i.test(u.repair || '');
+  if (!rep && !L.isRough((u.title || '') + ' ' + (u.desc || ''))) return true;
+  pushRaw(u, 'shell'); drop.rough = (drop.rough || 0) + 1;
+  return false;
+}
 const sets = {
-  'olx|house': dedupe(housesOlx.filter(nbPass)), 'olx|flat': dedupe(flatsOlx.filter(nbPass)),
-  'lun|house': dedupe(lunAll.filter(u => u.kind === 'house').filter(nbPass)), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'tg|house': dedupe(tgAll.filter(u => u.kind === 'house').filter(nbPass)), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'riel|house': dedupe(rielAll.filter(u => u.kind === 'house').filter(nbPass)), 'riel|flat': dedupe(rielAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'metr|house': dedupe(metrAll.filter(u => u.kind === 'house').filter(nbPass)), 'metr|flat': dedupe(metrAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'domria|house': dedupe(domriaAll.filter(u => u.kind === 'house').filter(nbPass)), 'domria|flat': dedupe(domriaAll.filter(u => u.kind === 'flat').filter(nbPass)),
-  'flatfy|house': dedupe(flatfyAll.filter(u => u.kind === 'house').filter(nbPass)), 'flatfy|flat': dedupe(flatfyAll.filter(u => u.kind === 'flat').filter(nbPass)),
+  'olx|house': dedupe(housesOlx.filter(nbPass).filter(notRough)), 'olx|flat': dedupe(flatsOlx.filter(nbPass).filter(notRough)),
+  'lun|house': dedupe(lunAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'tg|house': dedupe(tgAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'riel|house': dedupe(rielAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'riel|flat': dedupe(rielAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'metr|house': dedupe(metrAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'metr|flat': dedupe(metrAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'domria|house': dedupe(domriaAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'domria|flat': dedupe(domriaAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'flatfy|house': dedupe(flatfyAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'flatfy|flat': dedupe(flatfyAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
 };
 const units = [];
 const setStats = [];
@@ -632,8 +645,12 @@ setStats.forEach(s => console.log(s));
 const oblCnt = {};
 units.forEach(u => oblCnt[u.obl] = (oblCnt[u.obl] || 0) + 1);
 console.log('готовых лотов:', units.length, 'по областям:', JSON.stringify(oblCnt));
-const lowCnt = (arr) => arr.filter(u => L.tierOf(u.price) === 'low').reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {});
-console.log('полоса $20–30 тыс. (дома): готовых', JSON.stringify(lowCnt(units)), '| получистовая', JSON.stringify(lowCnt(semi)), '| чистовая', JSON.stringify(lowCnt(raw)));
+const bandCnt = (arr, b) => arr.filter(u => u.kind === 'house' && L.bandOf(u.price) === b).reduce((m, u) => { m[u.obl] = (m[u.obl] || 0) + 1; return m; }, {});
+const sumCnt = m => Object.values(m).reduce((a, b) => a + b, 0);
+for (const b of L.PRICE_BANDS) {
+  const r = [units, semi, raw].map(a => bandCnt(a, b.key));
+  console.log(`дома ${b.label}: готовых ${sumCnt(r[0])}`, JSON.stringify(r[0]), `| получистовая ${sumCnt(r[1])} | чистовая ${sumCnt(r[2])}`);
+}
 console.log('получистовая: отбор', JSON.stringify(semiDrop), '| кандидатов', semiCand.length, '| в топах', semi.length, '| с прежней страницы', liveKept);
 const semiCls = {}; semi.forEach(u => semiCls[u.semi] = (semiCls[u.semi] || 0) + 1);
 console.log('получистовая по классам:', JSON.stringify(semiCls));

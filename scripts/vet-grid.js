@@ -1,8 +1,8 @@
 // Фото-проверка домов OLX («готовое» = по фотографиям видно жилой дом):
 // собирает кандидатов без вердикта в сетки 3×4 (по одному фото на лот, 320×240),
 // картинки смотрит Claude и пишет вердикты через vet-apply.js.
-// usage: node vet-grid.js [maxPerObl] [low|main] — второй аргумент берёт только один ярус цены
-// (low — дома $20–30 тыс., у них своя квота топ-100 на область)
+// usage: node vet-grid.js [maxPerObl] [low|main|p20|p30|p35|p40] — второй аргумент берёт только
+// один ярус или одну полосу цены (у каждой полосы домов своя квота топ-100 на область)
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
@@ -13,7 +13,7 @@ const need = JSON.parse(fs.readFileSync(D + 'vet-need.json', 'utf8'));
 const done = fs.existsSync(D + 'photo-vet.json') ? JSON.parse(fs.readFileSync(D + 'photo-vet.json', 'utf8')) : {};
 const MAX = +(process.argv[2] || 70);
 const TIER = process.argv[3] || null;
-const { tierOf } = require('./lib9');
+const { tierOf, bandOf } = require('./lib9');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/151';
 
@@ -23,7 +23,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/151';
   for (const u of need) {
     if (done[u.id]) continue;
     if (!u.photos || !u.photos.length) continue;
-    if (TIER && tierOf(u.price) !== TIER) continue;
+    if (TIER && tierOf(u.price) !== TIER && bandOf(u.price) !== TIER) continue;
     (byObl[u.obl] = byObl[u.obl] || []).push(u);
   }
   const queue = [];

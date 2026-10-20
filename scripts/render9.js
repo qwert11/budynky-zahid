@@ -10,7 +10,7 @@ const D5 = 'C:/Users/xetr11/AppData/Local/Temp/claude/c--Users-xetr11-Documents-
 const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
 const ex = f => fs.existsSync(f);
 
-const DATE = '19 сентября 2026, дома $20–30 тыс. и группа Facebook — 20 октября 2026';
+const DATE = '20 октября 2026 (дома $20–45 тыс. собраны заново, все ссылки проверены на снятость)';
 const { units, semi, raw } = rd(D + 'units9.json');
 const market = ex(D + 'market9.json') ? rd(D + 'market9.json') : { byId: {} };
 const marketOld = ex(D5 + 'market-all.json') ? rd(D5 + 'market-all.json') : { byId: {} };

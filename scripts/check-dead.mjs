@@ -37,6 +37,17 @@ const dead = new Set();
 let blocked = [];
 let checked = 0;
 const byId = new Map(pts.map(p => [p.i, p]));
+// Снятое прошлыми прогонами на странице уже не стоит (units9.js выкидывает его по dead.json),
+// поэтому по точкам карты его не проверить. Раньше такие ID при перезаписи выпадали из списка,
+// и следующая пересборка возвращала снятые лоты в каталог (найдено 20.10.2026). Держим их всегда.
+for (const id of prevDead) if (!byId.has(id)) dead.add(id);
+// DEAD_ONLY=<файл со списком ID> — проверить только эти точки (добор после пересборки:
+// лоты, впервые попавшие на место снятых); остальные считаются проверенными этим же днём.
+if (process.env.DEAD_ONLY) {
+  const only = new Set(JSON.parse(fs.readFileSync(process.env.DEAD_ONLY, 'utf8')));
+  for (const id of prevDead) if (byId.has(id) && !only.has(id)) dead.add(id);
+  pts.splice(0, pts.length, ...pts.filter(p => only.has(p.i)));
+}
 
 for (let i = 0; i < pts.length; i += 6) {
   await Promise.all(pts.slice(i, i + 6).map(async p => {
