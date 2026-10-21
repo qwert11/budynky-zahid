@@ -2,7 +2,8 @@
 // формат «топ-50 на область» отдельно по домам и квартирам В КАЖДОМ источнике
 // (OLX, ЛУН, Телеграм, Фейсбук). Правила покупателя от 02.09.2026:
 //   • дальше 10 км от города — не рассматриваем вообще (кроме закреплённых
-//     лотов с разбором «нам подходит» — их метки нельзя терять);
+//     лотов с разбором «нам подходит» — их метки нельзя терять; с 21.10.2026 — кроме
+//     Facebook, см. gate());
 //   • близость к городу в индексе цена/качество весит 2:1 к каждой другой категории.
 // Набор «получистовая» — отдельный список по тем же правилам (топ-50 на область в каждом
 // источнике по домам и квартирам, ≤10 км): кандидаты — то, что готовый отбор отбросил по
@@ -130,7 +131,9 @@ function gate(u) {
   if (u.obl === 'zak' || u.obl == null && u.region === 'Закарпатська область') { drop.zak++; return false; }
   if (PINNED.has(u.id)) { pinnedKept++; return true; }        // разобранное избранное держим всегда
   if (u.lat == null || u.km == null) { drop.nogeo++; return false; }
-  if (u.km > KM_MAX) { drop.far++; return false; }
+  // Facebook — без предела 10 км (правило покупателя 21.10.2026: «фильтр 10 можешь откинуть»):
+  // и группа «Будиночок у селі», и Marketplace — это в основном дома в сёлах
+  if (u.km > KM_MAX && u.src !== 'fb') { drop.far++; return false; }
   return true;
 }
 
@@ -289,8 +292,11 @@ function loadExt(file, src, geoFile, dir) {
 const tgAll = [...loadExt('tme-candidates.json', 'tg', 'tg-geocode.json', EXT), ...loadExt('tg9-candidates.json', 'tg', 'tg9-geocode.json', D)]
   .map(finish).filter(gate);
 // fb9-candidates.json — посты групп Facebook о продаже домов (группа «Будиночок у селі»,
-// 20.10.2026, scripts/fb9-group.js): только с явной ценой в тексте
-const fbAll = [...loadExt('fb-candidates.json', 'fb', null, EXT), ...loadExt('fb9-candidates.json', 'fb', null, D)]
+// 20.10.2026, scripts/fb9-group.js): только с явной ценой в тексте;
+// fbm9-candidates.json — Facebook Marketplace (21.10.2026, scripts/fb9-market.js): поиск
+// домов вокруг каждого города девяти областей, карточки открываются по очереди
+const fbAll = [...loadExt('fb-candidates.json', 'fb', null, EXT), ...loadExt('fb9-candidates.json', 'fb', null, D),
+  ...loadExt('fbm9-candidates.json', 'fb', null, D)]
   .map(finish).filter(gate);
 // Rieltor.ua отдаёт координаты прямо в карточке поиска; Metrazh координат не даёт —
 // сборщик (metrazh9.js) сам подставляет центр города поиска в r.lat/r.lon, поэтому
@@ -420,11 +426,19 @@ function notRough(u) {
   pushRaw(u, 'shell'); drop.rough = (drop.rough || 0) + 1;
   return false;
 }
+// Facebook: фотопроверка глазами (photo-vet.json). «shell» — на фото коробка без отделки:
+// это не готовое, а «чистовая» (третий список, правило 13.09.2026 — ничего не выбрасываем).
+// «no» (на фото не жильё — план, участок) отсеивают ещё fb9-parse.js / fb9-market-parse.js.
+function fbShell(u) {
+  if (u.src !== 'fb' || vet[u.id] !== 'shell' || PINNED.has(u.id)) return true;
+  pushRaw(u, 'shell'); drop.fbShell = (drop.fbShell || 0) + 1;
+  return false;
+}
 const sets = {
   'olx|house': dedupe(housesOlx.filter(nbPass).filter(notRough)), 'olx|flat': dedupe(flatsOlx.filter(nbPass).filter(notRough)),
   'lun|house': dedupe(lunAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'lun|flat': dedupe(lunAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
   'tg|house': dedupe(tgAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'tg|flat': dedupe(tgAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
-  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
+  'fb|house': dedupe(fbAll.filter(u => u.kind === 'house').filter(fbShell).filter(nbPass).filter(notRough)), 'fb|flat': dedupe(fbAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
   'riel|house': dedupe(rielAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'riel|flat': dedupe(rielAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
   'metr|house': dedupe(metrAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'metr|flat': dedupe(metrAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
   'domria|house': dedupe(domriaAll.filter(u => u.kind === 'house').filter(nbPass).filter(notRough)), 'domria|flat': dedupe(domriaAll.filter(u => u.kind === 'flat').filter(nbPass).filter(notRough)),
